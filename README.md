@@ -12,3 +12,4 @@ Fork of https://github.com/lazytiger/gumbo-query. I opted to have this be an uno
  - Expose internal Gumbo Parser structures and modify API so that construction is possible where things like CDocument are non-owning of the raw Gumbo Parser structures.
  - Implement optimizations for trivial selectors.
  - Expose compiled selectors to the public so that they can be retained and recycled against existing and new documents.
+ - Comment the hell out of everything. The goal is to have more green than anything else.
