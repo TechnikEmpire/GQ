@@ -61,7 +61,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{CE29AD88-4255-450F-9FA1-22252959CE94}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>GumbQuery</RootNamespace>
+    <RootNamespace>GumboQuery</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
