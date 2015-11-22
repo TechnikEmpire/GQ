@@ -12,8 +12,7 @@ Fork of https://github.com/lazytiger/gumbo-query. I opted to have this be an uno
  - Replace `std::string` with `boost::string_ref` wherever string copies don't truly need to be generated.  
  - Expose internal Gumbo Parser structures and modify to allow construction of `CDocument` from existing `GumboOutput*`.
  - Implement optimizations for trivial selectors.
- - Implement caching of selectors so that unneccessary recompilation doesn't happen.
  - Remove local state tracking from the selector parser (no members that save parsing states).
- - Thread safety in selector parser, since we're caching results.
+ - Thread safety in selector parser.
  - Expose compiled selectors to the public so that they can be retained and recycled against existing and new documents.
  - Comment the hell out of everything. The goal is to have more green than anything else.
