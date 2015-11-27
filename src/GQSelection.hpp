@@ -2,6 +2,9 @@
 * This is a heavily modified fork of gumbo-query by Hoping White aka LazyTiger.
 * The original software can be found at: https://github.com/lazytiger/gumbo-query
 *
+* gumbo-query is based on cascadia, written by Andy Balholm.
+*
+* Copyright (c) 2011 Andy Balholm. All rights reserved.
 * Copyright (c) 2015 Hoping White aka LazyTiger (hoping@baimashi.com)
 * Copyright (c) 2015 Jesse Nicholson
 *
@@ -12,10 +15,8 @@
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
 *
-*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-*
 *
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -37,17 +38,35 @@
 
 namespace gumboquery
 {
+
+	/// <summary>
+	/// 
+	/// </summary>
 	class GQSelection
 	{
 
 	public:
 
-		GQSelection(const GumboNode* node);
+		/// <summary>
+		/// Builds a new GQSelection object from a single, valid SharedGQNode. The supplied shared
+		/// pointer cannot be nullptr and this constructor will throw if it is.
+		/// </summary>
+		/// <param name="node">
+		/// The valid SharedGQNode to build the selection from. 
+		/// </param>
+		GQSelection(const SharedGQNode node);
 
-		GQSelection(std::vector<GumboNode*>&& nodes);
+		/// <summary>
+		/// Builds a new GQSelection object from a copy of a collection of nodes.
+		/// </summary>
+		/// <param name="nodes">
+		/// Existing nodes that make up the selection.
+		/// </param>
+		GQSelection(std::vector<SharedGQNode> nodes);
 
-		GQSelection(const std::vector<GumboNode*>& nodes);
-
+		/// <summary>
+		/// Default destructor.
+		/// </summary>
 		~GQSelection();
 
 		/// <summary>
@@ -74,7 +93,7 @@ namespace gumboquery
 		/// A collection of nodes that were matched by the supplied selector. If no matches were
 		/// found, the collection will be empty.
 		/// </returns>
-		GQSelection Find(const GQSelector& selector) const;
+		GQSelection Find(const SharedGQSelector& selector) const;
 
 		/// <summary>
 		/// Check the total number of nodes held in this selection. This number represents how many
@@ -85,7 +104,7 @@ namespace gumboquery
 		/// <returns>
 		/// The total number of nodes contained in this selection.
 		/// </returns>
-		const size_t& GetNodeCount() const;
+		const size_t GetNodeCount() const;
 
 		/// <summary>
 		/// Fetch a copy of the node at the supplied index. The index must respect the upper and
@@ -98,11 +117,15 @@ namespace gumboquery
 		/// <returns>
 		/// A copy of the node found at the supplied index.
 		/// </returns>
-		GQNode GetNodeAt(const size_t& index) const;
+		SharedGQNode GetNodeAt(const size_t index) const;
 
 	private:
 
-		std::vector<GumboNode*> m_nodes;
+		/// <summary>
+		/// The collection of nodes in the selection.
+		/// </summary>
+		std::vector<SharedGQNode> m_nodes;
 
 	};
+
 } /* namespace gumboquery */

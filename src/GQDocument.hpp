@@ -2,6 +2,9 @@
 * This is a heavily modified fork of gumbo-query by Hoping White aka LazyTiger.
 * The original software can be found at: https://github.com/lazytiger/gumbo-query
 *
+* gumbo-query is based on cascadia, written by Andy Balholm.
+*
+* Copyright (c) 2011 Andy Balholm. All rights reserved.
 * Copyright (c) 2015 Hoping White aka LazyTiger (hoping@baimashi.com)
 * Copyright (c) 2015 Jesse Nicholson
 *
@@ -12,10 +15,8 @@
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
 *
-*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-*
 *
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -76,7 +77,15 @@ namespace gumboquery
 
 		/// <summary>
 		/// Run a selector against the document and return any and all nodes that were matched by
-		/// the supplied selector string.
+		/// the supplied selector string. Note that this method, which accepts a selector as a
+		/// string, internally calls the GQParser::Parse(...) method, which will throw when supplied
+		/// with invalid selectors. As such, be prepared to handle exceptions when using this
+		/// method.
+		/// 
+		/// Note also that it is recommended to use the GQParser directly to compile selectors
+		/// first, saving the returned GQSharedSelector objects. This is much more efficient if the
+		/// selector is used more than once. Methods that accept raw selector strings will compile
+		/// and discard selectors after use.
 		/// </summary>
 		/// <param name="selectorString">
 		/// The selector string to query against the document with. 
@@ -98,21 +107,18 @@ namespace gumboquery
 		/// A collection of nodes that were matched by the supplied selector. If no matches were
 		/// found, the collection will be empty.
 		/// </returns>
-		GQSelection Find(const GQSelector& selector) const;		
+		GQSelection Find(const SharedGQSelector& selector) const;		
 
 	private:
 
 		/// <summary>
-		/// unique_ptr wrapper for the raw GumboOutput pointer. This object exclusively holds
+		/// A pointer to the GumboOutput generated when parsing HTML. This object exclusively holds
 		/// ownership of the raw GumboOutput structure it works with.
 		/// </summary>
-		std::unique_ptr<GumboOutput> m_gumboOutput = nullptr;
+		GumboOutput* m_gumboOutput = nullptr;
 
-		/// <summary>
-		/// unique_ptr of the GQSelection instance which wraps m_gumboOutput-&gt;root. This should
-		/// be reset every time m_gumboOutput is reset.
-		/// </summary>
-		std::unique_ptr<GQSelection> m_rootSelection = nullptr;
+
+		SharedGQNode m_gumboRootNode = nullptr;
 	};
 
 } /* namespace gumboquery */

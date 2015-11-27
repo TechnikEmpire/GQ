@@ -2,6 +2,9 @@
 * This is a heavily modified fork of gumbo-query by Hoping White aka LazyTiger.
 * The original software can be found at: https://github.com/lazytiger/gumbo-query
 *
+* gumbo-query is based on cascadia, written by Andy Balholm.
+*
+* Copyright (c) 2011 Andy Balholm. All rights reserved.
 * Copyright (c) 2015 Hoping White aka LazyTiger (hoping@baimashi.com)
 * Copyright (c) 2015 Jesse Nicholson
 *
@@ -12,10 +15,8 @@
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
 *
-*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-*
 *
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -27,57 +28,68 @@
 */
 
 #include "GQSelection.hpp"
+#include "GQParser.hpp"
+#include "GQUtil.hpp"
 
 namespace gumboquery
 {
 
-	GQSelection::GQSelection(const GumboNode* node)
+	GQSelection::GQSelection(SharedGQNode node)
 	{
+		if (node == nullptr)
+		{
+			throw new std::runtime_error(u8"In GQSelection::GQSelection(SharedGQNode) - The SharedGQNode is nullptr.");
+		}
+
+		m_nodes.push_back(std::move(node));
 	}
 
-	GQSelection::GQSelection(std::vector<GumboNode*>&& nodes) : 
+	GQSelection::GQSelection(std::vector<SharedGQNode> nodes) :
 		m_nodes(std::move(nodes))
-	{
-
-	}
-
-	GQSelection::GQSelection(const std::vector<GumboNode*>& nodes) :
-		m_nodes(nodes)
 	{
 
 	}
 
 	GQSelection::~GQSelection()
 	{
+
 	}
 
 	GQSelection GQSelection::Find(const std::string& selectorString) const
 	{
-
+		SharedGQSelector selector = GQParser::CreateSelector(selectorString);	
+	
+		return Find(selector);
 	}
 
-	GQSelection GQSelection::Find(const GQSelector& selector) const
+	GQSelection GQSelection::Find(const SharedGQSelector& selector) const
 	{
+		std::vector<SharedGQNode> ret;
 
-	}
-
-	const size_t& GQSelection::GetNodeCount() const
-	{
-		m_nodes.size();
-	}
-
-	GQNode GQSelection::GetNodeAt(const size_t& index) const
-	{
-		if (m_nodes.size() == 0)
+		for (std::vector<SharedGQNode>::const_iterator it = m_nodes.begin(); it != m_nodes.end(); ++it)
 		{
-			throw new std::runtime_error(u8"In GQSelection::GetNodeAt(const size_t&) - ::GetNodeCount() == 0. Cannot access any element by any valid index when the collection is empty.");
-		}
-		else if (index >= m_nodes.size())
-		{
-			throw new std::runtime_error(u8"In GQSelection::GetNodeAt(const size_t&) - index >= ::GetNodeCount(). The supplied index is out of bounds.");
+			const GumboNode* node = (*it)->m_node;
+
+			auto matched = selector->MatchAll(node);
+			GQUtil::UnionNodes(ret, matched);
 		}
 
-		return GQNode(m_nodes[index]);
+		return GQSelection(ret);
+	}
+
+	const size_t GQSelection::GetNodeCount() const
+	{
+		return m_nodes.size();
+	}
+
+	SharedGQNode GQSelection::GetNodeAt(const size_t index) const
+	{
+		if (m_nodes.size() == 0 || index >= m_nodes.size())
+		{
+			throw new std::runtime_error(u8"In GQSelection::GetNodeAt(const size_t) - The supplied index is out of bounds.");
+		}
+
+		return m_nodes[index];
 	}
 
 } /* namespace gumboquery */

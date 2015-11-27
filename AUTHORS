@@ -4,11 +4,25 @@ project, along with a brief summary of the contribution.
 ------------------------------------------------------------------------
 
 Author Name, Location and Email:
+	Andy Balholm - Clayton, Washington / Unknown
+	
+Author Contribution:
+	The original author of Cascadia, a GO selector library which 
+	gumbo-query is based on. Cascadia is licensed under the MIT 
+	License. 
+
+Original Work:
+	https://github.com/lazytiger/gumbo-query
+
+------------------------------------------------------------------------
+
+Author Name, Location and Email:
 	Hoping White aka LazyTiger, Haidian, Beijing - baihaoping@gmail.com
 	
 Author Contribution:
-	As the original author of gumbo-query, did all the hard work. :) This 
-work is licensed under the MIT License. 
+	Author of gumbo-query, a C++ selector library for gumbo-parser, based
+	on the GO library Cascadia. This software is under the same license
+	as Cascadia, the MIT License.
 
 Original Work:
 	https://github.com/lazytiger/gumbo-query
