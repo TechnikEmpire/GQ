@@ -117,7 +117,9 @@ namespace gumboquery
 		/// </summary>
 		GumboOutput* m_gumboOutput = nullptr;
 
-
+		/// <summary>
+		/// SharedGQNode to wrap the root node, used for supplying to selection methods.
+		/// </summary>
 		SharedGQNode m_gumboRootNode = nullptr;
 	};
 
