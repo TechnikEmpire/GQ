@@ -23,33 +23,6 @@
 namespace gumboquery
 {
 
-	const std::unordered_set<boost::string_ref, GQSerializer::StringRefHasher> GQSerializer::NonBreakingInline =
-	{
-		{ u8"a" },
-		{ u8"abbr" },
-		{ u8"acronym" },
-		{ u8"b" },
-		{ u8"bdo" },
-		{ u8"big" },
-		{ u8"cite" },
-		{ u8"code" },
-		{ u8"dfn" },
-		{ u8"em" },
-		{ u8"font" },
-		{ u8"i" },
-		{ u8"img" },
-		{ u8"kbd" },
-		{ u8"nobr" },
-		{ u8"s" },
-		{ u8"small" },
-		{ u8"span" },
-		{ u8"strike" },
-		{ u8"strong" },
-		{ u8"sub" },
-		{ u8"sup" },
-		{ u8"tt" }
-	};
-
 	const std::unordered_set<boost::string_ref, GQSerializer::StringRefHasher> GQSerializer::EmptyTags =
 	{
 		{ u8"area" },

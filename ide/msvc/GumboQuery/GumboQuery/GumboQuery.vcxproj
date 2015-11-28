@@ -68,52 +68,52 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug x86|Win32'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug x64|Win32'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release x86|Win32'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release x64|Win32'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug x86|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug x64|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release x86|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release x64|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -203,7 +203,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>BOOST_AUTO_LINK_NOMANGLE;WIN32;_DEBUG;_WINDOWS;_USRDLL;GUMBQUERY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>BOOST_AUTO_LINK_NOMANGLE;GQ_SHARED;WIN32;_DEBUG;_WINDOWS;_USRDLL;GUMBQUERY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\include;$(ProjectDir)..\..\..\..\..\..\dev\projects\Stahp\libstahp\deps\boost\boost_1_59_0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
@@ -212,6 +212,8 @@
       <AdditionalDependencies>gumbo_parser.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\lib;$(ProjectDir)..\..\..\..\..\..\dev\projects\Stahp\libstahp\deps\boost\boost_1_59_0\stage\MSVC-$(PlatformTarget)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+      <GenerateMapFile>true</GenerateMapFile>
+      <MapExports>true</MapExports>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /Y "$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\lib\*.dll" "$(OutDir)"
@@ -226,7 +228,7 @@ xcopy /Y "$(ProjectDir)..\..\..\..\..\..\dev\projects\Stahp\libstahp\deps\boost\
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>BOOST_AUTO_LINK_NOMANGLE;WIN32;_DEBUG;_WINDOWS;_USRDLL;GUMBQUERY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>BOOST_AUTO_LINK_NOMANGLE;GQ_SHARED;WIN32;_DEBUG;_WINDOWS;_USRDLL;GUMBQUERY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\include;$(ProjectDir)..\..\..\..\..\..\dev\projects\Stahp\libstahp\deps\boost\boost_1_59_0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
@@ -235,6 +237,8 @@ xcopy /Y "$(ProjectDir)..\..\..\..\..\..\dev\projects\Stahp\libstahp\deps\boost\
       <AdditionalDependencies>gumbo_parser.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\lib;$(ProjectDir)..\..\..\..\..\..\dev\projects\Stahp\libstahp\deps\boost\boost_1_59_0\stage\MSVC-$(PlatformTarget)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+      <GenerateMapFile>true</GenerateMapFile>
+      <MapExports>true</MapExports>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /Y "$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\lib\*.dll" "$(OutDir)"
@@ -249,7 +253,7 @@ xcopy /Y "$(ProjectDir)..\..\..\..\..\..\dev\projects\Stahp\libstahp\deps\boost\
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>BOOST_AUTO_LINK_NOMANGLE;_DEBUG;_WINDOWS;_USRDLL;GUMBQUERY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>BOOST_AUTO_LINK_NOMANGLE;GQ_SHARED;_DEBUG;_WINDOWS;_USRDLL;GUMBQUERY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\include;$(ProjectDir)..\..\..\..\..\..\dev\projects\Stahp\libstahp\deps\boost\boost_1_59_0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
@@ -258,6 +262,8 @@ xcopy /Y "$(ProjectDir)..\..\..\..\..\..\dev\projects\Stahp\libstahp\deps\boost\
       <AdditionalDependencies>gumbo_parser.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\lib;$(ProjectDir)..\..\..\..\..\..\dev\projects\Stahp\libstahp\deps\boost\boost_1_59_0\stage\MSVC-$(PlatformTarget)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+      <GenerateMapFile>true</GenerateMapFile>
+      <MapExports>true</MapExports>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /Y "$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\lib\*.dll" "$(OutDir)"
@@ -272,7 +278,7 @@ xcopy /Y "$(ProjectDir)..\..\..\..\..\..\dev\projects\Stahp\libstahp\deps\boost\
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>BOOST_AUTO_LINK_NOMANGLE;_DEBUG;_WINDOWS;_USRDLL;GUMBQUERY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>BOOST_AUTO_LINK_NOMANGLE;GQ_SHARED;_DEBUG;_WINDOWS;_USRDLL;GUMBQUERY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\include;$(ProjectDir)..\..\..\..\..\..\dev\projects\Stahp\libstahp\deps\boost\boost_1_59_0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
@@ -281,6 +287,8 @@ xcopy /Y "$(ProjectDir)..\..\..\..\..\..\dev\projects\Stahp\libstahp\deps\boost\
       <AdditionalDependencies>gumbo_parser.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\lib;$(ProjectDir)..\..\..\..\..\..\dev\projects\Stahp\libstahp\deps\boost\boost_1_59_0\stage\MSVC-$(PlatformTarget)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+      <GenerateMapFile>true</GenerateMapFile>
+      <MapExports>true</MapExports>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /Y "$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\lib\*.dll" "$(OutDir)"
@@ -297,17 +305,19 @@ xcopy /Y "$(ProjectDir)..\..\..\..\..\..\dev\projects\Stahp\libstahp\deps\boost\
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>BOOST_AUTO_LINK_NOMANGLE;WIN32;NDEBUG;_WINDOWS;_USRDLL;GUMBQUERY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>BOOST_AUTO_LINK_NOMANGLE;GQ_SHARED;WIN32;NDEBUG;_WINDOWS;_USRDLL;GUMBQUERY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\include;$(ProjectDir)..\..\..\..\..\..\dev\projects\Stahp\libstahp\deps\boost\boost_1_59_0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>No</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>gumbo_parser.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\lib;$(ProjectDir)..\..\..\..\..\..\dev\projects\Stahp\libstahp\deps\boost\boost_1_59_0\stage\MSVC-$(PlatformTarget)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+      <GenerateMapFile>true</GenerateMapFile>
+      <MapExports>true</MapExports>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /Y "$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\lib\*.dll" "$(OutDir)"
@@ -324,17 +334,19 @@ xcopy /Y "$(ProjectDir)..\..\..\..\..\..\dev\projects\Stahp\libstahp\deps\boost\
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>BOOST_AUTO_LINK_NOMANGLE;WIN32;NDEBUG;_WINDOWS;_USRDLL;GUMBQUERY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>BOOST_AUTO_LINK_NOMANGLE;GQ_SHARED;WIN32;NDEBUG;_WINDOWS;_USRDLL;GUMBQUERY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\include;$(ProjectDir)..\..\..\..\..\..\dev\projects\Stahp\libstahp\deps\boost\boost_1_59_0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>No</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>gumbo_parser.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\lib;$(ProjectDir)..\..\..\..\..\..\dev\projects\Stahp\libstahp\deps\boost\boost_1_59_0\stage\MSVC-$(PlatformTarget)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+      <GenerateMapFile>true</GenerateMapFile>
+      <MapExports>true</MapExports>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /Y "$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\lib\*.dll" "$(OutDir)"
@@ -351,17 +363,19 @@ xcopy /Y "$(ProjectDir)..\..\..\..\..\..\dev\projects\Stahp\libstahp\deps\boost\
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>BOOST_AUTO_LINK_NOMANGLE;NDEBUG;_WINDOWS;_USRDLL;GUMBQUERY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>BOOST_AUTO_LINK_NOMANGLE;GQ_SHARED;NDEBUG;_WINDOWS;_USRDLL;GUMBQUERY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\include;$(ProjectDir)..\..\..\..\..\..\dev\projects\Stahp\libstahp\deps\boost\boost_1_59_0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>No</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>gumbo_parser.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\lib;$(ProjectDir)..\..\..\..\..\..\dev\projects\Stahp\libstahp\deps\boost\boost_1_59_0\stage\MSVC-$(PlatformTarget)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+      <GenerateMapFile>true</GenerateMapFile>
+      <MapExports>true</MapExports>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /Y "$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\lib\*.dll" "$(OutDir)"
@@ -378,17 +392,19 @@ xcopy /Y "$(ProjectDir)..\..\..\..\..\..\dev\projects\Stahp\libstahp\deps\boost\
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>BOOST_AUTO_LINK_NOMANGLE;NDEBUG;_WINDOWS;_USRDLL;GUMBQUERY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>BOOST_AUTO_LINK_NOMANGLE;GQ_SHARED;NDEBUG;_WINDOWS;_USRDLL;GUMBQUERY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\include;$(ProjectDir)..\..\..\..\..\..\dev\projects\Stahp\libstahp\deps\boost\boost_1_59_0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>No</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>gumbo_parser.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\lib;$(ProjectDir)..\..\..\..\..\..\dev\projects\Stahp\libstahp\deps\boost\boost_1_59_0\stage\MSVC-$(PlatformTarget)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+      <GenerateMapFile>true</GenerateMapFile>
+      <MapExports>true</MapExports>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /Y "$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\lib\*.dll" "$(OutDir)"

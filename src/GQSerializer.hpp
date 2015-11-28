@@ -80,11 +80,6 @@ namespace gumboquery
 				return boost::hash_range(strRef.begin(), strRef.end());
 			}
 		};
-		
-		/// <summary>
-		/// Ported, then realized it's unused! lolz! Lets waste space and keep it.
-		/// </summary>
-		static const std::unordered_set<boost::string_ref, StringRefHasher> NonBreakingInline;
 
 		/// <summary>
 		/// List of tags that do not require a named closing tag.

@@ -107,7 +107,7 @@ namespace gumboquery
 		/// A collection of nodes that were matched by the supplied selector. If no matches were
 		/// found, the collection will be empty.
 		/// </returns>
-		GQSelection Find(const SharedGQSelector& selector) const;		
+		GQSelection Find(const SharedGQSelector& selector) const;
 
 	private:
 
