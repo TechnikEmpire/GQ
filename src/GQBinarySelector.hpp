@@ -133,7 +133,7 @@ namespace gumboquery
 		/// True if this selector was successfully matched against the supplied node, false
 		/// otherwise.
 		/// </returns>
-		virtual const bool Match(const GumboNode* node) const;
+		virtual const bool Match(const GumboNode* node) const;		
 
 	private:
 

@@ -178,6 +178,17 @@ namespace gumboquery
 		/// A string_ref wrapper for m_attributeValueRef.
 		/// </summary>
 		boost::string_ref m_attributeValueRef;
+
+		/// <summary>
+		/// Removes any quote characters at the first and last positions of the supplied string.
+		/// Since we handle raw values instead of the values after Gumbo Parser has done conversions
+		/// on things such as character references, the original values can/will still have any
+		/// enclosing quotes present. In order to ensure proper matching, they must be trimmed.
+		/// </summary>
+		/// <param name="str">
+		/// The string to trim enclosing quotation characters from. 
+		/// </param>
+		void TrimEnclosingQuotes(boost::string_ref& str) const;
 	};
 
 } /* namespace gumboquery */

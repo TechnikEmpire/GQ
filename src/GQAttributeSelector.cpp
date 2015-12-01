@@ -89,14 +89,23 @@ namespace gumboquery
 		for (size_t i = 0; i < attributes.length; i++)
 		{
 			GumboAttribute* attribute = static_cast<GumboAttribute*>(attributes.data[i]);
-			boost::string_ref attributeName(attribute->name);
-			boost::string_ref attributeValue(attribute->value);
-
-			if (m_attributeName.size() > attributeName.size())
+			
+			// Note that we take the original attribute name and value. This is because Gumbo Parser will
+			// modify these things, such as replacing character references with literal characters. We don't
+			// want to have to convert escaped character references in supplied selectors.
+			boost::string_ref attributeName(attribute->original_name.data, attribute->original_name.length);
+			boost::string_ref attributeValue(attribute->original_value.data, attribute->original_value.length);
+			
+			if (attributeName.size() == 0 || m_attributeName.size() > attributeName.size())
 			{
-				// Not possible to match, not even prefix matches
+				// Not possible to match if we have nothing to match against or if
+				// the extracted name/value is greater than our value, not even prefix matches.
 				continue;
 			}
+
+			// Since we're dealing with raw values, must remove and preceeding and trailing enclosing quotation characters
+			TrimEnclosingQuotes(attributeName);
+			//
 
 			bool keyMatches = true;
 			if (!boost::iequals(m_attributeName, attributeName))
@@ -142,11 +151,13 @@ namespace gumboquery
 
 				case SelectorOperator::ValueEquals:
 				{
-					// Values cannot possibly be equal if not the same size.
-					if (attributeValue.size() != m_attributeValue.size())
+					// Values cannot possibly be equal if not present or not the same size.
+					if (attributeValue.size() == 0 || attributeValue.size() != m_attributeValue.size())
 					{
 						return false;
 					}
+
+					TrimEnclosingQuotes(attributeValue);
 
 					return boost::iequals(attributeValue, m_attributeValue);
 				}
@@ -159,6 +170,8 @@ namespace gumboquery
 					{
 						return false;
 					}
+
+					TrimEnclosingQuotes(attributeValue);
 
 					// Test case-insensitive equality of same-length substring.
 					boost::string_ref sub = attributeValue.substr(0, m_attributeValue.size());
@@ -174,6 +187,8 @@ namespace gumboquery
 					{
 						return false;
 					}
+
+					TrimEnclosingQuotes(attributeValue);
 
 					// Test case-insensitive equality of same-length substring taken from the end.
 					boost::string_ref sub = attributeValue.substr((attributeValue.size() - m_attributeValue.size()) -1);
@@ -257,6 +272,8 @@ namespace gumboquery
 						return false;
 					}
 
+					TrimEnclosingQuotes(attributeValue);
+
 					// A hyphen was found, so all we have to do is make a case-insensitive match against
 					// a substring of equal length to our member value.
 					boost::string_ref sub = attributeValue.substr(0, m_attributeValue.size());
@@ -268,6 +285,38 @@ namespace gumboquery
 		}
 
 		return false;
+	}
+
+	void GQAttributeSelector::TrimEnclosingQuotes(boost::string_ref& str) const
+	{
+		if (str.length() > 1)
+		{
+			switch (str[0])
+			{
+				case '\'':
+				case '"':
+				{
+					str = str.substr(1);
+				}
+				break;
+
+				default:
+					break;
+			}
+
+			switch (str[str.length() - 1])
+			{
+				case '\'':
+				case '"':
+				{
+					str = str.substr(0, str.length() - 2);
+				}
+				break;
+
+				default:
+					break;
+			}
+		}		
 	}
 
 } /* namespace gumboquery */

@@ -204,7 +204,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>BOOST_AUTO_LINK_NOMANGLE;GQ_SHARED;WIN32;_DEBUG;_WINDOWS;_USRDLL;GUMBQUERY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\include;$(ProjectDir)..\..\..\..\..\..\dev\projects\Stahp\libstahp\deps\boost\boost_1_59_0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\include;$(ProjectDir)..\..\..\..\third-party\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -218,8 +218,7 @@
     <PostBuildEvent>
       <Command>xcopy /Y "$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\lib\*.dll" "$(OutDir)"
 cmd /x /c mkdir "$(OutDir)\..\include"
-xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)\..\include"
-xcopy /Y "$(ProjectDir)..\..\..\..\..\..\dev\projects\Stahp\libstahp\deps\boost\boost_1_59_0\stage\MSVC-$(PlatformTarget)\lib\boost_thread.dll" "$(OutDir)"</Command>
+xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)\..\include"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug x64|Win32'">
@@ -229,7 +228,7 @@ xcopy /Y "$(ProjectDir)..\..\..\..\..\..\dev\projects\Stahp\libstahp\deps\boost\
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>BOOST_AUTO_LINK_NOMANGLE;GQ_SHARED;WIN32;_DEBUG;_WINDOWS;_USRDLL;GUMBQUERY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\include;$(ProjectDir)..\..\..\..\..\..\dev\projects\Stahp\libstahp\deps\boost\boost_1_59_0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\include;$(ProjectDir)..\..\..\..\third-party\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -243,8 +242,7 @@ xcopy /Y "$(ProjectDir)..\..\..\..\..\..\dev\projects\Stahp\libstahp\deps\boost\
     <PostBuildEvent>
       <Command>xcopy /Y "$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\lib\*.dll" "$(OutDir)"
 cmd /x /c mkdir "$(OutDir)\..\include"
-xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)\..\include"
-xcopy /Y "$(ProjectDir)..\..\..\..\..\..\dev\projects\Stahp\libstahp\deps\boost\boost_1_59_0\stage\MSVC-$(PlatformTarget)\lib\boost_thread.dll" "$(OutDir)"</Command>
+xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)\..\include"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug x86|x64'">
@@ -254,7 +252,7 @@ xcopy /Y "$(ProjectDir)..\..\..\..\..\..\dev\projects\Stahp\libstahp\deps\boost\
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>BOOST_AUTO_LINK_NOMANGLE;GQ_SHARED;_DEBUG;_WINDOWS;_USRDLL;GUMBQUERY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\include;$(ProjectDir)..\..\..\..\..\..\dev\projects\Stahp\libstahp\deps\boost\boost_1_59_0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\include;$(ProjectDir)..\..\..\..\third-party\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -268,8 +266,7 @@ xcopy /Y "$(ProjectDir)..\..\..\..\..\..\dev\projects\Stahp\libstahp\deps\boost\
     <PostBuildEvent>
       <Command>xcopy /Y "$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\lib\*.dll" "$(OutDir)"
 cmd /x /c mkdir "$(OutDir)\..\include"
-xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)\..\include"
-xcopy /Y "$(ProjectDir)..\..\..\..\..\..\dev\projects\Stahp\libstahp\deps\boost\boost_1_59_0\stage\MSVC-$(PlatformTarget)\lib\boost_thread.dll" "$(OutDir)"</Command>
+xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)\..\include"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug x64|x64'">
@@ -279,7 +276,7 @@ xcopy /Y "$(ProjectDir)..\..\..\..\..\..\dev\projects\Stahp\libstahp\deps\boost\
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>BOOST_AUTO_LINK_NOMANGLE;GQ_SHARED;_DEBUG;_WINDOWS;_USRDLL;GUMBQUERY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\include;$(ProjectDir)..\..\..\..\..\..\dev\projects\Stahp\libstahp\deps\boost\boost_1_59_0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\include;$(ProjectDir)..\..\..\..\third-party\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -293,8 +290,7 @@ xcopy /Y "$(ProjectDir)..\..\..\..\..\..\dev\projects\Stahp\libstahp\deps\boost\
     <PostBuildEvent>
       <Command>xcopy /Y "$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\lib\*.dll" "$(OutDir)"
 cmd /x /c mkdir "$(OutDir)\..\include"
-xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)\..\include"
-xcopy /Y "$(ProjectDir)..\..\..\..\..\..\dev\projects\Stahp\libstahp\deps\boost\boost_1_59_0\stage\MSVC-$(PlatformTarget)\lib\boost_thread.dll" "$(OutDir)"</Command>
+xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)\..\include"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release x86|Win32'">
@@ -306,7 +302,7 @@ xcopy /Y "$(ProjectDir)..\..\..\..\..\..\dev\projects\Stahp\libstahp\deps\boost\
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>BOOST_AUTO_LINK_NOMANGLE;GQ_SHARED;WIN32;NDEBUG;_WINDOWS;_USRDLL;GUMBQUERY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\include;$(ProjectDir)..\..\..\..\..\..\dev\projects\Stahp\libstahp\deps\boost\boost_1_59_0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\include;$(ProjectDir)..\..\..\..\third-party\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -322,8 +318,7 @@ xcopy /Y "$(ProjectDir)..\..\..\..\..\..\dev\projects\Stahp\libstahp\deps\boost\
     <PostBuildEvent>
       <Command>xcopy /Y "$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\lib\*.dll" "$(OutDir)"
 cmd /x /c mkdir "$(OutDir)\..\include"
-xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)\..\include"
-xcopy /Y "$(ProjectDir)..\..\..\..\..\..\dev\projects\Stahp\libstahp\deps\boost\boost_1_59_0\stage\MSVC-$(PlatformTarget)\lib\boost_thread.dll" "$(OutDir)"</Command>
+xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)\..\include"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release x64|Win32'">
@@ -335,7 +330,7 @@ xcopy /Y "$(ProjectDir)..\..\..\..\..\..\dev\projects\Stahp\libstahp\deps\boost\
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>BOOST_AUTO_LINK_NOMANGLE;GQ_SHARED;WIN32;NDEBUG;_WINDOWS;_USRDLL;GUMBQUERY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\include;$(ProjectDir)..\..\..\..\..\..\dev\projects\Stahp\libstahp\deps\boost\boost_1_59_0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\include;$(ProjectDir)..\..\..\..\third-party\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -351,8 +346,7 @@ xcopy /Y "$(ProjectDir)..\..\..\..\..\..\dev\projects\Stahp\libstahp\deps\boost\
     <PostBuildEvent>
       <Command>xcopy /Y "$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\lib\*.dll" "$(OutDir)"
 cmd /x /c mkdir "$(OutDir)\..\include"
-xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)\..\include"
-xcopy /Y "$(ProjectDir)..\..\..\..\..\..\dev\projects\Stahp\libstahp\deps\boost\boost_1_59_0\stage\MSVC-$(PlatformTarget)\lib\boost_thread.dll" "$(OutDir)"</Command>
+xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)\..\include"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release x86|x64'">
@@ -364,7 +358,7 @@ xcopy /Y "$(ProjectDir)..\..\..\..\..\..\dev\projects\Stahp\libstahp\deps\boost\
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>BOOST_AUTO_LINK_NOMANGLE;GQ_SHARED;NDEBUG;_WINDOWS;_USRDLL;GUMBQUERY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\include;$(ProjectDir)..\..\..\..\..\..\dev\projects\Stahp\libstahp\deps\boost\boost_1_59_0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\include;$(ProjectDir)..\..\..\..\third-party\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -380,8 +374,7 @@ xcopy /Y "$(ProjectDir)..\..\..\..\..\..\dev\projects\Stahp\libstahp\deps\boost\
     <PostBuildEvent>
       <Command>xcopy /Y "$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\lib\*.dll" "$(OutDir)"
 cmd /x /c mkdir "$(OutDir)\..\include"
-xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)\..\include"
-xcopy /Y "$(ProjectDir)..\..\..\..\..\..\dev\projects\Stahp\libstahp\deps\boost\boost_1_59_0\stage\MSVC-$(PlatformTarget)\lib\boost_thread.dll" "$(OutDir)"</Command>
+xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)\..\include"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release x64|x64'">
@@ -393,7 +386,7 @@ xcopy /Y "$(ProjectDir)..\..\..\..\..\..\dev\projects\Stahp\libstahp\deps\boost\
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>BOOST_AUTO_LINK_NOMANGLE;GQ_SHARED;NDEBUG;_WINDOWS;_USRDLL;GUMBQUERY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\include;$(ProjectDir)..\..\..\..\..\..\dev\projects\Stahp\libstahp\deps\boost\boost_1_59_0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\include;$(ProjectDir)..\..\..\..\third-party\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -409,8 +402,7 @@ xcopy /Y "$(ProjectDir)..\..\..\..\..\..\dev\projects\Stahp\libstahp\deps\boost\
     <PostBuildEvent>
       <Command>xcopy /Y "$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\lib\*.dll" "$(OutDir)"
 cmd /x /c mkdir "$(OutDir)\..\include"
-xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)\..\include"
-xcopy /Y "$(ProjectDir)..\..\..\..\..\..\dev\projects\Stahp\libstahp\deps\boost\boost_1_59_0\stage\MSVC-$(PlatformTarget)\lib\boost_thread.dll" "$(OutDir)"</Command>
+xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)\..\include"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

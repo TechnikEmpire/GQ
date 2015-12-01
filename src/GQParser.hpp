@@ -37,7 +37,6 @@
 #include <boost/functional/hash.hpp>
 #include <boost/utility/string_ref.hpp>
 #include <boost/algorithm/string.hpp>
-#include <boost/thread.hpp>
 #include <stdexcept>
 #include <locale>
 
@@ -65,11 +64,6 @@ namespace gumboquery
 		static SharedGQSelector CreateSelector(std::string selectorString);
 
 	private:
-
-		typedef boost::shared_lock<boost::shared_mutex> Reader;
-		typedef boost::upgrade_lock< boost::shared_mutex > ConditionalWriter;
-		typedef boost::unique_lock<boost::shared_mutex> Writer;
-		boost::shared_mutex m_sharedMutex;
 
 		/// <summary>
 		/// Hash implementation for string_ref keys in unordered_maps.
@@ -104,15 +98,11 @@ namespace gumboquery
 			Empty
 		};
 
-		std::unordered_map<boost::string_ref, PseudoOp, StringRefHasher> m_pseudoOps;		
-
 		/// <summary>
-		/// In order to not constantly be building and destroying gumbo data structures just to
-		/// get converted character references, we'll store the converted references in a map we can
-		/// simply query for previously converted values, before falling back on building and
-		/// parsing dummy HTML with Gumbo Parser to get converted values.
+		/// For quickly validating a parsed pseduo selector and in return getting an enum we can
+		/// switch on rather than having a mess of if/elseif/else.
 		/// </summary>
-		std::unordered_map<std::string, std::string> m_convertedCharacterReferences;
+		static const std::unordered_map<boost::string_ref, PseudoOp, StringRefHasher> PseudoOps;
 
 		/// <summary>
 		/// For supplying to isalpha, etc.
@@ -309,22 +299,7 @@ namespace gumboquery
 		/// <returns>
 		/// True if the supplied character is a valid hexidecimal digit, false otherwise. 
 		/// </returns>
-		const bool IsHexDigit(const char& c) const;
-
-		std::vector<boost::string_ref> ExtractAllCharacterReferences(const std::string& str);
-
-		/// <summary>
-		/// Gumbo Parser does not replace escaped characters inside of values with unescaped
-		/// versions, but it does convert character references to literal values. As such, if/when a
-		/// character reference is found, we'll simply pass it to Gumbo Parser in some HTML, parse
-		/// the HTML and copy out the converted value. This way we're relying on Gumbo Parser to
-		/// give us the exact values that Gumbo Parser will generate in a real world scenario,
-		/// guaranteeing accurate matching.
-		/// </summary>
-		/// <param name="ref">
-		/// A string containing the character reference to convert.
-		/// </param>
-		const bool ConvertCharacterReference(std::string& ref);
+		const bool IsHexDigit(const char& c) const;		
 
 	};
 } /* namespace gumboquery */
