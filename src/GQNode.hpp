@@ -34,10 +34,10 @@
 #include <boost/algorithm/string.hpp>
 #include "GQSelector.hpp"
 
-namespace gumboquery
+namespace gq
 {
 	
-	class GQSelection;
+	class GQSelection;	
 
 	/// <summary>
 	/// The GQNode class serves as a wrapper around a GumboNode raw pointer. It is not possible to
@@ -45,11 +45,20 @@ namespace gumboquery
 	/// internal GumboNode* is guaranteed to be valid.
 	/// 
 	/// Note that since GumboNode objects are owned exclusively by the GumboOutput root object, this
-	/// wrapper does not managed the lifetime of the raw pointer it matches. Users still need to
+	/// wrapper does not manage the lifetime of the raw pointer it matches. Users still need to
 	/// take care that manually generated GumboOutput is destroyed correctly.
 	/// </summary>
 	class GQNode : public std::enable_shared_from_this<GQNode>
 	{
+
+		// If MSVC, must friend this nonsense so that make_shared can access the private constructor
+		// of our class. If not, just friend the template function.
+		#ifdef _MSC_VER
+		friend std::_Ref_count_obj<GQNode>;
+		#else
+		friend std::shared_ptr<GQNode> std::make_shared<>(const GumboNode*);
+		#endif
+		
 
 		/// <summary>
 		/// So, I don't really like the idea of this friend business and having to forward declare
@@ -57,9 +66,9 @@ namespace gumboquery
 		/// Unfortunately, I'm trying to work within design that I started out with.
 		/// 
 		/// In the original library, the CNode (GQNode now) was completely separate from everything
-		/// else, but generated on the fly whenever the user needed to search against a non-document
-		/// node, or access certain information. I didn't like this, generating potentially endless
-		/// temporaries on every access. So, I opted to change this, making them shared.
+		/// else, but local instances were generated and copied all over the place whenever the user
+		/// needed to search against a non-document node, or access a specific child. I didn't like
+		/// this, so I opted to change this, making them shared.
 		/// 
 		/// This then forced the design all the way back down the library into complementary
 		/// selection code which stored matched nodes in collections, vectors. In order to make the
@@ -74,12 +83,19 @@ namespace gumboquery
 	public:
 
 		/// <summary>
-		/// Constructs a new node around a raw GumboNode pointer.
+		/// Interface to create a SharedGQNode instance. Since GQNode inherits from
+		/// enabled_shared_from_this and calls shared_from_this internally for some matching
+		/// methods, its necessary to enforce that an object of this type cannot exist but already
+		/// wrapped in a shared_ptr.
 		/// </summary>
 		/// <param name="node">
-		/// Pointer to a GumboNode. Default is nullptr.
+		/// The GumboNode* object that the GQNode is to wrap. This must be a valid pointer, or this
+		/// method will throw.
 		/// </param>
-		GQNode(const GumboNode* node);
+		/// <returns>
+		/// A SharedGQNode instance. 
+		/// </returns>
+		static std::shared_ptr<GQNode> Create(const GumboNode* node);
 
 		/// <summary>
 		/// Default destructor.
@@ -288,6 +304,14 @@ namespace gumboquery
 	private:
 
 		/// <summary>
+		/// Constructs a new node around a raw GumboNode pointer.
+		/// </summary>
+		/// <param name="node">
+		/// Pointer to a GumboNode. Default is nullptr.
+		/// </param>
+		GQNode(const GumboNode* node);
+
+		/// <summary>
 		/// The raw GumboNode* that this object wraps.
 		/// </summary>
 		const GumboNode* m_node;
@@ -315,4 +339,4 @@ namespace gumboquery
 
 	typedef std::shared_ptr<GQNode> SharedGQNode;
 
-} /* namespace gumboquery */
+} /* namespace gq */

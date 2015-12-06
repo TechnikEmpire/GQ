@@ -29,7 +29,7 @@
 
 #include "GQUnarySelectory.hpp"
 
-namespace gumboquery
+namespace gq
 {
 
 	GQUnarySelectory::GQUnarySelectory(SelectorOperator op, SharedGQSelector selector) :
@@ -37,8 +37,14 @@ namespace gumboquery
 	{
 		if (m_selector == nullptr)
 		{
-			throw new std::runtime_error(u8"In GQUnarySelectory::GQUnarySelectory(SelectorOperator, SharedGQSelector) - Supplied shared selector is nullptr.");
+			throw std::runtime_error(u8"In GQUnarySelectory::GQUnarySelectory(SelectorOperator, SharedGQSelector) - Supplied shared selector is nullptr.");
 		}
+
+		#ifndef NDEBUG
+			#ifdef GQ_VERBOSE_SELECTOR_COMPILIATION
+			std::cout << "Built GQUnarySelectory with operator " << static_cast<size_t>(m_operator) << u8"." << std::endl;
+			#endif
+		#endif
 	}
 
 	GQUnarySelectory::~GQUnarySelectory()
@@ -48,7 +54,7 @@ namespace gumboquery
 	const bool GQUnarySelectory::GQUnarySelectory::Match(const GumboNode* node) const
 	{
 		// Don't match against stuff like comments, CDATA blocks, etc
-		if (node->type != GUMBO_NODE_ELEMENT && node->type != GUMBO_NODE_TEXT && node->type != GUMBO_NODE_DOCUMENT)
+		if (node->type != GUMBO_NODE_ELEMENT)
 		{
 			return false;
 		}
@@ -61,6 +67,18 @@ namespace gumboquery
 
 		switch (m_operator)
 		{
+			case SelectorOperator::Not:
+			{
+				return m_selector->Match(node) == false;
+			}
+			break;
+
+			case SelectorOperator::HasDescendant:
+			{
+				return HasDescendantMatch(node);
+			}
+			break;
+
 			case SelectorOperator::HasChild:
 			{
 				for (size_t i = 0; i < node->v.element.children.length; i++)
@@ -81,27 +99,16 @@ namespace gumboquery
 
 				return false;				
 			}
-			break;
-
-			case SelectorOperator::HasDescendant:
-			{
-				return HasDescendantMatch(node);
-			}
-			break;
-
-			case SelectorOperator::Not:
-			{				
-				return m_selector->Match(node) == false;
-			}
-			break;
+			break;	
 		}
 
+		// Just to shut up the compiler.
 		return false;
 	}
 
 	const bool GQUnarySelectory::HasDescendantMatch(const GumboNode* node) const
 	{
-		if (node->type != GUMBO_NODE_ELEMENT && node->type != GUMBO_NODE_TEXT && node->type != GUMBO_NODE_DOCUMENT)
+		if (node->type != GUMBO_NODE_ELEMENT && node->type != GUMBO_NODE_DOCUMENT)
 		{
 			return false;
 		}
@@ -125,4 +132,4 @@ namespace gumboquery
 		return false;
 	}
 
-} /* namespace gumboquery */
+} /* namespace gq */

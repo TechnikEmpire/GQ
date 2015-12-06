@@ -26,7 +26,7 @@
 #include <unordered_set>
 #include <gumbo.h>
 
-namespace gumboquery
+namespace gq
 {
 
 	/// <summary>
@@ -129,4 +129,4 @@ namespace gumboquery
 		static std::string BuildAttributes(const GumboAttribute* at);//, const bool noEntities);
 	};
 
-} /* namespace gumboquery */
+} /* namespace gq */

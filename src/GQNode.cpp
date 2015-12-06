@@ -31,8 +31,13 @@
 #include "GQUtil.hpp"
 #include "GQSelection.hpp"
 
-namespace gumboquery
+namespace gq
 {
+
+	std::shared_ptr<GQNode> GQNode::Create(const GumboNode* node)
+	{
+		return std::make_shared<GQNode>(node);
+	}
 
 	GQNode::GQNode(const GumboNode* node) : 
 		m_node(node)
@@ -40,33 +45,35 @@ namespace gumboquery
 		#ifndef NDEBUG
 		assert(node != nullptr && u8"In GQNode::GQNode(const GumboNode*) - Cannot construct a GQNode around a nullptr.");
 		#else
-		if (node == nullptr) { throw new std::runtime_error(u8"In GQNode::GQNode(const GumboNode*) - Cannot construct a GQNode around a nullptr."); }
+		if (node == nullptr) { throw std::runtime_error(u8"In GQNode::GQNode(const GumboNode*) - Cannot construct a GQNode around a nullptr."); }
 		#endif
 
+		/*
 		if (node->parent != nullptr)
 		{
-			m_sharedParent = std::make_shared<GQNode>(node->parent);
+			m_sharedParent = Create(node->parent);
 
 			// Todo - construct previous and next siblings.
 			if (node->parent->v.element.children.length > 1)
 			{
 				if (node->index_within_parent == 0)
 				{
-					m_sharedNextSibling = std::make_shared<GQNode>(static_cast<GumboNode*>(node->parent->v.element.children.data[1]));
+					m_sharedNextSibling = Create(static_cast<GumboNode*>(node->parent->v.element.children.data[1]));
 				}
 				else if (node->index_within_parent == (node->parent->v.element.children.length - 1))
 				{
-					m_sharedPreviousSibling = std::make_shared<GQNode>(static_cast<GumboNode*>(node->parent->v.element.children.data[node->index_within_parent - 1]));
+					m_sharedPreviousSibling = Create(static_cast<GumboNode*>(node->parent->v.element.children.data[node->index_within_parent - 1]));
 				}
 				else
 				{
 					// This can only be possible if the number of children is greater than 2 and this node has
 					// a valid sibling on either side.
-					m_sharedNextSibling = std::make_shared<GQNode>(static_cast<GumboNode*>(node->parent->v.element.children.data[node->index_within_parent + 1]));
-					m_sharedPreviousSibling = std::make_shared<GQNode>(static_cast<GumboNode*>(node->parent->v.element.children.data[node->index_within_parent - 1]));
+					m_sharedNextSibling = Create(static_cast<GumboNode*>(node->parent->v.element.children.data[node->index_within_parent + 1]));
+					m_sharedPreviousSibling = Create(static_cast<GumboNode*>(node->parent->v.element.children.data[node->index_within_parent - 1]));
 				}
 			}
 		}
+		*/
 	}
 
 	GQNode::~GQNode()
@@ -108,10 +115,10 @@ namespace gumboquery
 	{
 		if (m_node->type != GUMBO_NODE_ELEMENT || position >= m_node->v.element.children.length)
 		{
-			throw new std::runtime_error(u8"In GQNode::GetChildAt(const size_t) - Supplied index is out of bounds.");
+			throw std::runtime_error(u8"In GQNode::GetChildAt(const size_t) - Supplied index is out of bounds.");
 		}
 
-		return std::make_shared<GQNode>(static_cast<GumboNode*>(m_node->v.element.children.data[position]));
+		return Create(static_cast<GumboNode*>(m_node->v.element.children.data[position]));
 	}
 
 	std::string GQNode::GetAttributeValue(const std::string& attributeName) const
@@ -297,5 +304,5 @@ namespace gumboquery
 		return selection.Find(selector);
 	}
 
-} /* namespace gumboquery */
+} /* namespace gq */
 

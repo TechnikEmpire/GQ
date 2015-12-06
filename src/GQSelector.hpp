@@ -35,7 +35,12 @@
 #include <vector>
 #include <cassert>
 
-namespace gumboquery
+// For printing debug information about compiled selectors to the console.
+#ifndef NDEBUG
+#include <iostream>
+#endif
+
+namespace gq
 {
 
 	class GQNode;
@@ -87,14 +92,29 @@ namespace gumboquery
 		/// </param>
 		GQSelector(const int leftHandSideOfNth, const int rightHandSideOfNth, const bool matchLast, const bool matchType);
 
+		/// <summary>
+		/// Constructs a GQSelector intended solely to match a specific element based on its tag
+		/// type.
+		/// </summary>
+		/// <param name="tagTypeToMatch">
+		/// The type of tag/element to match. 
+		/// </param>
 		GQSelector(GumboTag tagTypeToMatch);
 
-		void SetTagTypeToMatch(GumboTag tagType);
-
-		const GumboTag GetTagTypeToMatch(GumboTag tagType) const;
-
+		/// <summary>
+		/// Default destructor.
+		/// </summary>
 		virtual ~GQSelector();
 
+		/// <summary>
+		/// Gets the GumboTag that this selector is to match against. If this selector is not built with the ::Tag matching operator, then the
+		/// result will be empty. Default value is empty/nothing. 
+		/// </summary>
+		/// <returns>
+		/// The GumboTag, if any, that this selector is to match against.
+		/// </returns>
+		const GumboTag GetTagTypeToMatch() const;		
+		
 		virtual const bool Match(const GumboNode* node) const;
 
 		std::vector< std::shared_ptr<GQNode> > MatchAll(const GumboNode* node) const;
@@ -105,12 +125,54 @@ namespace gumboquery
 		
 		SelectorOperator m_selectorOperator = SelectorOperator::Dummy;
 
+		/// <summary>
+		/// If this selector was constructed to do an nth-* match, this member will hold the value
+		/// of the left hand side (left of the N) of the nth parameter. In the event that the parsed
+		/// value of the nth parameter is something like "odd", "even", "-n+3", the values supplied
+		/// in the constructor will already be accurately set accordingly by
+		/// GQParser::ParseNth(...).
+		/// </summary>
 		int m_leftHandSideOfNth = 0;
+
+		/// <summary>
+		/// If this selector was constructed to do an nth-* match, this member will hold the value
+		/// of the right hand side (right of the N) of the nth parameter. In the event that the
+		/// parsed value of the nth parameter is something like "odd", "even", "-n+3", the values
+		/// supplied in the constructor will already be accurately set accordingly by
+		/// GQParser::ParseNth(...).
+		/// </summary>
 		int m_rightHandSideOfNth = 0;
+
+		/// <summary>
+		/// If this member is true, then in our matching code, it means we're doing some sort of 
+		/// last match, where we're takes to match the last or nth last or last-of-type.
+		/// </summary>
 		bool m_matchLast;
+
+		/// <summary>
+		/// This member is difficult to name correctly, in a way that makes its purpose very clear.
+		/// This member has absolutely nothing to do with matching a GumboTag. Rather, this bool is
+		/// used for correctly counting sublings and children in nth-child/only-child type selectors
+		/// where type is a factor. For example, nth-last-of-type and only-of-type would both
+		/// require this member to be set to "true". The reason for this is what when we're
+		/// iterating through siblings/children on such selectors, we need to ignore anything not of
+		/// the same type as the node we're trying to match when counting. nth-last-of-type(2) is
+		/// very easy to calculate when you only count siblings/children of the same type.
+		/// 
+		/// I know I've explained this to death, but I want to save the user the burden I had of
+		/// resolving the true meaning/purpose of this member.
+		/// </summary>
 		bool m_matchType;
+		
+		/// <summary>
+		/// If the selector is a tag selector, this member will store the type of GumboTag the
+		/// selector must match against.
+		/// </summary>
 		GumboTag m_tagTypeToMatch;
 
+		/// <summary>
+		/// Init member defaults across multiple constructors.
+		/// </summary>
 		void InitDefaults();
 
 		void MatchAllInto(const GumboNode* node, std::vector< std::shared_ptr<GQNode> >& nodes) const;
@@ -119,4 +181,4 @@ namespace gumboquery
 
 	typedef std::shared_ptr<GQSelector> SharedGQSelector;
 
-} /* namespace gumboquery */
+} /* namespace gq */

@@ -33,7 +33,7 @@
 #include <memory>
 #include "GQSelection.hpp"
 
-namespace gumboquery
+namespace gq
 {
 
 	/// <summary>
@@ -123,4 +123,4 @@ namespace gumboquery
 		SharedGQNode m_gumboRootNode = nullptr;
 	};
 
-} /* namespace gumboquery */
+} /* namespace gq */

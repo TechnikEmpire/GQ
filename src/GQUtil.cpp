@@ -30,7 +30,7 @@
 #include "GQUtil.hpp"
 #include "GQNode.hpp"
 
-namespace gumboquery
+namespace gq
 {
 
 	GQUtil::GQUtil()
@@ -140,4 +140,4 @@ namespace gumboquery
 		}
 	}
 
-} /* namespace gumboquery */
+} /* namespace gq */

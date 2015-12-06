@@ -29,7 +29,7 @@
 
 #include "GQParser.hpp"
 
-namespace gumboquery
+namespace gq
 {
 
 	const std::unordered_map<boost::string_ref, GQParser::PseudoOp, GQParser::StringRefHasher> GQParser::PseudoOps =
@@ -44,6 +44,7 @@ namespace gumboquery
 		{ u8"nth-child", PseudoOp::NthChild },
 		{ u8"nth-last-child", PseudoOp::NthLastChild },
 		{ u8"nth-of-type", PseudoOp::NthOfType },
+		{ u8"nth-last-of-type", PseudoOp::NthLastOfType },
 		{ u8"first-child", PseudoOp::FirstChild },
 		{ u8"last-child", PseudoOp::LastChild },
 		{ u8"first-of-type", PseudoOp::FirstOfType },
@@ -55,7 +56,7 @@ namespace gumboquery
 
 	GQParser::GQParser()
 	{
-		m_localeEnUS = std::locale(u8"en_US.UTF-8");		
+		m_localeEnUS = std::locale(u8"en-US");		
 	}
 
 	GQParser::~GQParser()
@@ -108,7 +109,9 @@ namespace gumboquery
 
 		char combinator = 0;
 
-		while (selectorStr.size() > 0)
+		bool notDone = true;
+
+		while (notDone && selectorStr.size() > 0)
 		{
 			if (TrimLeadingWhitespace(selectorStr))
 			{
@@ -121,7 +124,7 @@ namespace gumboquery
 				return ret;
 			}
 
-			if (IsCombinator(selectorStr[0]))
+			if (combinator == 0 && IsCombinator(selectorStr[0]))
 			{
 				// If it's a combinator, these are usually separated by spaces,
 				// so we'll copy out which combinator, delete it from our selector
@@ -134,16 +137,20 @@ namespace gumboquery
 			{
 				switch (selectorStr[0])
 				{
-				case ',':
-				case ')': 
-				{
-					// This smells to me (the closing paren). Perhaps it's for parsing stuff inside
-					// of pseudo selector parenthesis?
-					return ret;
-				}
-				break;
+					case ',':
+					case ')': 
+					{
+						// This smells to me (the closing paren). Perhaps it's for parsing stuff inside
+						// of pseudo selector parenthesis? Either way this should really be handled
+						// already by the pseudo parsing code, not showing up here.
+						return ret;
+					}
+					break;
 
-				default:
+					default:
+					{
+						notDone = false;
+					}
 					break;
 				}
 			}
@@ -185,7 +192,7 @@ namespace gumboquery
 			default:
 				// This should never happen, since we've correctly only accepted valid combinators.
 				// However, if somehow this happens, we should explode the universe.				
-				throw new std::runtime_error(u8"In GQParser::ParseSelector(boost::string_ref&) - Invalid combinator supplied.");
+				throw std::runtime_error(u8"In GQParser::ParseSelector(boost::string_ref&) - Invalid combinator supplied.");
 			}
 		}
 
@@ -196,7 +203,7 @@ namespace gumboquery
 	{
 		if (selectorStr.size() == 0)
 		{
-			throw new std::runtime_error(u8"In GQParser::ParseSimpleSelectorSequence(boost::string_ref&) - Expected selector string, received empty string.");
+			throw std::runtime_error(u8"In GQParser::ParseSimpleSelectorSequence(boost::string_ref&) - Expected selector string, received empty string.");
 		}
 
 		SharedGQSelector ret = nullptr;
@@ -205,32 +212,36 @@ namespace gumboquery
 
 		switch (zero)
 		{
-		case '*':
-		{
-			// CSS "*" declaration holds no meaning for us.
-			selectorStr = selectorStr.substr(1);
-		}
-		break;
+			case '*':
+			{
+				// CSS "*" declaration holds no meaning for us.
+				selectorStr = selectorStr.substr(1);
+			}
+			break;
 
-		case '#':
-		case '.':
-		case '[':
-		case ':':
-		{
-			// If it's an ID, class, attribute, or pseudo class selector, just move on,
-			// this will be handled a little later.
+			case '#':
+			case '.':
+			case '[':
+			case ':':
+			{
+				// If it's an ID, class, attribute, or pseudo class selector, just move on,
+				// this will be handled a little later.
+				break;
+			}
+			break;
+
+			default:
+			{
+				// Assume it's a type selector. If it is valid, will return a valid object. If not, it will
+				// be nullptr. We'll handle either situation a little later.
+				ret = ParseTypeSelector(selectorStr);
+			}
 			break;
 		}
-		break;
 
-		default:
-			// Assume it's a type selector. If it is valid, will return a valid object. If not, it will
-			// be nullptr. We'll handle either situation a little later.
-			ret = ParseTypeSelector(selectorStr);
-			break;
-		}
+		bool notDone = true;
 
-		while (selectorStr.size() > 0)
+		while (notDone && selectorStr.size() > 0)
 		{
 			SharedGQSelector selector = nullptr;
 
@@ -245,31 +256,37 @@ namespace gumboquery
 
 			switch (zero)
 			{
-			case '#':
-			{
-				selector = ParseIDSelector(selectorStr);
-			}
-			break;
+				case '#':
+				{
+					selector = ParseIDSelector(selectorStr);
+				}
+				break;
 
-			case '.':
-			{
-				selector = ParseClassSelector(selectorStr);
-			}
-			break;
+				case '.':
+				{
+					selector = ParseClassSelector(selectorStr);
+				}
+				break;
 
-			case '[':
-			{
-				selector = ParseAttributeSelector(selectorStr);
-			}
-			break;
+				case '[':
+				{
+					selector = ParseAttributeSelector(selectorStr);
+				}
+				break;
 
-			case ':':
-			{
-				selector = ParsePseudoclassSelector(selectorStr);
-			}
-			break;
+				case ':':
+				{
+					selector = ParsePseudoclassSelector(selectorStr);
+				}
+				break;
 
-			default:
+				default:
+				{
+					//std::string errorMessage(u8"In GQParser::ParseSimpleSelectorSequence(boost::string_ref&) - Expected start of simple selector, got ");
+					//errorMessage.append(selectorStr.to_string()).append(u8" instead.");
+					///throw std::runtime_error(errorMessage);
+					notDone = false;
+				}
 				break;
 			}
 
@@ -277,16 +294,15 @@ namespace gumboquery
 			{
 				ret = selector;
 			}
-			else
+			else if(selector != nullptr)
 			{
 				ret = std::make_shared<GQBinarySelector>(GQBinarySelector::SelectorOperator::Intersection, ret, selector);
-				selector.reset();
 			}
 		}
 
 		if (ret == nullptr)
 		{
-			throw new std::runtime_error(u8"In GQParser::ParseSimpleSelectorSequence(boost::string_ref&) - Failed to generate a single selector. The supplied selector string must have been invalid.");
+			throw std::runtime_error(u8"In GQParser::ParseSimpleSelectorSequence(boost::string_ref&) - Failed to generate a single selector. The supplied selector string must have been invalid.");
 		}
 
 		return ret;
@@ -296,7 +312,7 @@ namespace gumboquery
 	{
 		if (selectorStr.size() == 0 || selectorStr[0] != ':')
 		{
-			throw new std::runtime_error(u8"In GQParser::ParseSimpleSelectorSequence(boost::string_ref&) - Expected pseudo class selector string.");
+			throw std::runtime_error(u8"In GQParser::ParsePseudoclassSelector(boost::string_ref&) - Expected pseudo class selector string.");
 		}
 
 		selectorStr = selectorStr.substr(1);
@@ -312,142 +328,153 @@ namespace gumboquery
 
 		if (pseudoOperatorResult == PseudoOps.end())
 		{
-			std::string errString = u8"In GQParser::ParseSimpleSelectorSequence(boost::string_ref&) - Unsupported Pseudo selector type: " + nameAsString;
-			throw new std::runtime_error(errString.c_str());
+			std::string errString = u8"In GQParser::ParsePseudoclassSelector(boost::string_ref&) - Unsupported Pseudo selector type: " + nameAsString;
+			throw std::runtime_error(errString.c_str());
 		}
 
 		switch (pseudoOperatorResult->second)
 		{
-		case PseudoOp::Not:
-		case PseudoOp::Has:
-		case PseudoOp::HasChild:
-		{
-			ConsumeOpeningParenthesis(selectorStr);
-
-			SharedGQSelector sel = ParseSelectorGroup(selectorStr);
-
-			ConsumeClosingParenthesis(selectorStr);
-
-			GQUnarySelectory::SelectorOperator op;
-
-			if (pseudoOperatorResult->second == PseudoOp::Not)
+			case PseudoOp::Not:
+			case PseudoOp::Has:
+			case PseudoOp::HasChild:
 			{
-				op = GQUnarySelectory::SelectorOperator::Not;
+				ConsumeOpeningParenthesis(selectorStr);
+
+				SharedGQSelector sel = ParseSelectorGroup(selectorStr);
+
+				ConsumeClosingParenthesis(selectorStr);
+
+				GQUnarySelectory::SelectorOperator op;
+
+				if (pseudoOperatorResult->second == PseudoOp::Not)
+				{
+					op = GQUnarySelectory::SelectorOperator::Not;
+				}
+				else if (pseudoOperatorResult->second == PseudoOp::Has)
+				{
+					op = GQUnarySelectory::SelectorOperator::HasDescendant;
+				}
+				else if (pseudoOperatorResult->second == PseudoOp::HasChild)
+				{
+					op = GQUnarySelectory::SelectorOperator::HasChild;
+				}
+
+				return std::make_shared<GQUnarySelectory>(op, sel);
 			}
-			else if (pseudoOperatorResult->second == PseudoOp::Has)
+			break;
+
+			case PseudoOp::Contains:
+			case PseudoOp::ContainsOwn:
+			case PseudoOp::Matches:
+			case PseudoOp::MatchesOwn:
 			{
-				op = GQUnarySelectory::SelectorOperator::HasDescendant;
+				ConsumeOpeningParenthesis(selectorStr);
+
+				boost::string_ref value;
+
+				const char& c = selectorStr[0];
+				if (c == '\'' || c == '"')
+				{
+					value = ParseString(selectorStr);
+				}
+				else
+				{
+					value = ParseIdentifier(selectorStr);
+				}
+
+				TrimLeadingWhitespace(selectorStr);
+
+				ConsumeClosingParenthesis(selectorStr);
+
+				GQTextSelector::SelectorOperator op;
+
+				if (pseudoOperatorResult->second == PseudoOp::Contains)
+				{
+					op = GQTextSelector::SelectorOperator::Contains;
+				}
+				else if (pseudoOperatorResult->second == PseudoOp::ContainsOwn)
+				{
+					op = GQTextSelector::SelectorOperator::ContainsOwn;
+				}
+				else if (pseudoOperatorResult->second == PseudoOp::Matches)
+				{
+					op = GQTextSelector::SelectorOperator::Matches;
+				}
+				else if (pseudoOperatorResult->second == PseudoOp::MatchesOwn)
+				{
+					op = GQTextSelector::SelectorOperator::MatchesOwn;
+				}
+
+				return std::make_shared<GQTextSelector>(op, value);
 			}
-			else if (pseudoOperatorResult->second == PseudoOp::HasChild)
+			break;
+
+			case PseudoOp::NthChild:
+			case PseudoOp::NthLastChild:
+			case PseudoOp::NthOfType:
+			case PseudoOp::NthLastOfType:
 			{
-				op = GQUnarySelectory::SelectorOperator::HasChild;
+				ConsumeOpeningParenthesis(selectorStr);
+
+				int lhs, rhs;
+				ParseNth(selectorStr, lhs, rhs);
+
+				ConsumeClosingParenthesis(selectorStr);
+
+				bool matchLast = (pseudoOperatorResult->second == PseudoOp::NthLastChild || pseudoOperatorResult->second == PseudoOp::NthLastOfType);
+				bool matchType = (pseudoOperatorResult->second == PseudoOp::NthOfType || pseudoOperatorResult->second == PseudoOp::NthLastOfType);
+
+				// Note that if it's a last-match, we swap the left and right hand sides
+				//if (matchLast)
+				//{
+				//	std::swap(lhs, rhs);
+				//}
+				
+				return std::make_shared<GQSelector>(lhs, rhs, matchLast, matchType);
 			}
+			break;
 
-			return std::make_shared<GQUnarySelectory>(op, sel);
-		}
-		break;
-
-		case PseudoOp::Contains:
-		case PseudoOp::ContainsOwn:
-		{
-			ConsumeOpeningParenthesis(selectorStr);
-
-			boost::string_ref value;
-
-			const char& c = selectorStr[0];
-			if (c == '\'' || c == '"')
+			case PseudoOp::FirstChild:
 			{
-				value = ParseString(selectorStr);
+				return std::make_shared<GQSelector>(0, 1, false, false);
 			}
-			else
+			break;
+
+			case PseudoOp::LastChild:
 			{
-				value = ParseIdentifier(selectorStr);
+				return std::make_shared<GQSelector>(0, 1, true, false);
 			}
+			break;
 
-			TrimLeadingWhitespace(selectorStr);
-
-			ConsumeClosingParenthesis(selectorStr);
-
-			GQTextSelector::SelectorOperator op;
-
-			if (pseudoOperatorResult->second == PseudoOp::Contains)
+			case PseudoOp::FirstOfType:
 			{
-				op = GQTextSelector::SelectorOperator::Contains;
+				return std::make_shared<GQSelector>(0, 1, false, true);
 			}
-			else if (pseudoOperatorResult->second == PseudoOp::ContainsOwn)
+			break;
+
+			case PseudoOp::LastOfType:
 			{
-				op = GQTextSelector::SelectorOperator::ContainsOwn;
+				return std::make_shared<GQSelector>(0, 1, true, true);
 			}
+			break;
 
-			return std::make_shared<GQTextSelector>(op, value);
-		}
-		break;
+			case PseudoOp::OnlyChild:
+			{
+				return std::make_shared<GQSelector>(false);
+			}
+			break;
 
-		case PseudoOp::Matches:
-		case PseudoOp::MatchesOwn:
-		{
-			// regex - XXX TODO - Currently not implemented
-			throw new std::runtime_error(u8"In GQParser::ParseSimpleSelectorSequence(boost::string_ref&) - Matches and MatchesOwn selectors are currently unimplemented.");
-		}
-		break;
+			case PseudoOp::OnlyOfType:
+			{
+				return std::make_shared<GQSelector>(true);
+			}
+			break;
 
-		case PseudoOp::NthChild:
-		case PseudoOp::NthLastChild:
-		case PseudoOp::NthOfType:
-		case PseudoOp::NthLastOfType:
-		{
-			ConsumeOpeningParenthesis(selectorStr);
-
-			int lhs, rhs;
-			ParseNth(selectorStr, lhs, rhs);
-
-			ConsumeClosingParenthesis(selectorStr);
-
-			return std::make_shared<GQSelector>(lhs, rhs, true, false);
-		}
-		break;
-
-		case PseudoOp::FirstChild:
-		{
-			return std::make_shared<GQSelector>(0, 1, false, false);
-		}
-		break;
-
-		case PseudoOp::LastChild:
-		{
-			return std::make_shared<GQSelector>(0, 1, true, false);
-		}
-		break;
-
-		case PseudoOp::FirstOfType:
-		{
-			return std::make_shared<GQSelector>(0, 1, false, true);
-		}
-		break;
-
-		case PseudoOp::LastOfType:
-		{
-			return std::make_shared<GQSelector>(0, 1, true, true);
-		}
-		break;
-
-		case PseudoOp::OnlyChild:
-		{
-			return std::make_shared<GQSelector>(false);
-		}
-		break;
-
-		case PseudoOp::OnlyOfType:
-		{
-			return std::make_shared<GQSelector>(true);
-		}
-		break;
-
-		case PseudoOp::Empty:
-		{
-			return std::make_shared<GQSelector>(GQSelector::SelectorOperator::Empty);
-		}
-		break;
+			case PseudoOp::Empty:
+			{
+				return std::make_shared<GQSelector>(GQSelector::SelectorOperator::Empty);
+			}
+			break;
 		} /* switch (pseudoOperatorResult->second) */
 
 		return nullptr;
@@ -457,7 +484,7 @@ namespace gumboquery
 	{
 		if (selectorStr.size() == 0 || selectorStr[0] != '[')
 		{
-			throw new std::runtime_error(u8"In GQParser::ParseAttributeSelector(boost::string_ref&) - Expected atrribute selector string.");
+			throw std::runtime_error(u8"In GQParser::ParseAttributeSelector(boost::string_ref&) - Expected atrribute selector string.");
 		}
 
 		selectorStr = selectorStr.substr(1);
@@ -465,7 +492,7 @@ namespace gumboquery
 
 		if (selectorStr.length() == 0)
 		{
-			throw new std::runtime_error(u8"In GQParser::ParseAttributeSelector(boost::string_ref&) - Expected identifier, reached EOF instead.");
+			throw std::runtime_error(u8"In GQParser::ParseAttributeSelector(boost::string_ref&) - Expected identifier, reached EOF instead.");
 		}
 
 		// This is used for matching attributes not exactly, but by a specific prefix. If this is the case, rather
@@ -485,7 +512,7 @@ namespace gumboquery
 
 		if (selectorStr.length() == 0)
 		{
-			throw new std::runtime_error(u8"In GQParser::ParseAttributeSelector(boost::string_ref&) - No value for identifier specified and no closing brace found.");
+			throw std::runtime_error(u8"In GQParser::ParseAttributeSelector(boost::string_ref&) - No value for identifier specified and no closing brace found.");
 		}
 
 		const char& valueMatchFirstChar = selectorStr[0];
@@ -499,7 +526,8 @@ namespace gumboquery
 		case ']':
 		{
 			// This is just an EXISTS attribute selector. So, this will match an element that has
-			// the specified attribute, regardless of value.
+			// the specified attribute, regardless of value. We need to consume the closing
+			// bracket though as well.
 			selectorStr = selectorStr.substr(1);
 
 			return std::make_shared<GQAttributeSelector>(key, doesAttributeHasPrefix);
@@ -509,14 +537,14 @@ namespace gumboquery
 		case '|':
 		{
 			// This is a hypen delimited list selector where the first attribute value (left to right) starts with
-			// a specific value.
+			// a specific value followed by a hyphen, or exactly equals the specified selector value.
 			if (selectorStr.length() > 3 && selectorStr[1] == '=')
 			{
 				op = GQAttributeSelector::SelectorOperator::ValueIsHyphenSeparatedListStartingWith;
 			}
 			else
 			{
-				throw new std::runtime_error(u8"In GQParser::ParseAttributeSelector(boost::string_ref&) - Broken hypen attribute value match supplied.");
+				throw std::runtime_error(u8"In GQParser::ParseAttributeSelector(boost::string_ref&) - Broken hypen attribute value match supplied.");
 			}
 		}
 		break;
@@ -531,7 +559,7 @@ namespace gumboquery
 			}
 			else
 			{
-				throw new std::runtime_error(u8"In GQParser::ParseAttributeSelector(boost::string_ref&) - Broken whitespace attribute value match supplied.");
+				throw std::runtime_error(u8"In GQParser::ParseAttributeSelector(boost::string_ref&) - Broken whitespace attribute value match supplied.");
 			}
 		}
 		break;
@@ -542,11 +570,11 @@ namespace gumboquery
 			// that exactly matches a specific value.
 			if (selectorStr.length() > 3 && selectorStr[1] == '=')
 			{
-				op = GQAttributeSelector::SelectorOperator::ValueHasSuffix;
+				op = GQAttributeSelector::SelectorOperator::ValueHasPrefix;
 			}
 			else
 			{
-				throw new std::runtime_error(u8"In GQParser::ParseAttributeSelector(boost::string_ref&) - Broken prefix attribute value match supplied.");
+				throw std::runtime_error(u8"In GQParser::ParseAttributeSelector(boost::string_ref&) - Broken prefix attribute value match supplied.");
 			}
 		}
 		break;
@@ -561,7 +589,7 @@ namespace gumboquery
 			}
 			else
 			{
-				throw new std::runtime_error(u8"In GQParser::ParseAttributeSelector(boost::string_ref&) - Broken suffix attribute value match supplied.");
+				throw std::runtime_error(u8"In GQParser::ParseAttributeSelector(boost::string_ref&) - Broken suffix attribute value match supplied.");
 			}
 		}
 		break;
@@ -576,7 +604,7 @@ namespace gumboquery
 			}
 			else
 			{
-				throw new std::runtime_error(u8"In GQParser::ParseAttributeSelector(boost::string_ref&) - Broken substring attribute value match supplied.");
+				throw std::runtime_error(u8"In GQParser::ParseAttributeSelector(boost::string_ref&) - Broken substring attribute value match supplied.");
 			}
 		}
 		break;
@@ -592,13 +620,13 @@ namespace gumboquery
 			}
 			else
 			{
-				throw new std::runtime_error(u8"In GQParser::ParseAttributeSelector(boost::string_ref&) - Broken substring attribute value match supplied. Expected value, got EOF.");
+				throw std::runtime_error(u8"In GQParser::ParseAttributeSelector(boost::string_ref&) - Broken substring attribute value match supplied. Expected value, got EOF.");
 			}
 		}
 		break;
 
 		default:
-			throw new std::runtime_error(u8"In GQParser::ParseAttributeSelector(boost::string_ref&) - Invalid attribute value specifier.");
+			throw std::runtime_error(u8"In GQParser::ParseAttributeSelector(boost::string_ref&) - Invalid attribute value specifier.");
 		} /* switch (valueMatchFirstChar) */
 
 		  // Trim off the match specifier
@@ -621,8 +649,11 @@ namespace gumboquery
 
 		if (selectorStr.length() == 0 || selectorStr[0] != ']')
 		{
-			throw new std::runtime_error(u8"In GQParser::ParseAttributeSelector(boost::string_ref&) - Expected attribute closing tag aka ']', found invalid character or EOF instead.");
+			throw std::runtime_error(u8"In GQParser::ParseAttributeSelector(boost::string_ref&) - Expected attribute closing tag aka ']', found invalid character or EOF instead.");
 		}
+
+		// Consume the closing bracket
+		selectorStr = selectorStr.substr(1);
 
 		return std::make_shared<GQAttributeSelector>(op, key, value, doesAttributeHasPrefix);
 	}
@@ -631,7 +662,7 @@ namespace gumboquery
 	{
 		if (selectorStr.size() < 2 || selectorStr[0] != '.')
 		{
-			throw new std::runtime_error(u8"In GQParser::ParseClassSelector(boost::string_ref&) - Expected class specifier, got insufficient string or non-class definition.");
+			throw std::runtime_error(u8"In GQParser::ParseClassSelector(boost::string_ref&) - Expected class specifier, got insufficient string or non-class definition.");
 		}
 
 		selectorStr = selectorStr.substr(1);
@@ -649,14 +680,14 @@ namespace gumboquery
 
 		boost::string_ref clazz = u8"class";
 
-		return std::make_shared<GQAttributeSelector>(GQAttributeSelector::SelectorOperator::ValueContains, clazz, className, false);
+		return std::make_shared<GQAttributeSelector>(GQAttributeSelector::SelectorOperator::ValueContainsElementInWhitespaceSeparatedList, clazz, className, false);
 	}
 
 	SharedGQSelector GQParser::ParseIDSelector(boost::string_ref& selectorStr) const
 	{
 		if (selectorStr.size() < 2 || selectorStr[0] != '#')
 		{
-			throw new std::runtime_error(u8"In GQParser::ParseIDSelector(boost::string_ref&) - Expected ID specifier, got insufficient string or non-ID definition.");
+			throw std::runtime_error(u8"In GQParser::ParseIDSelector(boost::string_ref&) - Expected ID specifier, got insufficient string or non-ID definition.");
 		}
 
 		selectorStr = selectorStr.substr(1);
@@ -681,12 +712,12 @@ namespace gumboquery
 	{
 		if (selectorStr.size() == 0)
 		{
-			throw new std::runtime_error(u8"In GQParser::ParseTypeSelector(boost::string_ref&) - Expected Tag specifier, got empty string.");
+			throw std::runtime_error(u8"In GQParser::ParseTypeSelector(boost::string_ref&) - Expected Tag specifier, got empty string.");
 		}
 
 		boost::string_ref tag = ParseIdentifier(selectorStr);
-
-		return std::make_shared<GQSelector>(gumbo_tag_enum(tag.data()));
+			 
+		return std::make_shared<GQSelector>(gumbo_tag_enum(tag.to_string().c_str()));
 	}
 
 	void GQParser::ParseNth(boost::string_ref& selectorStr, int& lhs, int& rhs) const
@@ -695,7 +726,7 @@ namespace gumboquery
 
 		if (selectorStr.length() == 0)
 		{
-			throw new std::runtime_error(u8"In GQParser::ParseNth(boost::string_ref&, const int& ,const int&) - Expected Nth(...) definintion, got empty string.");
+			throw std::runtime_error(u8"In GQParser::ParseNth(boost::string_ref&, const int& ,const int&) - Expected Nth(...) definintion, got empty string.");
 		}
 
 		const size_t nPosition = selectorStr.find_first_of(u8"nNdD");
@@ -703,7 +734,7 @@ namespace gumboquery
 
 		if (closingParenPosition == boost::string_ref::npos)
 		{
-			throw new std::runtime_error(u8"In GQParser::ParseNth(boost::string_ref&, const int& ,const int&) - No closing parenthesis was found for nth parameter.");
+			throw std::runtime_error(u8"In GQParser::ParseNth(boost::string_ref&, const int& ,const int&) - No closing parenthesis was found for nth parameter.");
 		}
 
 		if (nPosition != boost::string_ref::npos && nPosition < closingParenPosition)
@@ -730,7 +761,7 @@ namespace gumboquery
 					}
 					else
 					{
-						throw new std::runtime_error(u8"In GQParser::ParseNth(boost::string_ref&, const int& ,const int&) - Expected 'odd' or 'even', invalid nth value found.");
+						throw std::runtime_error(u8"In GQParser::ParseNth(boost::string_ref&, const int& ,const int&) - Expected 'odd' or 'even', invalid nth value found.");
 					}
 
 					return;
@@ -738,7 +769,7 @@ namespace gumboquery
 				else
 				{
 					// This is almost certainly an expression using N, such as -n+ 6
-					boost::string_ref wholeParam = selectorStr.substr(closingParenPosition);
+					boost::string_ref wholeParam = selectorStr.substr(0, closingParenPosition);
 					boost::string_ref leftHandSide = wholeParam.substr(0, nPosition);
 					boost::string_ref rightHandSide = wholeParam.substr(nPosition + 1);
 
@@ -750,10 +781,25 @@ namespace gumboquery
 					boost::replace_all(lhss, u8"\t\f\r\n ", u8"");
 					boost::replace_all(rhss, u8"\t\f\r\n ", u8"");
 
-					// The left hand side could be "-n", "-3n", etc.
-					if (lhss.size() == 1 && (lhss[0] == '-' || lhss[0] == '+'))
+					// The left hand side could be "-n", etc.
+					if (lhss.size() == 1)
 					{
-						lhs = 0;
+						if (lhss[0] == '-')
+						{
+							lhs = -0;
+						}
+						else if (lhss[0] == '+')
+						{
+							lhs = 0;
+						}
+						else if (std::isdigit(lhss[0], m_localeEnUS))
+						{
+							lhs = std::atoi(&lhss[0]);
+						}
+						else
+						{
+							throw std::runtime_error(u8"In GQParser::ParseNth(boost::string_ref&, const int& ,const int&) - Single character left hand side of nth is neither '+', '-' or a digit.");
+						}
 					}
 					else
 					{
@@ -768,7 +814,7 @@ namespace gumboquery
 						{
 							if (!std::isdigit(lhss[i], m_localeEnUS))
 							{
-								throw new std::runtime_error(u8"In GQParser::ParseNth(boost::string_ref&, const int& ,const int&) - Nth parameter left hand side contained non-digit input.");
+								throw std::runtime_error(u8"In GQParser::ParseNth(boost::string_ref&, const int& ,const int&) - Nth parameter left hand side contained non-digit input.");
 							}
 						}
 
@@ -787,7 +833,7 @@ namespace gumboquery
 					{
 						if (!std::isdigit(rhss[i], m_localeEnUS))
 						{
-							throw new std::runtime_error(u8"In GQParser::ParseNth(boost::string_ref&, const int& ,const int&) - Nth parameter right hand side contained non-digit input.");
+							throw std::runtime_error(u8"In GQParser::ParseNth(boost::string_ref&, const int& ,const int&) - Nth parameter right hand side contained non-digit input.");
 						}
 					}
 
@@ -823,7 +869,7 @@ namespace gumboquery
 					{
 						if (!std::isdigit(rhss[i], m_localeEnUS))
 						{
-							throw new std::runtime_error(u8"In GQParser::ParseNth(boost::string_ref&, const int& ,const int&) - Nth parameter right hand side contained non-digit input.");
+							throw std::runtime_error(u8"In GQParser::ParseNth(boost::string_ref&, const int& ,const int&) - Nth parameter right hand side contained non-digit input.");
 						}
 					}
 
@@ -831,7 +877,7 @@ namespace gumboquery
 				}
 				else
 				{
-					throw new std::runtime_error(u8"In GQParser::ParseNth(boost::string_ref&, const int& ,const int&) - Nth parameter starts with alphabetical character other than N.");
+					throw std::runtime_error(u8"In GQParser::ParseNth(boost::string_ref&, const int& ,const int&) - Nth parameter starts with alphabetical character other than N.");
 				}
 			}
 		}
@@ -839,7 +885,7 @@ namespace gumboquery
 		{
 			// No 'N' is part of the nth parameter, so it must be a single integer value
 
-			boost::string_ref wholeParam = selectorStr.substr(closingParenPosition);
+			boost::string_ref wholeParam = selectorStr.substr(0, closingParenPosition);
 
 			selectorStr = selectorStr.substr(closingParenPosition);
 
@@ -858,11 +904,15 @@ namespace gumboquery
 			{
 				if (!std::isdigit(paramStr[i], m_localeEnUS))
 				{
-					throw new std::runtime_error(u8"In GQParser::ParseNth(boost::string_ref&, const int& ,const int&) - Single integer Nth parameter contained non-digit input.");
+					std::string errorMessage(u8"In GQParser::ParseNth(boost::string_ref&, const int& ,const int&) - Single integer Nth parameter contained non-digit input. String is: ");
+					errorMessage.append(paramStr);
+					throw std::runtime_error(errorMessage.c_str());
 				}
 			}
 
-			lhs = std::stoi(paramStr);
+			rhs = std::stoi(paramStr);
+
+			lhs = 0;
 
 			return;
 		}
@@ -872,7 +922,7 @@ namespace gumboquery
 	{
 		if (selectorStr.length() == 0)
 		{
-			throw new std::runtime_error(u8"In GQParser::ParseInteger(boost::string_ref&) - Expected number in string representation, got empty string.");
+			throw std::runtime_error(u8"In GQParser::ParseInteger(boost::string_ref&) - Expected number in string representation, got empty string.");
 		}
 
 		TrimLeadingWhitespace(selectorStr);
@@ -886,14 +936,14 @@ namespace gumboquery
 
 		if (!std::isdigit(selectorStr[endPos], m_localeEnUS))
 		{
-			throw new std::runtime_error(u8"In GQParser::ParseInteger(boost::string_ref&) - Expected number in string representation, got non-digit characters.");
+			throw std::runtime_error(u8"In GQParser::ParseInteger(boost::string_ref&) - Expected number in string representation, got non-digit characters.");
 		}
 
 		++endPos;
 
 		if (endPos >= selectorStr.size())
 		{
-			throw new std::runtime_error(u8"In GQParser::ParseInteger(boost::string_ref&) - Expected number in string representation, got EOF instead.");
+			throw std::runtime_error(u8"In GQParser::ParseInteger(boost::string_ref&) - Expected number in string representation, got EOF instead.");
 		}
 
 		while (endPos < selectorStr.size())
@@ -918,7 +968,9 @@ namespace gumboquery
 
 		if (selectorStr.size() == 0 || selectorStr[0] != ')')
 		{
-			throw new std::runtime_error(u8"In GQParser::ConsumeClosingParenthesis(boost::string_ref&) - Expected string with closing parenthesis, got empty string or string not preceeded by opening parenthesis.");
+			std::string errorMessage(u8"In GQParser::ConsumeClosingParenthesis(boost::string_ref&) - Expected string with closing parenthesis, got empty string or string not preceeded by opening parenthesis. String Is: ");
+			errorMessage.append(selectorStr.to_string());
+			throw std::runtime_error(errorMessage.c_str());
 		}
 
 		selectorStr = selectorStr.substr(1);
@@ -928,7 +980,9 @@ namespace gumboquery
 	{
 		if (selectorStr.size() == 0 || selectorStr[0] != '(')
 		{
-			throw new std::runtime_error(u8"In GQParser::ConsumeOpeningParenthesis(boost::string_ref&) - Expected string with opening parenthesis, got empty string or string not preceeded by opening parenthesis.");
+			std::string errorMessage(u8"In GQParser::ConsumeOpeningParenthesis(boost::string_ref&) - Expected string with opening parenthesis, got empty string or string not preceeded by opening parenthesis. String Is: ");
+			errorMessage.append(selectorStr.to_string());
+			throw std::runtime_error(errorMessage.c_str());
 		}
 
 		selectorStr = selectorStr.substr(1);
@@ -976,24 +1030,24 @@ namespace gumboquery
 
 		if (selectorStr.size() == 0)
 		{
-			throw new std::runtime_error(u8"In GQParser::ParseString(boost::string_ref&) - Expected quoted string, got empty string.");
+			throw std::runtime_error(u8"In GQParser::ParseString(boost::string_ref&) - Expected quoted string, got empty string.");
 		}
 
 		const char& quoteChar = selectorStr[0];
 
 		if (quoteChar != '\'' && quoteChar != '"')
 		{
-			throw new std::runtime_error(u8"In GQParser::ParseString(boost::string_ref&) - Expected quoted string, string does not begin with valid quote characters.");
+			throw std::runtime_error(u8"In GQParser::ParseString(boost::string_ref&) - Expected quoted string, string does not begin with valid quote characters.");
 		}
 
 		// Remove the opening quote
 		selectorStr = selectorStr.substr(1);
 
-		auto pos = selectorStr.find_first_of(u8"'\"");
+		auto pos = selectorStr.find_first_of(quoteChar);
 
 		if (pos == std::string::npos)
 		{
-			throw new std::runtime_error(u8"In GQParser::ParseString(boost::string_ref&) - No closing quote found in supplied quoted string.");
+			throw std::runtime_error(u8"In GQParser::ParseString(boost::string_ref&) - No closing quote found in supplied quoted string.");
 		}
 
 		size_t endOffset = 0;
@@ -1016,11 +1070,12 @@ namespace gumboquery
 
 		if (endOffset == boost::string_ref::npos || endOffset > selectorStr.size())
 		{
-			throw new std::runtime_error(u8"In GQParser::ParseString(boost::string_ref&) - No unescaped closing quote found in supplied quoted string.");
+			throw std::runtime_error(u8"In GQParser::ParseString(boost::string_ref&) - No unescaped closing quote found in supplied quoted string.");
 		}
 
 		boost::string_ref value = selectorStr.substr(0, endOffset);
 
+		/*
 		boost::string_ref valueValidationCopy = value;
 
 		auto linbreakPos = valueValidationCopy.find_first_of(u8"\r\n\f");
@@ -1028,7 +1083,7 @@ namespace gumboquery
 		{
 			if (linbreakPos == 0 || value[linbreakPos - 1] != '\\')
 			{
-				throw new std::runtime_error(u8"In GQParser::ParseString(boost::string_ref&) - Unescaped line break found in supplied string.");
+				throw std::runtime_error(u8"In GQParser::ParseString(boost::string_ref&) - Unescaped line break found in supplied string.");
 			}
 
 			if (linbreakPos + 1 >= valueValidationCopy.size())
@@ -1039,16 +1094,9 @@ namespace gumboquery
 			valueValidationCopy = valueValidationCopy.substr(linbreakPos + 1);
 			linbreakPos = valueValidationCopy.find_first_of(u8"\r\n\f");
 		}
+		*/
 
-
-		if (endOffset + 1 >= selectorStr.size())
-		{
-			selectorStr.clear();
-		}
-		else
-		{
-			selectorStr = selectorStr.substr(endOffset + 1);
-		}
+		selectorStr = selectorStr.substr(endOffset + 1);
 
 		return value;
 	}
@@ -1062,43 +1110,32 @@ namespace gumboquery
 	{
 		if (selectorStr.size() == 0)
 		{
-			throw new std::runtime_error(u8"In GQParser::ParseIdentifier(boost::string_ref&) - Expected selector containing identifier, got empty string.");
+			throw std::runtime_error(u8"In GQParser::ParseIdentifier(boost::string_ref&) - Expected selector containing identifier, got empty string.");
 		}
+
+		bool notDone = true;
 
 		int ind = 0;
 
-		while (ind < static_cast<int>(selectorStr.size()))
+		while (notDone && ind < static_cast<int>(selectorStr.size()))
 		{
-			if (selectorStr[ind] == '\\')
+			if (selectorStr[ind] == '&')
 			{
-				// Since Gumbo Parser directly embeds escaped character sequences directly,
-				// and unmodified, we need to accept them as well. These will always, in a 
-				// properly formatted element, be followed by a space in order to make it
-				// clear that the characters immediately following a '\\' and then followed
-				// by a space are the hex value for a unicode character.
-				bool foundEscapeSequenceEnd = false;
-				for (ind; ind < static_cast<int>(selectorStr.size()); ++ind)
+				boost::string_ref sub = selectorStr.substr(ind);
+				auto endPos = sub.find(';');
+
+				if (endPos == boost::string_ref::npos)
 				{
-					if (IsHexDigit(selectorStr[ind]))
-					{
-						continue;
-					}
-					else if (std::isspace(selectorStr[ind], m_localeEnUS))
-					{
-						++ind;
-						foundEscapeSequenceEnd = true;
-						break;
-					}
+					throw std::runtime_error(u8"In GQParser::ParseIdentifier(boost::string_ref&) - Encountered improperly formatted named or numbered character reference.");
 				}
 
-				if (!foundEscapeSequenceEnd)
-				{
-					throw new std::runtime_error(u8"In GQParser::ParseIdentifier(boost::string_ref&) - Encountered improperly formatted character escape sequence. Escaped character sequences must be followed by a space.");
-				}
+				ind += static_cast<int>(endPos);
+
+				continue;
 			}
 			else if (!IsNameChar(selectorStr[ind]))
 			{
-				--ind;
+				notDone = false;
 				break;
 			}
 
@@ -1107,20 +1144,12 @@ namespace gumboquery
 
 		if (ind <= 0 || ind > static_cast<int>(selectorStr.size()))
 		{
-			throw new std::runtime_error(u8"In GQParser::ParseIdentifier(boost::string_ref&) - Expected selector containing identifier, yet no valid identifier was found.");
+			throw std::runtime_error(u8"In GQParser::ParseIdentifier(boost::string_ref&) - Expected selector containing identifier, yet no valid identifier was found.");
 		}
 
 		boost::string_ref value = selectorStr.substr(0, ind);
-
-		if (ind + 1 == selectorStr.size())
-		{
-			selectorStr.clear();
-		}
-		else
-		{
-			selectorStr = selectorStr.substr(ind + 1);
-		}
-
+		selectorStr = selectorStr.substr(ind);
+		
 		return value;
 	}
 
@@ -1141,13 +1170,14 @@ namespace gumboquery
 	// embeds them with no conversion. What we do need to do is convert character references,
 	// but gumbo_parser already does this, so we'll leverage this functionality elsewhere.
 	// This method however is gone forever.
-	throw new std::runtime_error(u8"In GQParser::ParseEscape(boost::string_ref&) - Not implemented.");
+	throw std::runtime_error(u8"In GQParser::ParseEscape(boost::string_ref&) - Not implemented.");
 	}
 	*/
 
 	const bool GQParser::IsNameChar(const char& c) const
 	{
-		return IsNameStart(c) || (c == '-') || (c >= '0' && c <= '9');
+		// We need to be able to support alphabet, 0-9, underscores and & and ; (for numbered and named char refs)
+		return IsNameStart(c) || (c == '-') || (c >= '0' && c <= '9') || (c == '&') || (c == ';');
 	}
 
 	const bool GQParser::IsNameStart(const char& c) const
@@ -1178,4 +1208,4 @@ namespace gumboquery
 		return std::isxdigit(c, m_localeEnUS);
 	}
 
-} /* namespace gumboquery */
+} /* namespace gq */

@@ -31,7 +31,7 @@
 
 #include "GQSelector.hpp"
 
-namespace gumboquery
+namespace gq
 {
 
 	/// <summary>
@@ -130,4 +130,4 @@ namespace gumboquery
 
 	};
 
-} /* namespace gumboquery */
+} /* namespace gq */

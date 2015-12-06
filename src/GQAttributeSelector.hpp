@@ -32,7 +32,7 @@
 #include "GQSelector.hpp"
 #include <boost/utility/string_ref.hpp>
 
-namespace gumboquery
+namespace gq
 {
 
 	/// <summary>
@@ -78,14 +78,17 @@ namespace gumboquery
 			ValueContains,
 
 			/// <summary>
-			/// The attribute value must be a whitespace delimited list where one of the list
-			/// entries exactly matches a specific value.
+			/// The attribute value must either be an exact match to the specified selector value,
+			/// or the attribute value must be a whitespace delimited list where one of the list
+			/// entries exactly matches a specific value. This is used, for example, for class
+			/// selectors.
 			/// </summary>
 			ValueContainsElementInWhitespaceSeparatedList,
 
 			/// <summary>
-			/// The attribute value must be a hyphen delimited list where the lefthand (start) of
-			/// the sequence matches exactly a specified value.
+			/// The attribute value must either be an exact match to the specified selector value,
+			/// or must start by exactly matching the selector value and be immediately followed by
+			/// a hyphen.
 			/// </summary>
 			ValueIsHyphenSeparatedListStartingWith,
 		};
@@ -191,5 +194,5 @@ namespace gumboquery
 		void TrimEnclosingQuotes(boost::string_ref& str) const;
 	};
 
-} /* namespace gumboquery */
+} /* namespace gq */
 

@@ -31,16 +31,32 @@
 #include "GQUtil.hpp"
 #include <boost/algorithm/string.hpp>
 
-namespace gumboquery
+namespace gq
 {
 
 	GQTextSelector::GQTextSelector(const SelectorOperator op, const boost::string_ref value) :
-		m_operator(op), m_textToMatch(value.to_string()), m_textToMatchStrRef(value)
+		m_operator(op), m_textToMatch(value.to_string()), m_textToMatchStrRef(m_textToMatch)
 	{
 		if (m_textToMatch.size() == 0)
 		{
-			throw new std::runtime_error(u8"In GQAttributeSelector::GQAttributeSelector(SelectorOperator, const boost::string_ref) - Supplied text to match has zero length.");
+			throw std::runtime_error(u8"In GQAttributeSelector::GQAttributeSelector(SelectorOperator, const boost::string_ref) - Supplied text to match has zero length.");
 		}
+
+		if (m_operator == SelectorOperator::Matches || m_operator == SelectorOperator::MatchesOwn)
+		{
+			m_expression.reset(new std::regex(m_textToMatch.c_str(), std::regex_constants::ECMAScript | std::regex_constants::optimize | std::regex_constants::nosubs));
+
+			if (m_expression == nullptr)
+			{
+				throw std::runtime_error(u8"In GQAttributeSelector::GQAttributeSelector(SelectorOperator, const boost::string_ref) - Failed to allocate new std::regex for regex based GQTextSelector.");
+			}
+		}
+
+		#ifndef NDEBUG
+			#ifdef GQ_VERBOSE_SELECTOR_COMPILIATION
+			std::cout << "Built GQTextSelector with operator " << static_cast<size_t>(m_operator) << " with text to match " << m_textToMatch << u8"." << std::endl;
+			#endif
+		#endif
 	}
 
 	GQTextSelector::GQTextSelector(const SelectorOperator op, std::string value) :
@@ -48,8 +64,24 @@ namespace gumboquery
 	{
 		if (m_textToMatch.size() == 0)
 		{
-			throw new std::runtime_error(u8"In GQAttributeSelector::GQAttributeSelector(SelectorOperator, std::string) - Supplied text to match has zero length.");
+			throw std::runtime_error(u8"In GQAttributeSelector::GQAttributeSelector(SelectorOperator, std::string) - Supplied text to match has zero length.");
 		}
+
+		if (m_operator == SelectorOperator::Matches || m_operator == SelectorOperator::MatchesOwn)
+		{
+			m_expression.reset(new std::regex(m_textToMatch.c_str(), std::regex_constants::ECMAScript | std::regex_constants::optimize | std::regex_constants::nosubs));
+
+			if (m_expression == nullptr)
+			{
+				throw std::runtime_error(u8"In GQAttributeSelector::GQAttributeSelector(SelectorOperator, const boost::string_ref) - Failed to allocate new std::regex for regex based GQTextSelector.");
+			}
+		}
+
+		#ifndef NDEBUG
+			#ifdef GQ_VERBOSE_SELECTOR_COMPILIATION
+			std::cout << "Built GQTextSelector with operator " << static_cast<size_t>(m_operator) << " with text to match " << m_textToMatch << u8"." << std::endl;
+			#endif
+		#endif
 	}
 
 	GQTextSelector::~GQTextSelector()
@@ -59,7 +91,18 @@ namespace gumboquery
 
 	const bool GQTextSelector::Match(const GumboNode* node) const
 	{		
-		if (node == false)
+		if (node == nullptr)
+		{
+			return false;
+		}
+
+		// This might seem strange. But, the idea behind text selectors is to match nodes that
+		// eventually contain the text being searched for, not the text itself. If we allow text
+		// nodes to be match results for this type of search, then the user will be expecting a 
+		// returned list of a HTML elements that contain the text, and end up getting somewhere
+		// in those results pure text nodes as well, which isn't really useful at all from a 
+		// selector point of view.
+		if (node->type == GUMBO_NODE_TEXT)
 		{
 			return false;
 		}
@@ -70,8 +113,8 @@ namespace gumboquery
 			{
 				auto text = GQUtil::NodeText(node);
 				boost::string_ref textStrRef(text);
-				auto searchResult = boost::ifind_first(textStrRef, m_textToMatchStrRef);
-				return !searchResult.empty();
+				auto searchResult = boost::find_first(textStrRef, m_textToMatchStrRef);
+				return searchResult.empty() == false;
 			}
 			break;
 
@@ -79,8 +122,22 @@ namespace gumboquery
 			{
 				auto text = GQUtil::NodeOwnText(node);
 				boost::string_ref textStrRef(text);
-				auto searchResult = boost::ifind_first(textStrRef, m_textToMatchStrRef);
-				return !searchResult.empty();
+				auto searchResult = boost::find_first(textStrRef, m_textToMatchStrRef);
+				return searchResult.empty() == false;
+			}
+			break;
+
+			case SelectorOperator::Matches:
+			{
+				auto text = GQUtil::NodeText(node);
+				return std::regex_search(text, *(m_expression.get()));
+			}
+			break;
+
+			case SelectorOperator::MatchesOwn:
+			{
+				auto text = GQUtil::NodeOwnText(node);
+				return std::regex_search(text, *(m_expression.get()));
 			}
 			break;
 		}
@@ -88,4 +145,4 @@ namespace gumboquery
 		return false;
 	}
 
-} /* namespace gumboquery */
+} /* namespace gq */

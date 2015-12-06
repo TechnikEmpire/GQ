@@ -31,14 +31,14 @@
 #include "GQParser.hpp"
 #include "GQUtil.hpp"
 
-namespace gumboquery
+namespace gq
 {
 
 	GQSelection::GQSelection(SharedGQNode node)
 	{
 		if (node == nullptr)
 		{
-			throw new std::runtime_error(u8"In GQSelection::GQSelection(SharedGQNode) - The SharedGQNode is nullptr.");
+			throw std::runtime_error(u8"In GQSelection::GQSelection(SharedGQNode) - The SharedGQNode is nullptr.");
 		}
 
 		m_nodes.push_back(std::move(node));
@@ -86,10 +86,10 @@ namespace gumboquery
 	{
 		if (m_nodes.size() == 0 || index >= m_nodes.size())
 		{
-			throw new std::runtime_error(u8"In GQSelection::GetNodeAt(const size_t) - The supplied index is out of bounds.");
+			throw std::runtime_error(u8"In GQSelection::GetNodeAt(const size_t) - The supplied index is out of bounds.");
 		}
 
 		return m_nodes[index];
 	}
 
-} /* namespace gumboquery */
+} /* namespace gq */

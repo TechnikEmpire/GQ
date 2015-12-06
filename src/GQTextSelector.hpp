@@ -31,17 +31,37 @@
 
 #include "GQSelector.hpp"
 #include <boost/utility/string_ref.hpp>
+#include <regex>
 
-namespace gumboquery
+namespace gq
 {
 
+	/// <summary>
+	/// The GQTextSelector is designed to match specifically against text elements. There are four
+	/// types of operations supported by the GQTextSelector.
+	/// 
+	/// Match against a node where itself or any of its descendants contains a specific string.
+	/// Match against a node where itself or any of its direct children contain a specific string.
+	/// Match against a node where itself or any of its descendants contain text that is positively
+	/// matched against by a regular expression. Match against a node where itself or any of its
+	/// direct children contain text that is positively matched against by a regular expression.
+	/// 
+	/// Currently the regex implementation is rigid in some regards. Regular expressions such as
+	/// "/some.*stuff/gi" are not supported, because this would involve parsing the expression from
+	/// the options and converting options to implementation specific flags, maybe. I say maybe
+	/// because I didn't even bother investigating really, as I have not read the w3 standard on the
+	/// matter. For time constraints some things such as this are presently left on the to do list.
+	/// 
+	/// The grammar is specified to be ECMAScript which is supposed to be implemented as defined in
+	/// ECMA-262 section [28.13].
+	/// </summary>
 	class GQTextSelector : public GQSelector
 	{
 
 	public:
 
 		enum class SelectorOperator
-		{			
+		{
 			/// <summary>
 			/// The Contains selector will match any node that contains the text to search for
 			/// anywhere in that node or any of its descendants.
@@ -52,7 +72,20 @@ namespace gumboquery
 			/// The ContainsOwn selector will match any node where one or more of its children
 			/// contains the text to search for.
 			/// </summary>
-			ContainsOwn
+			ContainsOwn,
+
+			/// <summary>
+			/// The Matches selector will match any node that contains text which the supplied
+			/// regular expression matches against, be it within itself or any of its descendants.
+			/// </summary>
+			Matches,
+
+			/// <summary>
+			/// The MatchesOwn selector will match any node that contains text which the supplied
+			/// regular expression matches against be it within itself, or any direct child node
+			/// which contains such text.
+			/// </summary>
+			MatchesOwn
 		};
 
 		/// <summary>
@@ -120,8 +153,17 @@ namespace gumboquery
 		/// </summary>
 		boost::string_ref m_textToMatchStrRef;
 
+		/// <summary>
+		/// If this text selector is regex based selector, we'll need a regex object to work with.
+		/// If it's not, then we certainly don't want to incur the overhead of default constructed
+		/// regexes needlessly. As such, this object will hold a unique_ptr to a regex which may or
+		/// may not be constructed depending on the desired composition of this object, extrapolated
+		/// from the operator(s) supplied to the constructors.
+		/// </summary>
+		std::unique_ptr<std::regex> m_expression;
+
 	};
 
-} /* namespace gumboquery */
+} /* namespace gq */
 
 

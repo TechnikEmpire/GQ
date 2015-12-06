@@ -29,7 +29,7 @@
 
 #include "GQDocument.hpp"
 
-namespace gumboquery
+namespace gq
 {
 
 	GQDocument::GQDocument()
@@ -43,10 +43,10 @@ namespace gumboquery
 		#ifndef NDEBUG
 		assert(gumboOutput != nullptr && u8"In GQDocument::GQDocument(GumboOutput*) - Supplied GumboOutput* is nulltr! Use the parameterless constructor.");
 		#else
-		if (gumboOutput == nullptr) { throw new std::runtime_error(u8"In GQDocument::GQDocument(GumboOutput*) - Supplied GumboOutput* is nulltr! Use the parameterless constructor."); }
+		if (gumboOutput == nullptr) { throw std::runtime_error(u8"In GQDocument::GQDocument(GumboOutput*) - Supplied GumboOutput* is nulltr! Use the parameterless constructor."); }
 		#endif
 		
-		m_gumboRootNode = std::make_shared<GQNode>(m_gumboOutput->root);
+		m_gumboRootNode = GQNode::Create(m_gumboOutput->root);
 	}
 
 	GQDocument::~GQDocument()
@@ -63,7 +63,7 @@ namespace gumboquery
 		#ifndef NDEBUG
 		assert(source.length() > 0 && (source.find_first_not_of(u8" \t\r\n") != std::string::npos) && u8"In GQDocument::Parse(const std::string&) - Empty or whitespace string supplied.");
 		#else
-		if (source.length() == 0 || (source.find_first_not_of(u8" \t\r\n\f") == std::string::npos)) { throw new std::runtime_error(u8"In GQDocument::Parse(const std::string&) - Empty or whitespace string supplied."); }
+		if (source.length() == 0 || (source.find_first_not_of(u8" \t\r\n\f") == std::string::npos)) { throw std::runtime_error(u8"In GQDocument::Parse(const std::string&) - Empty or whitespace string supplied."); }
 		#endif
 
 		if (m_gumboOutput != nullptr)
@@ -75,17 +75,17 @@ namespace gumboquery
 
 		if (m_gumboOutput == nullptr)
 		{
-			throw new std::runtime_error(u8"In GQDocument::Parse(const std::string&) - Failed to parse and or allocate GumboOutput.");
+			throw std::runtime_error(u8"In GQDocument::Parse(const std::string&) - Failed to parse and or allocate GumboOutput.");
 		}
 
-		m_gumboRootNode = std::make_shared<GQNode>(m_gumboOutput->root);
+		m_gumboRootNode = GQNode::Create(m_gumboOutput->root);
 	}
 
 	GQSelection GQDocument::Find(const std::string& selectorString) const
 	{
 		if (m_gumboOutput == nullptr)
 		{
-			throw new std::runtime_error(u8"In GQDocument::Find(const std::string&) - Document is not initialized. You must parse an HTML string, or construct this object around a valid GumboOutput pointer.");
+			throw std::runtime_error(u8"In GQDocument::Find(const std::string&) - Document is not initialized. You must parse an HTML string, or construct this object around a valid GumboOutput pointer.");
 		}	
 
 		GQSelection selection(m_gumboRootNode);
@@ -97,7 +97,7 @@ namespace gumboquery
 	{
 		if (m_gumboOutput == nullptr)
 		{
-			throw new std::runtime_error(u8"In GQDocument::Find(const GQSelector&) - Document is not initialized. You must parse an HTML string, or construct this object around a valid GumboOutput pointer.");
+			throw std::runtime_error(u8"In GQDocument::Find(const GQSelector&) - Document is not initialized. You must parse an HTML string, or construct this object around a valid GumboOutput pointer.");
 		}
 
 		GQSelection selection(m_gumboRootNode);
@@ -105,4 +105,4 @@ namespace gumboquery
 		return selection.Find(selector);
 	}
 
-} /* namespace gumboquery */
+} /* namespace gq */

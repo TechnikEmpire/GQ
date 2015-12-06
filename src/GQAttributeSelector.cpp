@@ -30,7 +30,7 @@
 #include "GQAttributeSelector.hpp"
 #include <boost/algorithm/string.hpp>
 
-namespace gumboquery
+namespace gq
 {
 
 	GQAttributeSelector::GQAttributeSelector(boost::string_ref key, const bool keyIsPrefix) :
@@ -41,8 +41,14 @@ namespace gumboquery
 	{		
 		if (m_attributeName.size() == 0)
 		{
-			throw new std::runtime_error(u8"In GQAttributeSelector::GQAttributeSelector(SelectorOperator, boost::string_ref, const bool) - Supplied attribute identifier has zero length.");
-		}		
+			throw std::runtime_error(u8"In GQAttributeSelector::GQAttributeSelector(SelectorOperator, boost::string_ref, const bool) - Supplied attribute identifier has zero length.");
+		}	
+
+		#ifndef NDEBUG
+			#ifdef GQ_VERBOSE_SELECTOR_COMPILIATION
+			std::cout << "Built Exists GQAttributeSelector with key " << m_attributeName << std::endl;
+			#endif
+		#endif
 	}
 
 	GQAttributeSelector::GQAttributeSelector(SelectorOperator op, boost::string_ref key, boost::string_ref value, const bool keyIsPrefix) :
@@ -55,21 +61,27 @@ namespace gumboquery
 	{
 		if (m_attributeName.size() == 0)
 		{
-			throw new std::runtime_error(u8"In GQAttributeSelector::GQAttributeSelector(SelectorOperator, boost::string_ref, const bool) - Supplied attribute identifier has zero length.");
+			throw std::runtime_error(u8"In GQAttributeSelector::GQAttributeSelector(SelectorOperator, boost::string_ref, const bool) - Supplied attribute identifier has zero length.");
 		}
 
 		if (m_attributeValue.size() == 0)
 		{
-			throw new std::runtime_error(u8"In GQAttributeSelector::GQAttributeSelector(SelectorOperator, boost::string_ref, const bool) - Supplied attribute value has zero length.");
+			throw std::runtime_error(u8"In GQAttributeSelector::GQAttributeSelector(SelectorOperator, boost::string_ref, const bool) - Supplied attribute value has zero length.");
 		}
 
 		if (m_operator == SelectorOperator::ValueContainsElementInWhitespaceSeparatedList)
 		{
 			if (m_attributeValue.find_first_of(u8"\t\r\n ") != std::string::npos)
 			{
-				throw new std::runtime_error(u8"In GQAttributeSelector::GQAttributeSelector(SelectorOperator, boost::string_ref, const bool) - Constructued ValueContainsElementInWhitespaceSeparatedList attribute selector, but spaces exist in the search value. This is not allowed.");
+				throw std::runtime_error(u8"In GQAttributeSelector::GQAttributeSelector(SelectorOperator, boost::string_ref, const bool) - Constructed ValueContainsElementInWhitespaceSeparatedList attribute selector, but spaces exist in the search value. This is not allowed.");
 			}
 		}
+
+		#ifndef NDEBUG
+			#ifdef GQ_VERBOSE_SELECTOR_COMPILIATION
+			std::cout << "Built GQAttributeSelector with operator " << static_cast<size_t>(m_operator) << " with key " << m_attributeName << " looking for value " << m_attributeValue << std::endl;
+			#endif
+		#endif
 	}
 
 	GQAttributeSelector::~GQAttributeSelector()
@@ -79,16 +91,21 @@ namespace gumboquery
 
 	const bool GQAttributeSelector::Match(const GumboNode* node) const
 	{
-		if (node->type != GUMBO_NODE_ELEMENT && node->type != GUMBO_NODE_TEXT && node->type != GUMBO_NODE_DOCUMENT)
+		if (node->type != GUMBO_NODE_ELEMENT && node->type != GUMBO_NODE_DOCUMENT)
 		{
 			return false;
 		}
 
-		GumboVector attributes = node->v.element.attributes;
+		const GumboVector* attributes = &node->v.element.attributes;
 
-		for (size_t i = 0; i < attributes.length; i++)
+		if (attributes == nullptr)
 		{
-			GumboAttribute* attribute = static_cast<GumboAttribute*>(attributes.data[i]);
+			return false;
+		}
+
+		for (size_t i = 0; i < attributes->length; i++)
+		{
+			GumboAttribute* attribute = static_cast<GumboAttribute*>(attributes->data[i]);
 			
 			// Note that we take the original attribute name and value. This is because Gumbo Parser will
 			// modify these things, such as replacing character references with literal characters. We don't
@@ -140,19 +157,19 @@ namespace gumboquery
 				break;
 
 				case SelectorOperator::ValueContains:
-				{
-					// Case-insensitive search courtesy of boost
+				{					
+					// Case-insensitive search courtesy of boost.
 					auto searchResult = boost::ifind_first(attributeValue, m_attributeValue);
 
 					// Simply return whether or not we got any matches.
-					return !searchResult.empty();
+					return searchResult.empty() == false;
 				}
 				break;
 
 				case SelectorOperator::ValueEquals:
 				{
 					// Values cannot possibly be equal if not present or not the same size.
-					if (attributeValue.size() == 0 || attributeValue.size() != m_attributeValue.size())
+					if (attributeValue.size() == 0 || attributeValue.size() < m_attributeValue.size())
 					{
 						return false;
 					}
@@ -175,7 +192,7 @@ namespace gumboquery
 
 					// Test case-insensitive equality of same-length substring.
 					boost::string_ref sub = attributeValue.substr(0, m_attributeValue.size());
-					
+
 					return boost::iequals(sub, m_attributeValue);
 				}
 				break;
@@ -191,7 +208,7 @@ namespace gumboquery
 					TrimEnclosingQuotes(attributeValue);
 
 					// Test case-insensitive equality of same-length substring taken from the end.
-					boost::string_ref sub = attributeValue.substr((attributeValue.size() - m_attributeValue.size()) -1);
+					boost::string_ref sub = attributeValue.substr((attributeValue.size() - m_attributeValue.size()));
 
 					return boost::iequals(sub, m_attributeValue);
 				}
@@ -199,9 +216,28 @@ namespace gumboquery
 
 				case SelectorOperator::ValueContainsElementInWhitespaceSeparatedList:
 				{
+					TrimEnclosingQuotes(attributeValue);
+
+					// If the attribute value to check is smaller than our value, then we can just return
+					// false right away.
+					if (attributeValue.size() < m_attributeValue.size())
+					{
+						return false;
+					}
+
+					if (attributeValue.size() == m_attributeValue.size())
+					{
+						// If the two values match exactly, this is considered a match with this selector
+						// type. If they do not match, the only other possible type of match this operator
+						// can make is the match the selector value PLUS whitespace, in which case this isn't
+						// possible (being the two strings equal length), so letting boost::iequals return
+						// false or true is the right answer either way.
+						return boost::iequals(attributeValue, m_attributeValue);
+					}
+					
 					// If there isn't anything that qualifies as whitespace in the CSS selector world,
 					// then we can just immediately return false.
-					auto anySpacePosition = attributeValue.find_first_of("\t\r\n ");
+					auto anySpacePosition = attributeValue.find_first_of(u8"\t\r\n ");
 
 					if (anySpacePosition == boost::string_ref::npos)
 					{
@@ -217,68 +253,98 @@ namespace gumboquery
 						return false;
 					}
 					
-					// Value was found, so now we need to check if the preceeding and following characters
-					// around our match qualify as whitespace in the CSS selector world. 
-					auto distance = std::distance(attributeValue.begin(), result.begin());
-
-					// If the distance is zero, this can still be valid so long as the second check
-					// passes. Since constructing attribute selectors that use this operator with a value
-					// that contains spaces is illegal, it's simply not possible for us to have already 
-					// found a space and then have the distance == 0 and also the length plus offset of our 
-					// value member to also be equal to the length of the entire value to check against.
-					// Therefore, at least one of these disqualifying checks is guaranteed to run and not 
-					// further checks are required.
-
-					if (distance > 0)
-					{						
-						const char& before = attributeValue[distance - 1];
-
-						if (before != ' ' && before != '\t' && before != '\r' && before != '\n')
-						{
-							return false;
-						}
-					}
-
-					if (static_cast<size_t>(distance + 1) < attributeValue.size())
+					while(!result.empty())
 					{
-						const char& after = attributeValue[distance + attributeValue.length()];
-						if (after != ' ' && after != '\t' && after != '\r' && after != '\n')
+						// Value was found, so now we need to check if the preceeding and following characters
+						// around our match qualify as whitespace in the CSS selector world. 
+						auto distance = std::distance(attributeValue.begin(), result.begin());
+
+						// If the distance is zero, this can still be valid so long as the second check
+						// passes. Since constructing attribute selectors that use this operator with a value
+						// that contains spaces is illegal, it's simply not possible for us to have already 
+						// found a space and then have the distance == 0 and also the length plus offset of our 
+						// value member to also be equal to the length of the entire value to check against.
+						// Therefore, at least one of these disqualifying checks is guaranteed to run and not 
+						// further checks are required.
+
+						if (distance > 0)
 						{
-							return false;
+							const char& before = attributeValue[distance - 1];
+
+							if (before != ' ' && before != '\t' && before != '\r' && before != '\n')
+							{
+								attributeValue = attributeValue.substr(distance + m_attributeValue.length());
+								result = boost::ifind_first(attributeValue, m_attributeValue);
+								//std::cout << "char before " << before << " is not space at distance" << (distance - 1) << " in attributeValue " << attributeValue << std::endl;
+								continue;
+							}
 						}
+
+						if ((distance + m_attributeValue.length()) < attributeValue.size())
+						{
+							const char& after = attributeValue[distance + m_attributeValue.length()];
+							if (after != ' ' && after != '\t' && after != '\r' && after != '\n')
+							{
+								attributeValue = attributeValue.substr(distance + m_attributeValue.length());
+								result = boost::ifind_first(attributeValue, m_attributeValue);
+								//std::cout << "char after " << after << " is not space at distance" << (distance + m_attributeValue.length()) << " in attributeValue " << attributeValue << std::endl;
+								continue;
+							}
+						}
+
+						// If one of the previously disqualifying checks didn't return false, then this
+						// is necessarily a proper match.
+						return true;
 					}
-
-					// If one of the previously disqualifying checks didn't return false, then this
-					// is necessarily a proper match.
-					return true;
-
+					
+					return false;
 				}
 				break;
 
 				case SelectorOperator::ValueIsHyphenSeparatedListStartingWith:
 				{
+					TrimEnclosingQuotes(attributeValue);
+
 					// If the attribute value to check is smaller than our value, then we can just return
 					// false right away.
-					if (attributeValue.size() <= m_attributeValue.size())
+					if (attributeValue.size() < m_attributeValue.size())
 					{
 						return false;
+					}					
+
+					if (attributeValue.size() == m_attributeValue.size())
+					{
+						// If the two values match exactly, this is considered a match with this selector
+						// type. If they do not match, the only other possible type of match this operator
+						// can make is the match the selector value PLUS a dash, in which case this isn't
+						// possible (being the two strings equal length), so letting boost::iequals return
+						// false or true is the right answer either way.
+						return boost::iequals(attributeValue, m_attributeValue);
 					}
-					
-					// If we can't find a hypen, then we simply return false right away.
+
+					// If we didn't find an exact match, then the only hope of a match now is finding the selector
+					// value at the start of the attribute value, immediately followed by a hyphen. Therefore, if 
+					// we can't find a hypen, then we simply return false right away.
 					auto anyHyphen = attributeValue.find_first_of('-');
 
 					if (anyHyphen == boost::string_ref::npos)
 					{
 						return false;
-					}
-
-					TrimEnclosingQuotes(attributeValue);
+					}					
 
 					// A hyphen was found, so all we have to do is make a case-insensitive match against
 					// a substring of equal length to our member value.
-					boost::string_ref sub = attributeValue.substr(0, m_attributeValue.size());
+					boost::string_ref sub = attributeValue.substr(0, m_attributeValue.size()+1);
 
-					return boost::iequals(sub, m_attributeName);
+					if (sub[sub.length() - 1] != '-')
+					{
+						// If the last character in the substring isn't a dash, it can't possibly be a match anyway.
+						return false;
+					}
+
+					sub = sub.substr(0, sub.size()-1);
+
+					return boost::iequals(sub, m_attributeValue);
 				}
 				break;
 			}
@@ -309,7 +375,7 @@ namespace gumboquery
 				case '\'':
 				case '"':
 				{
-					str = str.substr(0, str.length() - 2);
+					str = str.substr(0, str.length() - 1);
 				}
 				break;
 
@@ -319,4 +385,4 @@ namespace gumboquery
 		}		
 	}
 
-} /* namespace gumboquery */
+} /* namespace gq */

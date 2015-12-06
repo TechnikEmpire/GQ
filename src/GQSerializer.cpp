@@ -20,7 +20,7 @@
 
 #include "GQSerializer.hpp"
 
-namespace gumboquery
+namespace gq
 {
 
 	const std::unordered_set<boost::string_ref, GQSerializer::StringRefHasher> GQSerializer::EmptyTags =
@@ -271,4 +271,4 @@ namespace gumboquery
 		return atts;
 	}
 
-} /* namespace gumboquery */
+} /* namespace gq */

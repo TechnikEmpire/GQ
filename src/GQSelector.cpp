@@ -31,7 +31,9 @@
 
 #include "GQNode.hpp"
 
-namespace gumboquery
+#include <unordered_set>
+
+namespace gq
 {
 
 	GQSelector::GQSelector(SelectorOperator op)
@@ -55,6 +57,22 @@ namespace gumboquery
 		m_rightHandSideOfNth = rightHandSideOfNth;
 		m_matchLast = matchLast;
 		m_matchType = matchType;
+
+		#ifndef NDEBUG
+			#ifdef GQ_VERBOSE_SELECTOR_COMPILIATION
+			std::cout 
+				<< u8"Built GQSelector for nth matching with lhs of "
+				<< std::to_string(leftHandSideOfNth) 
+				<< u8" and rhs of " 
+				<< std::to_string(rightHandSideOfNth) 
+				<< u8" match last set to "
+				<< std::to_string(matchLast)
+				<< u8" and match type set to "
+				<< std::to_string(matchType)
+				<< u8"."
+				<< std::endl;
+			#endif
+		#endif
 	}
 
 	GQSelector::GQSelector(GumboTag tagTypeToMatch)
@@ -62,27 +80,19 @@ namespace gumboquery
 		InitDefaults();
 		m_selectorOperator = SelectorOperator::Tag;
 		m_tagTypeToMatch = tagTypeToMatch;
+
+		#ifndef NDEBUG
+			#ifdef GQ_VERBOSE_SELECTOR_COMPILIATION
+			std::cout << "Built GQSelector for matching GumboTag " << gumbo_normalized_tagname(tagTypeToMatch) << u8"." << std::endl;
+			#endif
+		#endif
 	}
 
 	GQSelector::~GQSelector()
 	{
 	}
 
-	void GQSelector::SetTagTypeToMatch(GumboTag tagType)
-	{
-		if (tagType == GUMBO_TAG_UNKNOWN)
-		{
-			m_matchType = false;
-		}
-		else
-		{
-			m_matchType = true;
-		}
-
-		m_tagTypeToMatch = tagType;
-	}
-
-	const GumboTag GQSelector::GetTagTypeToMatch(GumboTag tagType) const
+	const GumboTag GQSelector::GetTagTypeToMatch() const
 	{
 		return m_tagTypeToMatch;
 	}
@@ -99,7 +109,7 @@ namespace gumboquery
 
 			case SelectorOperator::Empty:
 			{
-				if (node->type != GUMBO_NODE_ELEMENT && node->type != GUMBO_NODE_TEXT && node->type != GUMBO_NODE_DOCUMENT)
+				if (node->type != GUMBO_NODE_ELEMENT) //  && node->type != GUMBO_NODE_DOCUMENT
 				{
 					return false;
 				}
@@ -109,7 +119,7 @@ namespace gumboquery
 				for (size_t i = 0; i < children.length; i++)
 				{
 					GumboNode* child = (GumboNode*)children.data[i];
-					if (child->type == GUMBO_NODE_TEXT || child->type == GUMBO_NODE_ELEMENT)
+					if (child != nullptr && child->type == GUMBO_NODE_TEXT || child->type == GUMBO_NODE_ELEMENT)
 					{
 						return false;
 					}
@@ -121,7 +131,7 @@ namespace gumboquery
 
 			case SelectorOperator::OnlyChild:
 			{
-				if (node->type != GUMBO_NODE_ELEMENT && node->type != GUMBO_NODE_TEXT && node->type != GUMBO_NODE_DOCUMENT)
+				if (node->type != GUMBO_NODE_ELEMENT) //  && node->type != GUMBO_NODE_DOCUMENT
 				{
 					return false;
 				}
@@ -137,8 +147,13 @@ namespace gumboquery
 				for (size_t i = 0; i < node->parent->v.element.children.length; i++)
 				{
 					GumboNode* child = static_cast<GumboNode*>(node->parent->v.element.children.data[i]);
-					if (child->type != GUMBO_NODE_ELEMENT || (m_matchType && node->v.element.tag == child->v.element.tag))
+
+					if (child->type != GUMBO_NODE_ELEMENT || (m_matchType && node->v.element.tag != child->v.element.tag))
 					{
+						// When m_matchType is true, we want to ignore all nodes that are not of the same type, because
+						// in this circumstance, we'd be processing an only-of-type selector. So, to not screw up our
+						// count, we ignore any non-element nodes and any nodes not of the same type as what we're trying
+						// to match.
 						continue;
 					}
 
@@ -156,7 +171,7 @@ namespace gumboquery
 
 			case SelectorOperator::NthChild:
 			{
-				if (node->type != GUMBO_NODE_ELEMENT && node->type != GUMBO_NODE_TEXT && node->type != GUMBO_NODE_DOCUMENT)
+				if (node->type != GUMBO_NODE_ELEMENT) // && node->type != GUMBO_NODE_DOCUMENT
 				{
 					return false;
 				}
@@ -167,53 +182,104 @@ namespace gumboquery
 					return false;
 				}
 
-				size_t count = 0;
-				size_t index = 0;
-				for (size_t i = 0; i < node->parent->v.element.children.length; i++)
-				{
-					GumboNode* child = static_cast<GumboNode*>(node->parent->v.element.children.data[i]);
-					if (child->type != GUMBO_NODE_ELEMENT || (m_matchType && node->v.element.tag == child->v.element.tag))
+				// A valid child is a child that is either an element, or a is a node of exactly the same
+				// type as the node we're trying to match. We need to skip everything else because in 
+				// Gumbo Parser, we can have non-element nodes. However, in something like jquery using
+				// selectors, these are not factored in, so to keep our counts equal to what you'd expect
+				// in a real browser environment, we only count children as described.
+				int validChildCount = 0;				
+
+				// The actual index is "actual" in the sense that it is adjusted according to the process
+				// described in the comments on validChildCount. This will almost certainly differ from
+				// node->position_within_parent, which is why we keep this variable.
+				int actualIndex = 0;
+
+				// As we iterate up to our guaranteed match, we'll expand the nth formula and generate a 
+				// collection of all node indices that the nth parameter (expanded) could possible generate
+				// within the range of the parent child count. Then, later, we'll check to see if the final
+				// matched "actualIndex" of our discovered node is found within these expanded values to
+				// tell if we have a match or not.
+				std::unordered_set<int> validNths;
+
+				for (size_t j = 0; j < node->parent->v.element.children.length; j++)
+				{					
+					GumboNode* child = static_cast<GumboNode*>(node->parent->v.element.children.data[j]);
+					if (child->type != GUMBO_NODE_ELEMENT || (m_matchType && node->v.element.tag != child->v.element.tag))
 					{
+						// If m_matchType is true, we're not counting any children that are not the same
+						// tag type as valid children. We're pretending that they don't exist. We're doing
+						// this for situations last-of-type and nth-last-of-type. Whenever either of those
+						// selectors are used, we pretend the only elements that exist are of the type
+						// we're looking for, to make counting simple.
 						continue;
 					}
 
-					count++;
+					// Expand the nth forumla and get the generated nth index based on the present
+					// plain index. By doing this, we can store a list of all possible indices within
+					// the scope of this node's parent that would classify as valid nth indices, and
+					// thus a final "actualIndex" matching any of these indices is a match to the 
+					// selector. I'm explaining the hell out of this because the original code was
+					// as much of a copy and paste from sizzler as is possible and of course, it didn't
+					// work right, so I had to re-figure this nth thing out from scratch.
+					// XXX TODO - Write more nth selector tests to verify that this code holds.
+					validNths.insert(((m_leftHandSideOfNth * validChildCount) + m_rightHandSideOfNth));
 
-					if (node == child)
-					{
-						index = count;
+					// Once the child is found, we store its "true" index, aka the index after we've
+					// ignored everything we don't want to count as real children for the sake of maths.
+					if (child == node)
+					{						
+						actualIndex = validChildCount;
 
 						if (!m_matchLast)
 						{
+							// If we're not matching last (nth-last, last-of), we can just break here and
+							// check the nodes index for a match. If not, we need to carry on counting
+							// the total number of valid children (children we're not ignoring) so we
+							// can properly convert the index to offset from the the "last" aka end.
+							++validChildCount;
 							break;
 						}
-					}
-				}
+					}	
+
+					++validChildCount;
+				}				
 
 				if (m_matchLast)
 				{
-					index = count - index + 1;
+					// If we're matching from "last" we're matching count from the end aka total valid child count.
+					// A valid child depends on if the child is an html element, and when we're matching types 
+					// for selectors like (nth-last-of-type), then valid siblings are further restricted to sibling
+					// with the same tag name.
+					// 
+					// Got a bit off topic, but when we're matching from the end, we want to convert the index from
+					// a "count from start" to "count from end", so substracting count from start from total count 
+					// gives us this. In the case that we're not matching last, we need to append 1, since these
+					// type of pseudo selectors seem not to use zero based indices.
+					actualIndex = validChildCount - actualIndex;
 				}
-
-				index -= m_rightHandSideOfNth;
-
-				if (m_leftHandSideOfNth == 0)
+				else 
 				{
-					return index == 0;
-				}
+					// Increase the index to convert from zero based indices.
+					actualIndex += 1;
+				}				
 
-				return ((index % m_leftHandSideOfNth) == 0) && (static_cast<int>(index / m_leftHandSideOfNth) > 0);
+				// Expand the nth calculation against the actual found index of the node. No matter what the 
+				// composition of the nth parameter is, this will generate a proper index. We then are going
+				// to either exactly match this, or exactly match this to all other valid generated nth values
+				// for the selector, which we created while doing the loop to find the child in the first
+				// place using this exact same formula.
+				int nthIndex = ((m_leftHandSideOfNth * actualIndex) + m_rightHandSideOfNth);
+
+				// Either the calculated nth index will be an exact match, or during the iterations up till
+				// the found node, we will have generated a collection of valid nths for the specified selector
+				// and we'll find our index in there. If neither of those are true, then we didn't match at all.
+				return nthIndex == actualIndex || (validNths.find(actualIndex) != validNths.end());				
 			}
 			break;
 
 			case SelectorOperator::Tag:
-			{
-				if (node->type != GUMBO_NODE_ELEMENT && node->type != GUMBO_NODE_TEXT && node->type != GUMBO_NODE_DOCUMENT)
-				{
-					return false;
-				}
-
-				return node->v.element.tag == m_tagTypeToMatch;
+			{				
+				return node->type == GUMBO_NODE_ELEMENT && node->v.element.tag == m_tagTypeToMatch;
 			}
 			break;
 
@@ -227,7 +293,7 @@ namespace gumboquery
 		#ifndef NDEBUG
 		assert(node != nullptr && u8"In GQSelector::MatchAll(const GumboNode*) - Nullptr node supplied for matching.");
 		#else
-		if (node == nullptr) { throw new std::runtime_error(u8"In GQSelector::MatchAll(const GumboNode*) - Nullptr node supplied for matching."); }
+		if (node == nullptr) { throw std::runtime_error(u8"In GQSelector::MatchAll(const GumboNode*) - Nullptr node supplied for matching."); }
 		#endif
 
 		std::vector< std::shared_ptr<GQNode> > ret;
@@ -256,12 +322,12 @@ namespace gumboquery
 		#ifndef NDEBUG
 		assert(node != nullptr && u8"In GQSelector::MatchAllInto(const GumboNode*, std::vector<const GumboNode*>&) - Nullptr node supplied for matching.");
 		#else
-		if (node == nullptr) { throw new std::runtime_error(u8"In GQSelector::MatchAllInto(const GumboNode*, std::vector<const GumboNode*>&) - Nullptr node supplied for matching."); }
+		if (node == nullptr) { throw std::runtime_error(u8"In GQSelector::MatchAllInto(const GumboNode*, std::vector<const GumboNode*>&) - Nullptr node supplied for matching."); }
 		#endif
 
 		if (Match(node))
 		{
-			nodes.push_back(std::make_shared<GQNode>(node));
+			nodes.push_back(GQNode::Create(node));
 		}
 
 		if (node->type != GUMBO_NODE_ELEMENT)
@@ -277,5 +343,5 @@ namespace gumboquery
 	}
 	
 
-} /* namespace gumboquery */
+} /* namespace gq */
 

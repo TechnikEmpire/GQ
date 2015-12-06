@@ -30,7 +30,7 @@
 
 #include "GQSelector.hpp"
 
-namespace gumboquery
+namespace gq
 {
 	/// <summary>
 	/// The GQBinarySelector is designed to match two independent selectors against nodes in various
@@ -154,6 +154,6 @@ namespace gumboquery
 		SelectorOperator m_operator;
 	};
 
-} /* namespace gumboquery */
+} /* namespace gq */
 
 

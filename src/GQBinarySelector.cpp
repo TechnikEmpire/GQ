@@ -29,7 +29,7 @@
 
 #include "GQBinarySelector.hpp"
 
-namespace gumboquery
+namespace gq
 {
 
 	GQBinarySelector::GQBinarySelector(SelectorOperator op, SharedGQSelector left, SharedGQSelector right) :
@@ -37,8 +37,16 @@ namespace gumboquery
 	{
 		if (m_leftHandSide == nullptr || m_rightHandSide == nullptr)
 		{
-			throw new std::runtime_error(u8"In GQBinarySelector::GQBinarySelector(SelectorOperator, SharedGQSelector, SharedGQSelector) - Left or right hand selector is nullptr.");
+			std::string errorMessage(u8"In GQBinarySelector::GQBinarySelector(SelectorOperator, SharedGQSelector, SharedGQSelector) - Left or right hand selector is nullptr. Supplied operator was ");
+			errorMessage.append(std::to_string(static_cast<size_t>(m_operator))).append(u8".");
+			throw std::runtime_error(errorMessage);
 		}
+
+		#ifndef NDEBUG
+			#ifdef GQ_VERBOSE_SELECTOR_COMPILIATION
+			std::cout << "Built GQBinarySelector with operator " << static_cast<size_t>(m_operator) << std::endl;
+			#endif
+		#endif
 	}
 
 	GQBinarySelector::~GQBinarySelector()
@@ -52,7 +60,7 @@ namespace gumboquery
 		{
 			case SelectorOperator::Adjacent:
 			{
-				if (node->type != GUMBO_NODE_ELEMENT && node->type != GUMBO_NODE_TEXT && node->type != GUMBO_NODE_DOCUMENT)
+				if (node->type != GUMBO_NODE_ELEMENT) //  && node->type != GUMBO_NODE_DOCUMENT
 				{
 					return false;
 				}
@@ -99,7 +107,7 @@ namespace gumboquery
 
 			case SelectorOperator::Child:
 			{
-				if (node->type != GUMBO_NODE_ELEMENT && node->type != GUMBO_NODE_TEXT && node->type != GUMBO_NODE_DOCUMENT)
+				if (node->type != GUMBO_NODE_ELEMENT) //  && node->type != GUMBO_NODE_DOCUMENT
 				{
 					return false;
 				}
@@ -116,7 +124,7 @@ namespace gumboquery
 
 			case SelectorOperator::Descendant:
 			{
-				if (node->type != GUMBO_NODE_ELEMENT && node->type != GUMBO_NODE_TEXT && node->type != GUMBO_NODE_DOCUMENT)
+				if (node->type != GUMBO_NODE_ELEMENT) //  && node->type != GUMBO_NODE_DOCUMENT
 				{
 					return false;
 				}
@@ -146,7 +154,7 @@ namespace gumboquery
 
 			case SelectorOperator::Intersection:
 			{
-				if (node->type != GUMBO_NODE_ELEMENT && node->type != GUMBO_NODE_TEXT && node->type != GUMBO_NODE_DOCUMENT)
+				if (node->type != GUMBO_NODE_ELEMENT) //  && node->type != GUMBO_NODE_DOCUMENT
 				{
 					return false;
 				}
@@ -157,7 +165,7 @@ namespace gumboquery
 
 			case SelectorOperator::Sibling:
 			{
-				if (node->type != GUMBO_NODE_ELEMENT && node->type != GUMBO_NODE_TEXT && node->type != GUMBO_NODE_DOCUMENT)
+				if (node->type != GUMBO_NODE_ELEMENT) //  && node->type != GUMBO_NODE_DOCUMENT
 				{
 					return false;
 				}
@@ -204,7 +212,7 @@ namespace gumboquery
 
 			case SelectorOperator::Union:
 			{
-				if (node->type != GUMBO_NODE_ELEMENT && node->type != GUMBO_NODE_TEXT && node->type != GUMBO_NODE_DOCUMENT)
+				if (node->type != GUMBO_NODE_ELEMENT) //  && node->type != GUMBO_NODE_DOCUMENT
 				{
 					return false;
 				}
@@ -217,4 +225,4 @@ namespace gumboquery
 		return false;
 	}
 
-} /* namespace gumboquery */
+} /* namespace gq */

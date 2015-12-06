@@ -35,7 +35,7 @@
 #include <memory>
 #include <algorithm>
 
-namespace gumboquery
+namespace gq
 {	
 	
 	class GQNode;
@@ -122,4 +122,4 @@ namespace gumboquery
 
 	};
 
-} /* namespace gumboquery */
+} /* namespace gq */

@@ -40,7 +40,7 @@
 #include <stdexcept>
 #include <locale>
 
-namespace gumboquery
+namespace gq
 {
 	class GQParser
 	{
@@ -302,4 +302,4 @@ namespace gumboquery
 		const bool IsHexDigit(const char& c) const;		
 
 	};
-} /* namespace gumboquery */
+} /* namespace gq */
