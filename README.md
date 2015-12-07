@@ -1,7 +1,7 @@
 # GQ
 CSS Selector Engine for Gumbo Parser
 
-Fork of https://github.com/lazytiger/gumbo-query. I opted to have this be an unofficial fork because I intend on radically altering the library in a way that I don't expect the original repository to pull from.
+Fork of https://github.com/lazytiger/gumbo-query. I opted to have this be an unofficial fork because ~~I intend on radically altering~~ radically altered the library in a way that ~~I don't expect the original repository to pull from~~ is irreconcilable with the original source.
 
 ##Goals  
  - Renaming objects and files and nesting them inside directories to avoid existing conflicts with Gumbo Parser during compilation and inclusion.
@@ -15,3 +15,4 @@ Fork of https://github.com/lazytiger/gumbo-query. I opted to have this be an uno
  - Remove local state tracking from the selector parser.
  - Expose compiled selectors to the public so that they can be retained and recycled against existing and new documents.
  - "Comments. Lots of comments."
+
