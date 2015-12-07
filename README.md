@@ -1,5 +1,5 @@
 # GQ
-CSS Selector Engine for Gumbo Parser
+CSS Selector Engine for [Gumbo Parser](https://github.com/google/gumbo-parser)
 
 Fork of https://github.com/lazytiger/gumbo-query. I opted to have this be an unofficial fork because I ~~intend on radically altering~~ have radically altered the library in a way that ~~I don't expect the original repository to pull from~~ is irreconcilable with the original source.
 
