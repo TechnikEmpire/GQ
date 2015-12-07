@@ -64,9 +64,12 @@ int main()
 
 	std::istringstream tests(testContents);
 	std::string test;
+
+	int lastRunTestNumber = 0;
+
 	while (std::getline(tests, test))
 	{
-		if (test.length() == 0 || test[0] == '!')
+		if (test.size() == 0 || test[0] == '!')
 		{
 			// Skip empty lines and comments
 			continue;
@@ -83,9 +86,11 @@ int main()
 		}
 		catch (...)
 		{
-			std::cout << u8"Failed to locate the test number and or the test selector. The test data is improperly formatted. Aboring." << std::endl;
+			std::cout << u8"Failed to locate the test number and or the test selector after test " << lastRunTestNumber << u8". The test data is improperly formatted. Aboring." << std::endl;
 			return -1;
 		}			
+
+		lastRunTestNumber = testNumber;
 
 		try
 		{

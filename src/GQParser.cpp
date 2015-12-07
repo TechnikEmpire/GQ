@@ -1129,6 +1129,33 @@ namespace gq
 
 				continue;
 			}
+			else if (selectorStr[ind] == '\\')
+			{
+				// Since Gumbo Parser directly embeds escaped character sequences directly,
+				// and unmodified, we need to accept them as well. These will always, in a 
+				// properly formatted element, be followed by a space in order to make it
+				// clear that the characters immediately following a '\\' and then followed
+				// by a space are the hex value for a unicode character.
+				bool foundEscapeSequenceEnd = false;
+				for (ind; ind < static_cast<int>(selectorStr.size()); ++ind)
+				{
+					if (IsHexDigit(selectorStr[ind]))
+					{
+						continue;
+					}
+					else if (std::isspace(selectorStr[ind], m_localeEnUS))
+					{
+						++ind;
+						foundEscapeSequenceEnd = true;
+						break;
+					}
+				}
+
+				if (!foundEscapeSequenceEnd)
+				{
+					throw new std::runtime_error(u8"In GQParser::ParseIdentifier(boost::string_ref&) - Encountered improperly formatted character escape sequence. Escaped character sequences must be followed by a space.");
+				}
+			}
 			else if (!IsNameChar(selectorStr[ind]))
 			{
 				notDone = false;

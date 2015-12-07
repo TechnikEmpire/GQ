@@ -407,7 +407,7 @@ namespace gq
 		/// ignores escaped character sequences, embedding them directly, while also converting
 		/// character references.
 		/// 
-		/// So, ParseIdentifier was modified to refuse escaped characters, and skip over named or
+		/// So, ParseIdentifier was modified to accept escaped characters, and skip over named or
 		/// numbered character sequences, accepting them as a valid part of an identifier. At this
 		/// stage, I had removed a significant portion of the original code functionality, bypassing
 		/// it all together, and embedded a significant change in how various values are interpreted
@@ -435,7 +435,9 @@ namespace gq
 		/// supplied string and replacing it in the return object.
 		/// 
 		/// Accepts named character and numbered character references as valid portions of an
-		/// indetifier. Does not accept names that use escaped characters (like "\E9 ").
+		/// indetifier. Also accepts escaped characters like "\E9 " as valid portions of an
+		/// identifier. The format for escaped characters must be followed, however. Must be a
+		/// slash, followed by ONLY valid hex digits, then a single space. Anything else will throw.
 		/// 
 		/// As with all other parsing members, this function will consume characters from the front
 		/// of the supplied string. If no error is thrown, the consumption should leave the supplied
