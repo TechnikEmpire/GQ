@@ -491,6 +491,21 @@ namespace gq
 		const bool IsCombinator(const char& c) const;
 
 		/// <summary>
+		/// Check if the supplied character is a "special" character in CSS selectors. Not
+		/// necessarily a complete list. This function is meant to determine if certain escaped
+		/// characters found in identifiers are valid escaped characters, aka special characters
+		/// escaped that are commonly found in selector identifiers. For example, ":" can appear in
+		/// divs.
+		/// </summary>
+		/// <param name="c">
+		/// The character to check. 
+		/// </param>
+		/// <returns>
+		/// True if the supplied character is "special", false otherwise. 
+		/// </returns>
+		const bool IsSpecial(const char& c) const;
+
+		/// <summary>
 		/// Checks if the supplied character is a valid hexidecimal digit. 
 		/// </summary>
 		/// <param name="c">

@@ -210,8 +210,9 @@ namespace gq
 		{
 			case '*':
 			{
-				// CSS "*" declaration holds no meaning for us.
+				// Dummy selector. Matches anything.
 				selectorStr = selectorStr.substr(1);
+				return std::make_shared<GQSelector>(GQSelector::SelectorOperator::Dummy);
 			}
 			break;
 
@@ -1131,6 +1132,8 @@ namespace gq
 			}
 			else if (selectorStr[ind] == '\\')
 			{
+				++ind;
+
 				// Since Gumbo Parser directly embeds escaped character sequences directly,
 				// and unmodified, we need to accept them as well. These will always, in a 
 				// properly formatted element, be followed by a space in order to make it
@@ -1139,7 +1142,13 @@ namespace gq
 				bool foundEscapeSequenceEnd = false;
 				for (ind; ind < static_cast<int>(selectorStr.size()); ++ind)
 				{
-					if (IsHexDigit(selectorStr[ind]))
+					if (IsSpecial(selectorStr[ind]))
+					{
+						++ind;
+						foundEscapeSequenceEnd = true;
+						break;
+					}
+					else if (IsHexDigit(selectorStr[ind]))
 					{
 						continue;
 					}
@@ -1191,17 +1200,41 @@ namespace gq
 	{
 		switch (c)
 		{
-		case ' ':
-		case '~':
-		case '>':
-		case '+':
-		{
-			return true;
-		}
-		break;
+			case ' ':
+			case '~':
+			case '>':
+			case '+':
+			{
+				return true;
+			}
+			break;
 
-		default:
-			return false;
+			default:
+				return false;
+		}
+	}
+
+	const bool GQParser::IsSpecial(const char& c) const
+	{
+		switch (c)
+		{
+			case ' ':
+			case '~':
+			case '>':
+			case '+':
+			case ':':
+			case '|':
+			case '*':
+			case ';':
+			case '&':
+			case ',':
+			{
+				return true;
+			}
+			break;
+
+			default:
+				return false;
 		}
 	}
 
