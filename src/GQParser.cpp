@@ -65,13 +65,9 @@ namespace gq
 
 	SharedGQSelector GQParser::CreateSelector(std::string selectorString)
 	{
-		GQParser parser;
-
 		boost::string_ref input = boost::string_ref(selectorString);
 
-		input = boost::string_ref(selectorString);
-
-		SharedGQSelector result = parser.ParseSelectorGroup(input);
+		SharedGQSelector result = ParseSelectorGroup(input);
 
 		return result;
 	}
@@ -1071,27 +1067,6 @@ namespace gq
 		}
 
 		boost::string_ref value = selectorStr.substr(0, endOffset);
-
-		/*
-		boost::string_ref valueValidationCopy = value;
-
-		auto linbreakPos = valueValidationCopy.find_first_of(u8"\r\n\f");
-		while (linbreakPos != boost::string_ref::npos)
-		{
-			if (linbreakPos == 0 || value[linbreakPos - 1] != '\\')
-			{
-				throw std::runtime_error(u8"In GQParser::ParseString(boost::string_ref&) - Unescaped line break found in supplied string.");
-			}
-
-			if (linbreakPos + 1 >= valueValidationCopy.size())
-			{
-				break;
-			}
-
-			valueValidationCopy = valueValidationCopy.substr(linbreakPos + 1);
-			linbreakPos = valueValidationCopy.find_first_of(u8"\r\n\f");
-		}
-		*/
 
 		selectorStr = selectorStr.substr(endOffset + 1);
 
