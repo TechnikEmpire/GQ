@@ -109,7 +109,7 @@ namespace gq
 
 			case SelectorOperator::Empty:
 			{
-				if (node->type != GUMBO_NODE_ELEMENT) //  && node->type != GUMBO_NODE_DOCUMENT
+				if (node->type != GUMBO_NODE_ELEMENT) 
 				{
 					return false;
 				}
@@ -131,7 +131,7 @@ namespace gq
 
 			case SelectorOperator::OnlyChild:
 			{
-				if (node->type != GUMBO_NODE_ELEMENT) //  && node->type != GUMBO_NODE_DOCUMENT
+				if (node->type != GUMBO_NODE_ELEMENT) 
 				{
 					return false;
 				}
@@ -171,7 +171,7 @@ namespace gq
 
 			case SelectorOperator::NthChild:
 			{
-				if (node->type != GUMBO_NODE_ELEMENT) // && node->type != GUMBO_NODE_DOCUMENT
+				if (node->type != GUMBO_NODE_ELEMENT)
 				{
 					return false;
 				}

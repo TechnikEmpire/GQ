@@ -108,7 +108,7 @@ namespace gq
 
 	const bool GQUnarySelectory::HasDescendantMatch(const GumboNode* node) const
 	{
-		if (node->type != GUMBO_NODE_ELEMENT && node->type != GUMBO_NODE_DOCUMENT)
+		if (node->type != GUMBO_NODE_ELEMENT)
 		{
 			return false;
 		}

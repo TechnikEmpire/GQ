@@ -60,7 +60,7 @@ namespace gq
 		{
 			case SelectorOperator::Adjacent:
 			{
-				if (node->type != GUMBO_NODE_ELEMENT) //  && node->type != GUMBO_NODE_DOCUMENT
+				if (node->type != GUMBO_NODE_ELEMENT) 
 				{
 					return false;
 				}
@@ -107,7 +107,7 @@ namespace gq
 
 			case SelectorOperator::Child:
 			{
-				if (node->type != GUMBO_NODE_ELEMENT) //  && node->type != GUMBO_NODE_DOCUMENT
+				if (node->type != GUMBO_NODE_ELEMENT) 
 				{
 					return false;
 				}
@@ -124,7 +124,7 @@ namespace gq
 
 			case SelectorOperator::Descendant:
 			{
-				if (node->type != GUMBO_NODE_ELEMENT) //  && node->type != GUMBO_NODE_DOCUMENT
+				if (node->type != GUMBO_NODE_ELEMENT) 
 				{
 					return false;
 				}
@@ -154,7 +154,7 @@ namespace gq
 
 			case SelectorOperator::Intersection:
 			{
-				if (node->type != GUMBO_NODE_ELEMENT) //  && node->type != GUMBO_NODE_DOCUMENT
+				if (node->type != GUMBO_NODE_ELEMENT) 
 				{
 					return false;
 				}
@@ -165,7 +165,7 @@ namespace gq
 
 			case SelectorOperator::Sibling:
 			{
-				if (node->type != GUMBO_NODE_ELEMENT) //  && node->type != GUMBO_NODE_DOCUMENT
+				if (node->type != GUMBO_NODE_ELEMENT) 
 				{
 					return false;
 				}
@@ -212,7 +212,7 @@ namespace gq
 
 			case SelectorOperator::Union:
 			{
-				if (node->type != GUMBO_NODE_ELEMENT) //  && node->type != GUMBO_NODE_DOCUMENT
+				if (node->type != GUMBO_NODE_ELEMENT) 
 				{
 					return false;
 				}
