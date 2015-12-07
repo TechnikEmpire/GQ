@@ -125,6 +125,10 @@ int main()
 				}
 				else
 				{
+					// If the test pair bool is true, that means that we're not just counting results, but that we're
+					// also validatin the results. We'll check the results to see if they contain the test "FAIL". If 
+					// they do, that means that an element that should not have been selected by the selector was indeed
+					// selected. If "FAIL" is not matched, "PASS" is assumed.
 					if (testExpectedMatches[i].first == true)
 					{
 						bool foundInvalidData = false;

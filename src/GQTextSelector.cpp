@@ -111,6 +111,8 @@ namespace gq
 		{
 			case SelectorOperator::Contains:
 			{
+				// In jQuery, contains is case sensitive. As such, we use boost::find_first, rather
+				// than ifind_first.
 				auto text = GQUtil::NodeText(node);
 				boost::string_ref textStrRef(text);
 				auto searchResult = boost::find_first(textStrRef, m_textToMatchStrRef);
@@ -120,6 +122,8 @@ namespace gq
 
 			case SelectorOperator::ContainsOwn:
 			{
+				// In jQuery, contains is case sensitive. As such, we use boost::find_first, rather
+				// than ifind_first.
 				auto text = GQUtil::NodeOwnText(node);
 				boost::string_ref textStrRef(text);
 				auto searchResult = boost::find_first(textStrRef, m_textToMatchStrRef);

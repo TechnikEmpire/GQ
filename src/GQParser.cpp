@@ -1141,27 +1141,6 @@ namespace gq
 		return value;
 	}
 
-	/*
-	boost::string_ref GQParser::ParseEscape(boost::string_ref& selectorStr) const
-	{
-	// AFAIK, the purpose of parsing the escapes was for supporting selector rules that
-	// are meant to match objects that employ escaped character sequences, either
-	// plain escapes "\\"" or unicode code points, etc. I guess the original GO engine
-	// needed to explictly convert these to their actual values because they were being
-	// used against some parser which automatically converted these values. Who knows.
-	// In my tests, however, gumbo_parser seems to simply embed these sequences directly
-	// without converting any code points. What gumbo_parser does seem to automatically
-	// convert are numeric character references and named character references.
-	// (see char_ref.h/.c in gumbo_parser).
-	//
-	// As such, we don't need to parse anything that is escaped, since the parser just directly
-	// embeds them with no conversion. What we do need to do is convert character references,
-	// but gumbo_parser already does this, so we'll leverage this functionality elsewhere.
-	// This method however is gone forever.
-	throw std::runtime_error(u8"In GQParser::ParseEscape(boost::string_ref&) - Not implemented.");
-	}
-	*/
-
 	const bool GQParser::IsNameChar(const char& c) const
 	{
 		// We need to be able to support alphabet, 0-9, underscores and & and ; (for numbered and named char refs)

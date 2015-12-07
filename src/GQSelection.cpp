@@ -57,7 +57,9 @@ namespace gq
 
 	GQSelection GQSelection::Find(const std::string& selectorString) const
 	{
-		SharedGQSelector selector = GQParser::CreateSelector(selectorString);	
+		GQParser parser;
+
+		SharedGQSelector selector = parser.CreateSelector(selectorString);
 	
 		return Find(selector);
 	}
