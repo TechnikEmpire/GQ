@@ -203,7 +203,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>GQ_VERBOSE_SELECTOR_COMPILIATION;WIN32;_DEBUG;_WINDOWS;_USRDLL;GUMBQUERY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;GUMBQUERY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\include;$(ProjectDir)..\..\..\..\third-party\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
@@ -227,7 +227,7 @@ xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)\..\include"</Command>
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>GQ_VERBOSE_SELECTOR_COMPILIATION;WIN32;_DEBUG;_WINDOWS;_USRDLL;GUMBQUERY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;GUMBQUERY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\include;$(ProjectDir)..\..\..\..\third-party\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
@@ -251,7 +251,7 @@ xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)\..\include"</Command>
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>GQ_VERBOSE_SELECTOR_COMPILIATION;_DEBUG;_WINDOWS;_USRDLL;GUMBQUERY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_WINDOWS;_USRDLL;GUMBQUERY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\include;$(ProjectDir)..\..\..\..\third-party\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
@@ -275,7 +275,7 @@ xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)\..\include"</Command>
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>GQ_VERBOSE_SELECTOR_COMPILIATION;_DEBUG;_WINDOWS;_USRDLL;GUMBQUERY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_WINDOWS;_USRDLL;GUMBQUERY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\include;$(ProjectDir)..\..\..\..\third-party\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
@@ -301,7 +301,7 @@ xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)\..\include"</Command>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>GQ_VERBOSE_SELECTOR_COMPILIATION;WIN32;NDEBUG;_WINDOWS;_USRDLL;GUMBQUERY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;GUMBQUERY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\include;$(ProjectDir)..\..\..\..\third-party\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
@@ -329,7 +329,7 @@ xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)\..\include"</Command>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>GQ_VERBOSE_SELECTOR_COMPILIATION;WIN32;NDEBUG;_WINDOWS;_USRDLL;GUMBQUERY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;GUMBQUERY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\include;$(ProjectDir)..\..\..\..\third-party\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
@@ -357,7 +357,7 @@ xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)\..\include"</Command>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>GQ_VERBOSE_SELECTOR_COMPILIATION;NDEBUG;_WINDOWS;_USRDLL;GUMBQUERY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_WINDOWS;_USRDLL;GUMBQUERY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\include;$(ProjectDir)..\..\..\..\third-party\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
@@ -385,7 +385,7 @@ xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)\..\include"</Command>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>GQ_VERBOSE_SELECTOR_COMPILIATION;NDEBUG;_WINDOWS;_USRDLL;GUMBQUERY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_WINDOWS;_USRDLL;GUMBQUERY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\include;$(ProjectDir)..\..\..\..\third-party\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>

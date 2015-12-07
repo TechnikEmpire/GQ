@@ -305,7 +305,12 @@ namespace gq
 
 	void GQSelector::Filter(std::vector< std::shared_ptr<GQNode> >& nodes) const
 	{
-
+		nodes.erase(std::remove_if(nodes.begin(), nodes.end(), 
+			[this](const std::shared_ptr<GQNode>& sharedNode)
+			{
+				return !Match(sharedNode->m_node);
+			}
+		), nodes.end());
 	}
 
 	void GQSelector::InitDefaults()

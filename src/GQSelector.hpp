@@ -45,6 +45,11 @@ namespace gq
 
 	class GQNode;
 
+	/// <summary>
+	/// The GQSelector is the base class for all selectors in GQ. It handles simple and generic
+	/// aspects of matching, such handling nth parameters in pseudo selectors and matching against
+	/// specific html tags.
+	/// </summary>
 	class GQSelector
 	{
 
@@ -52,13 +57,38 @@ namespace gq
 
 		enum class SelectorOperator
 		{
+			/// <summary>
+			/// Dummy, matches no matter what.
+			/// </summary>
 			Dummy,
+			
+			/// <summary>
+			/// Match against elements that contain no valid child elements.
+			/// </summary>
 			Empty,
+
+			/// <summary>
+			/// Match against elements that are the only child of their parent.
+			/// </summary>
 			OnlyChild,
+
+			/// <summary>
+			/// Match against elements that are the nth child of their parent.
+			/// </summary>
 			NthChild,
+
+			/// <summary>
+			/// Match against a specific type of html element.
+			/// </summary>
 			Tag
 		};
 
+		/// <summary>
+		/// Constructs a GQSelector with the specified operator. 
+		/// </summary>
+		/// <param name="op">
+		/// The operator to define the functionality of this selector. 
+		/// </param>
 		GQSelector(SelectorOperator op = SelectorOperator::Dummy);
 
 		/// <summary>
@@ -115,14 +145,45 @@ namespace gq
 		/// </returns>
 		const GumboTag GetTagTypeToMatch() const;		
 		
+		/// <summary>
+		/// Check if this selector is a match against the supplied node. 
+		/// </summary>
+		/// <param name="node">
+		/// The node to attempt to match against. 
+		/// </param>
+		/// <returns>
+		/// True if this selector was successfully matched against the supplied node, false
+		/// otherwise.
+		/// </returns>
 		virtual const bool Match(const GumboNode* node) const;
 
+		/// <summary>
+		/// Recursively tests for matches against the supplied node and all of its descendants,
+		/// returning a collection of all nodes that were positively matched by this selector.
+		/// </summary>
+		/// <param name="node">
+		/// The node to match against, as well as it's descendants. 
+		/// </param>
+		/// <returns>
+		/// A collection of all nodes matched by this selector. 
+		/// </returns>
 		std::vector< std::shared_ptr<GQNode> > MatchAll(const GumboNode* node) const;
 
+		/// <summary>
+		/// Accepts an existing collection of nodes and removes all nodes in the collection that do
+		/// not positively match against this selector.
+		/// </summary>
+		/// <param name="nodes">
+		/// A collection of nodes to filter. 
+		/// </param>
 		void Filter(std::vector< std::shared_ptr<GQNode> >& nodes) const;
 
 	private:
 		
+		/// <summary>
+		/// Defines how the matching in this selector will work. Based on the option, the text to be
+		/// matched will be matched in different ways. See comments in the operator class.
+		/// </summary>
 		SelectorOperator m_selectorOperator = SelectorOperator::Dummy;
 
 		/// <summary>
@@ -175,6 +236,16 @@ namespace gq
 		/// </summary>
 		void InitDefaults();
 
+		/// <summary>
+		/// For use by the public MatchAll function. Aids in recursively matching down a chain of
+		/// descandants.
+		/// </summary>
+		/// <param name="node">
+		/// The present node to process. 
+		/// </param>
+		/// <param name="nodes">
+		/// The existing collection of matched nodes to append matches to. 
+		/// </param>
 		void MatchAllInto(const GumboNode* node, std::vector< std::shared_ptr<GQNode> >& nodes) const;
 
 	};

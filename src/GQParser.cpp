@@ -124,35 +124,23 @@ namespace gq
 				return ret;
 			}
 
-			if (combinator == 0 && IsCombinator(selectorStr[0]))
+			switch (selectorStr[0])
 			{
-				// If it's a combinator, these are usually separated by spaces,
-				// so we'll copy out which combinator, delete it from our selector
-				// string, then delete any following whitespace.
-				combinator = selectorStr[0];
-				selectorStr = selectorStr.substr(1);
-				TrimLeadingWhitespace(selectorStr);
-			}
-			else
-			{
-				switch (selectorStr[0])
+				case ',':
+				case ')':
 				{
-					case ',':
-					case ')': 
-					{
-						// This smells to me (the closing paren). Perhaps it's for parsing stuff inside
-						// of pseudo selector parenthesis? Either way this should really be handled
-						// already by the pseudo parsing code, not showing up here.
-						return ret;
-					}
-					break;
-
-					default:
-					{
-						notDone = false;
-					}
-					break;
+					// This smells to me (the closing paren). Perhaps it's for parsing stuff inside
+					// of pseudo selector parenthesis? Either way this should really be handled
+					// already by the pseudo parsing code, not showing up here.
+					return ret;
 				}
+				break;
+
+				default:
+				{
+					notDone = false;
+				}
+				break;
 			}
 
 			if (combinator == 0)

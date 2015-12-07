@@ -74,11 +74,14 @@ namespace gq
 		/// selection code which stored matched nodes in collections, vectors. In order to make the
 		/// new design consistent, these all had to be changed to hold shared_ptrs of GQNode, not
 		/// raw GumboNode pointers. Hence, we have forward declarations and friend declarations
-		/// between GQUtil and GQSelection to allow this design. These two friends need to be able
-		/// to access the raw GumboNode pointers privately held in GQNode.
+		/// between GQUtil, GQSelection and GQSelector to allow this design. These three friends need
+		/// to be able to access the raw GumboNode pointers privately held in GQNode. This could be
+		/// all solved by making a public accessor to the internal raw GumboNode, but not presently
+		/// convinced this approach is worse.
 		/// </summary>
 		friend class GQSelection;
 		friend class GQUtil;
+		friend class GQSelector;
 
 	public:
 
@@ -110,7 +113,7 @@ namespace gq
 		/// node does not have a valid parent, a node is returned but its ::IsValid() member will
 		/// report false.
 		/// </returns>
-		std::shared_ptr<GQNode> GetParent() const;
+		std::shared_ptr<GQNode> GetParent();
 
 		/// <summary>
 		/// Gets the index of this node within its parent. If the node is internally invalid or has
@@ -132,7 +135,7 @@ namespace gq
 		/// then the returned object indeed represents the previous sibling. If not, then it is a
 		/// dummy object.
 		/// </returns>
-		std::shared_ptr<GQNode> GetPreviousSibling() const;
+		std::shared_ptr<GQNode> GetPreviousSibling();
 
 		/// <summary>
 		/// Get the next sibling. May be nullptr if the node does not have a next sibling.
@@ -142,7 +145,7 @@ namespace gq
 		/// then the returned object indeed represents the next sibling. If not, then it is a dummy
 		/// object.
 		/// </returns>
-		std::shared_ptr<GQNode> GetNextSibling() const;
+		std::shared_ptr<GQNode> GetNextSibling();
 
 		/// <summary>
 		/// Gets the number of children this node has.

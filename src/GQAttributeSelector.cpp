@@ -274,8 +274,7 @@ namespace gq
 							if (before != ' ' && before != '\t' && before != '\r' && before != '\n')
 							{
 								attributeValue = attributeValue.substr(distance + m_attributeValue.length());
-								result = boost::ifind_first(attributeValue, m_attributeValue);
-								//std::cout << "char before " << before << " is not space at distance" << (distance - 1) << " in attributeValue " << attributeValue << std::endl;
+								result = boost::ifind_first(attributeValue, m_attributeValue);								
 								continue;
 							}
 						}
@@ -286,8 +285,7 @@ namespace gq
 							if (after != ' ' && after != '\t' && after != '\r' && after != '\n')
 							{
 								attributeValue = attributeValue.substr(distance + m_attributeValue.length());
-								result = boost::ifind_first(attributeValue, m_attributeValue);
-								//std::cout << "char after " << after << " is not space at distance" << (distance + m_attributeValue.length()) << " in attributeValue " << attributeValue << std::endl;
+								result = boost::ifind_first(attributeValue, m_attributeValue);								
 								continue;
 							}
 						}

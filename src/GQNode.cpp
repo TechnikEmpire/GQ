@@ -46,34 +46,7 @@ namespace gq
 		assert(node != nullptr && u8"In GQNode::GQNode(const GumboNode*) - Cannot construct a GQNode around a nullptr.");
 		#else
 		if (node == nullptr) { throw std::runtime_error(u8"In GQNode::GQNode(const GumboNode*) - Cannot construct a GQNode around a nullptr."); }
-		#endif
-
-		/*
-		if (node->parent != nullptr)
-		{
-			m_sharedParent = Create(node->parent);
-
-			// Todo - construct previous and next siblings.
-			if (node->parent->v.element.children.length > 1)
-			{
-				if (node->index_within_parent == 0)
-				{
-					m_sharedNextSibling = Create(static_cast<GumboNode*>(node->parent->v.element.children.data[1]));
-				}
-				else if (node->index_within_parent == (node->parent->v.element.children.length - 1))
-				{
-					m_sharedPreviousSibling = Create(static_cast<GumboNode*>(node->parent->v.element.children.data[node->index_within_parent - 1]));
-				}
-				else
-				{
-					// This can only be possible if the number of children is greater than 2 and this node has
-					// a valid sibling on either side.
-					m_sharedNextSibling = Create(static_cast<GumboNode*>(node->parent->v.element.children.data[node->index_within_parent + 1]));
-					m_sharedPreviousSibling = Create(static_cast<GumboNode*>(node->parent->v.element.children.data[node->index_within_parent - 1]));
-				}
-			}
-		}
-		*/
+		#endif		
 	}
 
 	GQNode::~GQNode()
@@ -81,8 +54,14 @@ namespace gq
 
 	}
 
-	SharedGQNode GQNode::GetParent() const
+	SharedGQNode GQNode::GetParent()
 	{
+		if (m_sharedParent == nullptr
+			&& m_node->parent != nullptr)
+		{
+			m_sharedParent = Create(m_node->parent);
+		}
+
 		return m_sharedParent;
 	}
 
@@ -91,13 +70,32 @@ namespace gq
 		return m_node->index_within_parent;
 	}
 
-	SharedGQNode GQNode::GetPreviousSibling() const
+	SharedGQNode GQNode::GetPreviousSibling()
 	{
+		if (m_sharedPreviousSibling == nullptr 
+			&& m_node->parent != nullptr 
+			&& m_node->index_within_parent > 0)
+		{
+			GumboNode* prevSibling = static_cast<GumboNode*>(m_node->parent->v.element.children.data[m_node->index_within_parent - 1]);
+			
+			m_sharedPreviousSibling = Create(prevSibling);
+		}
+
 		return m_sharedPreviousSibling;
 	}
 
-	SharedGQNode GQNode::GetNextSibling() const
+	SharedGQNode GQNode::GetNextSibling()
 	{
+		if (m_sharedNextSibling == nullptr
+			&& m_node->parent != nullptr
+			&& m_node->parent->v.element.children.length > 0
+			&& m_node->index_within_parent > 0)
+		{
+			GumboNode* nextSibling = static_cast<GumboNode*>(m_node->parent->v.element.children.data[m_node->index_within_parent + 1]);
+
+			m_sharedNextSibling = Create(nextSibling);
+		}
+
 		return m_sharedNextSibling;
 	}
 
