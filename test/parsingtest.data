@@ -18415,7 +18415,7 @@ TestNumber@18404%TestSelector@#home_noticias_highlight_sidebar
 TestNumber@18405%TestSelector@#home_right_island
 TestNumber@18406%TestSelector@#home_sidebar
 TestNumber@18407%TestSelector@#home_sponsor_nile
-TestNumber@18408%TestSelector@#home_stream > .uiUnifiedStory[data-ft*=""ei":""]
+TestNumber@18408%TestSelector@#home_stream > .uiUnifiedStory[data-ft*="\"ei\"\:\""]
 TestNumber@18409%TestSelector@#home_top_banner
 TestNumber@18410%TestSelector@#home_topbanner
 TestNumber@18411%TestSelector@#homepage-125
@@ -18750,7 +18750,7 @@ TestNumber@18739%TestSelector@#lsmspnad
 TestNumber@18740%TestSelector@#lucky
 TestNumber@18741%TestSelector@#lv_overlay
 TestNumber@18742%TestSelector@#m1a
-TestNumber@18743%TestSelector@#m_newsfeed_stream article[data-ft*=""ei":""]
+TestNumber@18743%TestSelector@#m_newsfeed_stream article[data-ft*="\"ei\"\:\""]
 TestNumber@18744%TestSelector@#magSubscribe
 TestNumber@18745%TestSelector@#magazine_rightRail_A
 TestNumber@18746%TestSelector@#magnify_widget_playlist_item_shop_container
@@ -20895,7 +20895,7 @@ TestNumber@20884%TestSelector@.aviso
 TestNumber@20885%TestSelector@.avt-mr
 TestNumber@20886%TestSelector@.avt-placement
 TestNumber@20887%TestSelector@.aymlCoverFlow
-TestNumber@20888%TestSelector@.aymlNewCoverFlow[data-ft*=""is_sponsored":"1""]
+TestNumber@20888%TestSelector@.aymlNewCoverFlow[data-ft*="\"is_sponsored\"\:\"1\""]
 TestNumber@20889%TestSelector@.az
 TestNumber@20890%TestSelector@.aztc
 TestNumber@20891%TestSelector@.azureDiv
@@ -24857,7 +24857,7 @@ TestNumber@24898%TestSelector@#a[href^="https://www.youtube.com/cthru?"]
 TestNumber@24899%TestSelector@#a[href^="index.php?adclick="]
 TestNumber@24900%TestSelector@#a[id^="banner_"]
 TestNumber@24901%TestSelector@#a[id^="mell"]
-TestNumber@24902%TestSelector@#a[onclick*=""ping_url":"http://www.google.com/aclk?"]
+TestNumber@24902%TestSelector@#a[onclick*="\"ping_url\"\:\"http://www.google.com/aclk?"]
 TestNumber@24903%TestSelector@#a[onclick*="sharesuper.info"]
 TestNumber@24904%TestSelector@#a[onclick="emuleInst();"]
 TestNumber@24905%TestSelector@#a[onclick="installerEmule();"]
@@ -25002,7 +25002,7 @@ TestNumber@25043%TestSelector@#div[align="center"][style="font-size:14px;margin:
 TestNumber@25044%TestSelector@#div[align="center"][style="margin-bottom:10px;"]
 TestNumber@25045%TestSelector@#div[align="center"][style="margin-top:10px;min-height:100px;"]
 TestNumber@25046%TestSelector@#div[align="left"] > p + p[align="center"]
-TestNumber@25047%TestSelector@#div[align="right"][bold][font:][padding:]
+TestNumber@25047%TestSelector@#div[align="right"][bold][font][padding]
 TestNumber@25048%TestSelector@#div[aria-labelledby="ui-dialog-title-altsocial_splash"] + .ui-widget-overlay
 TestNumber@25049%TestSelector@#div[class$="160_600"]
 TestNumber@25050%TestSelector@#div[class$="728_90"]
@@ -25080,12 +25080,12 @@ TestNumber@25121%TestSelector@#div[id^="rr_promo_"]
 TestNumber@25122%TestSelector@#div[id^="slot"]
 TestNumber@25123%TestSelector@#div[id^="sponsoredTickerStory_"]
 TestNumber@25124%TestSelector@#div[id^="substream_"] .userContentWrapper > ._1ifo
-TestNumber@25125%TestSelector@#div[id^="substream_"] div[data-ft*=""ei":""]
+TestNumber@25125%TestSelector@#div[id^="substream_"] div[data-ft*="\"ei\"\:\""]
 TestNumber@25126%TestSelector@#div[id^="taboola-stream"]
 TestNumber@25127%TestSelector@#div[id^="tile-A"][data-beacon-url^="https://beap.gemini.yahoo.com/mbcsc?"]
 TestNumber@25128%TestSelector@#div[id^="tile-mb-"]
 TestNumber@25129%TestSelector@#div[id^="timer"]
-TestNumber@25130%TestSelector@#div[id^="topnews_main_stream_"] div[data-ft*=""ei":""]
+TestNumber@25130%TestSelector@#div[id^="topnews_main_stream_"] div[data-ft*="\"ei\"\:\""]
 TestNumber@25131%TestSelector@#div[id^="wp_bannerize-"]
 TestNumber@25132%TestSelector@#div[id^="yui_"] > span > ul[class]:first-child:last-child > li[class]
 TestNumber@25133%TestSelector@#div[id^="yui_"] > ul > .res[data-bg-link^="http://r.search.yahoo.com/_ylt="] + * div[class^="pla"]
@@ -25177,7 +25177,7 @@ TestNumber@25218%TestSelector@#div[style="clear:both; width:292px; line-height:1
 TestNumber@25219%TestSelector@#div[style="clear:both;min-height:65px; border-top:1px solid #a8a9ba; border-bottom:1px solid #a8a9ba;margin:12px 0;padding:12px;"]
 TestNumber@25220%TestSelector@#div[style="clear:both;width: 728px; height:90px; margin:5px auto; overflow:hidden;"]
 TestNumber@25221%TestSelector@#div[style="clear:both;width: 728px; height:90px; margin:5px auto;"]
-TestNumber@25222%TestSelector@#div[style="color:#666666;font-size:10px;""]
+TestNumber@25222%TestSelector@#div[style="color:#666666;font-size:10px;\""]
 TestNumber@25223%TestSelector@#div[style="color:#666666;font-size:11px;font-style:italic;text-align:right;"]
 TestNumber@25224%TestSelector@#div[style="color:#666666;font-size:8pt;text-align:right;"]
 TestNumber@25225%TestSelector@#div[style="color:#AFAFAF; float:left;width:180px;margin:0 15px 8px 0; overflow:hidden;text-align:center"]
@@ -25741,7 +25741,7 @@ TestNumber@25782%TestSelector@#div[style="width:195px; height:600px; text-align:
 TestNumber@25783%TestSelector@#div[style="width:200px; height:200px;"]
 TestNumber@25784%TestSelector@#div[style="width:229px; height:120px;"]
 TestNumber@25785%TestSelector@#div[style="width:230px; height:200px;"]
-TestNumber@25786%TestSelector@#div[style="width:240px; height:400px;""]
+TestNumber@25786%TestSelector@#div[style="width:240px; height:400px;\""]
 TestNumber@25787%TestSelector@#div[style="width:240px;height:90px;background:#eee; margin-top:5px;float:right;"]
 TestNumber@25788%TestSelector@#div[style="width:250px; height:250px;"]
 TestNumber@25789%TestSelector@#div[style="width:255px; height:120px;"]
@@ -25948,7 +25948,7 @@ TestNumber@25989%TestSelector@#div[style="width:980px;height:100px;clear:both;ma
 TestNumber@25990%TestSelector@#div[style="width:980px;height:50px;float:left; "]
 TestNumber@25991%TestSelector@#div[style="width:994px; height:238px;"]
 TestNumber@25992%TestSelector@#div[style="width:994px; height:250px"]
-TestNumber@25993%TestSelector@#div[style="z-index: 2000; background-image: url("data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"); left: 145px; top: 120px; height: 576px; width: 1024px; position: absolute;"]
+TestNumber@25993%TestSelector@#div[style="z-index: 2000; background-image: url(\"data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7\"); left: 145px; top: 120px; height: 576px; width: 1024px; position: absolute;"]
 TestNumber@25994%TestSelector@#div[style] > div:first-child > div[class]
 TestNumber@25995%TestSelector@#div[style^="background-color: rgb"]
 TestNumber@25996%TestSelector@#div[style^="background-color:"] + br + *

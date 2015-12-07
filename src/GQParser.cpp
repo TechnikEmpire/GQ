@@ -67,9 +67,19 @@ namespace gq
 	{
 		boost::string_ref input = boost::string_ref(selectorString);
 
-		SharedGQSelector result = ParseSelectorGroup(input);
+		try
+		{
+			SharedGQSelector result = ParseSelectorGroup(input);
 
-		return result;
+			return result;
+		}
+		catch (std::runtime_error& e)
+		{
+			std::string errorMessage(e.what());
+			errorMessage.append(std::string(u8" -- [HERE>>>>>") + input.to_string() + std::string(u8"<<<<<]"));
+
+			throw std::runtime_error(errorMessage.c_str());
+		}		
 	}
 
 	SharedGQSelector GQParser::ParseSelectorGroup(boost::string_ref& selectorStr) const
@@ -89,6 +99,8 @@ namespace gq
 		// and/or the end of the input has been reached. 
 		while (selectorStr.size() > 0 && selectorStr[0] == ',')
 		{
+			selectorStr = selectorStr.substr(1);
+
 			SharedGQSelector second = ParseSelector(selectorStr);
 
 			ret = std::make_shared<GQBinarySelector>(GQBinarySelector::SelectorOperator::Union, ret, second);
@@ -1042,22 +1054,28 @@ namespace gq
 		{
 			throw std::runtime_error(u8"In GQParser::ParseString(boost::string_ref&) - No closing quote found in supplied quoted string.");
 		}
+		else if (pos == 0)
+		{
+			throw std::runtime_error(u8"In GQParser::ParseString(boost::string_ref&) - String begins with unescaped quote character.");
+		}
 
 		size_t endOffset = 0;
-		boost::string_ref searchStr = selectorStr;
-		while (pos > 0 && pos != boost::string_ref::npos)
+		
+		for (pos; pos < selectorStr.size(); ++pos)
 		{
-			endOffset += pos;
-
-			// Escaped quotes don't count. Skip.
-			if (selectorStr[pos - 1] == '\\')
+			if (selectorStr[pos] == quoteChar)
 			{
-				searchStr = searchStr.substr(pos + 1);
-				pos = searchStr.find_first_of(quoteChar);
-			}
-			else
-			{
-				break;
+				if (selectorStr[pos - 1] == '\\')
+				{
+					// Escaped quotes don't count. Skip.
+					continue;
+				}
+				else
+				{
+					endOffset = pos;
+					break;
+				}
+				
 			}
 		}
 
