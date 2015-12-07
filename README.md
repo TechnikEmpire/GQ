@@ -11,8 +11,7 @@ Fork of https://github.com/lazytiger/gumbo-query. I opted to have this be an uno
  - Fix broken parsing that was ported from cascadia, but is invalid for use with Gumbo Parser.
  - Make parsing/matching produce the same behavior as jQuery does on the exact same test data.
  - Replace `std::string` with `boost::string_ref` wherever string copies don't truly need to be generated.  
- - Expose internal Gumbo Parser structures and modify to allow construction of `GQDocument` (formerly `CDocument`) from existing `GumboOutput*`.
- - Implement optimizations for trivial selectors.
+ - Implement optimizations for or interface for optimized use for trivial selectors.
  - Remove local state tracking from the selector parser.
  - Expose compiled selectors to the public so that they can be retained and recycled against existing and new documents.
  - "Comments. Lots of comments."
