@@ -116,6 +116,14 @@ namespace gq
 			if (TrimLeadingWhitespace(selectorStr))
 			{
 				combinator = ' ';
+
+				// In the event of " > ", we do this.
+				if (selectorStr.size() > 0 && combinator == ' ' && IsCombinator(selectorStr[0]))
+				{
+					combinator = selectorStr[0];
+					selectorStr = selectorStr.substr(1);
+					TrimLeadingWhitespace(selectorStr);
+				}
 			}
 
 			if (selectorStr.size() == 0)

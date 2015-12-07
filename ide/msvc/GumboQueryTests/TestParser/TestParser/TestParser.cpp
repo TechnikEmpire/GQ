@@ -42,11 +42,11 @@
 /// </summary>
 int main()
 {
-	std::ifstream in(u8"../../matchingtest.data", std::ios::in);
+	std::ifstream in(u8"../../parsingtest.data", std::ios::in);
 
 	if (in.fail())
 	{
-		std::cout << u8"Failed to load \"../../matchingtest.data\" test file." << std::endl;
+		std::cout << u8"Failed to load \"../../parsingtest.data\" test file." << std::endl;
 		return -1;
 	}
 		
@@ -59,6 +59,9 @@ int main()
 
 	gq::GQParser selectorParser;
 
+	bool anyHandledException = false;
+	size_t totalSelectorsProcessed = 0;
+
 	std::istringstream tests(testContents);
 	std::string test;
 	while (std::getline(tests, test))
@@ -68,7 +71,42 @@ int main()
 			// Skip empty lines and comments
 			continue;
 		}
+
+		std::string selectorString;
+		int testNumber;
+		try
+		{
+			selectorString = test.substr(test.find_last_of("@") + 1);
+			auto testNumberStart = test.find("@");
+			auto testNumberEnd = test.find("%");
+			testNumber = std::stoi(test.substr(testNumberStart + 1, (testNumberStart + 1) - testNumberEnd));
+		}
+		catch (...)
+		{
+			std::cout << u8"Failed to locate the test number and or the test selector. The test data is improperly formatted. Aboring." << std::endl;
+			return -1;
+		}			
+
+		try
+		{
+			auto result = selectorParser.CreateSelector(selectorString);
+			++totalSelectorsProcessed;
+		}
+		catch (std::runtime_error& e)
+		{
+			anyHandledException = true;
+			std::cout << std::endl;
+			std::cout << u8"In test number " << testNumber << u8" using selector string " << selectorString << u8" got runtime_error: " << e.what() << std::endl;			
+		}
+		catch (std::exception& e)
+		{
+			anyHandledException = true;
+			std::cout << std::endl;
+			std::cout << u8"In test number " << testNumber << u8" using selector string " << selectorString << u8" got exception: " << e.what() << std::endl;
+		}	
 	}
+
+	std::cout << "Processed " << totalSelectorsProcessed << " selectors. Had handled errors? " << anyHandledException << std::endl;
 
     return 0;
 }
