@@ -1126,7 +1126,7 @@ namespace gq
 					throw std::runtime_error(u8"In GQParser::ParseIdentifier(boost::string_ref&) - Encountered improperly formatted named or numbered character reference.");
 				}
 
-				ind += static_cast<int>(endPos);
+				ind += static_cast<int>(endPos+1);
 
 				continue;
 			}
@@ -1188,7 +1188,7 @@ namespace gq
 	const bool GQParser::IsNameChar(const char& c) const
 	{
 		// We need to be able to support alphabet, 0-9, underscores and & and ; (for numbered and named char refs)
-		return IsNameStart(c) || (c == '-') || (c >= '0' && c <= '9') || (c == '&') || (c == ';');
+		return IsNameStart(c) || (c == '-') || (c >= '0' && c <= '9');
 	}
 
 	const bool GQParser::IsNameStart(const char& c) const

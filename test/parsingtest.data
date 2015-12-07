@@ -470,7 +470,7 @@ TestNumber@443%TestSelector@#MainContent_ucTopRightAdvert
 TestNumber@444%TestSelector@#MainSponsoredLinks
 TestNumber@445%TestSelector@#MastheadAd
 TestNumber@446%TestSelector@#MediumRectangleAD
-TestNumber@447%TestSelector@#Meebo:AdElement.Root
+TestNumber@447%TestSelector@#Meebo\:AdElement.Root
 TestNumber@448%TestSelector@#MidPageAds
 TestNumber@449%TestSelector@#Module-From_Advertisers
 TestNumber@450%TestSelector@#MyAdHeader
@@ -17133,7 +17133,7 @@ TestNumber@17122%TestSelector@#ads_left
 TestNumber@17123%TestSelector@#adsb
 TestNumber@17124%TestSelector@#adskin
 TestNumber@17125%TestSelector@#adsl
-TestNumber@17126%TestSelector@#adspot-300x600,300x250-pos-1
+TestNumber@17126%TestSelector@#adspot-300x600,#300x250-pos-1
 TestNumber@17127%TestSelector@#adst
 TestNumber@17128%TestSelector@#adtag
 TestNumber@17129%TestSelector@#adtile
