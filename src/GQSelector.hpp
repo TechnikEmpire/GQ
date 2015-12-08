@@ -167,7 +167,10 @@ namespace gq
 		/// <returns>
 		/// A collection of all nodes matched by this selector. 
 		/// </returns>
-		std::vector< std::shared_ptr<GQNode> > MatchAll(const GumboNode* node) const;
+		void MatchAll(const GumboNode* node, std::vector< std::shared_ptr<GQNode> >& results) const;
+
+
+		void MatchFirst(const GumboNode* node, std::vector < std::shared_ptr<GQNode> >& results) const;
 
 		/// <summary>
 		/// Accepts an existing collection of nodes and removes all nodes in the collection that do
@@ -246,7 +249,11 @@ namespace gq
 		/// <param name="nodes">
 		/// The existing collection of matched nodes to append matches to. 
 		/// </param>
-		void MatchAllInto(const GumboNode* node, std::vector< std::shared_ptr<GQNode> >& nodes) const;
+		/// <param name="skipChildrenOnMatch">
+		/// If the node is a match, it will be added to the collection and the function will
+		/// immediately return.
+		/// </param>
+		void MatchAllInto(const GumboNode* node, std::vector< std::shared_ptr<GQNode> >& nodes, const bool& skipChildrenOnMatch) const;
 
 	};
 

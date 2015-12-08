@@ -56,6 +56,7 @@ namespace gq
 
 	const bool GQBinarySelector::Match(const GumboNode* node) const
 	{
+
 		switch (m_operator)
 		{
 			case SelectorOperator::Adjacent:
@@ -118,7 +119,12 @@ namespace gq
 					return false;
 				}
 
-				return m_rightHandSide->Match(node) && m_leftHandSide->Match(node->parent);
+				if (!m_rightHandSide->Match(node))
+				{
+					return false;
+				}
+
+				return  m_leftHandSide->Match(node->parent);
 			}
 			break;
 
@@ -142,10 +148,7 @@ namespace gq
 
 				for (GumboNode* p = node->parent; p != nullptr; p = p->parent)
 				{
-					if (m_leftHandSide->Match(p))
-					{
-						return true;
-					}
+					return m_leftHandSide->Match(p);
 				}
 
 				return false;
@@ -159,7 +162,12 @@ namespace gq
 					return false;
 				}
 
-				return m_leftHandSide->Match(node) && m_rightHandSide->Match(node);
+				if (!m_rightHandSide->Match(node))
+				{
+					return false;
+				}
+
+				return m_leftHandSide->Match(node);
 			}
 			break;
 
@@ -217,7 +225,7 @@ namespace gq
 					return false;
 				}
 
-				return m_leftHandSide->Match(node) || m_rightHandSide->Match(node);
+				return m_rightHandSide->Match(node) || m_leftHandSide->Match(node);
 			}
 			break;
 		}

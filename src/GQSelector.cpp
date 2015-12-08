@@ -66,9 +66,9 @@ namespace gq
 				<< u8" and rhs of " 
 				<< std::to_string(rightHandSideOfNth) 
 				<< u8" match last set to "
-				<< std::to_string(matchLast)
+				<< std::boolalpha << matchLast
 				<< u8" and match type set to "
-				<< std::to_string(matchType)
+				<< std::boolalpha << matchType
 				<< u8"."
 				<< std::endl;
 			#endif
@@ -99,6 +99,7 @@ namespace gq
 
 	const bool GQSelector::Match(const GumboNode* node) const
 	{
+
 		switch (m_selectorOperator)
 		{
 			case SelectorOperator::Dummy:
@@ -109,17 +110,22 @@ namespace gq
 
 			case SelectorOperator::Empty:
 			{
-				if (node->type != GUMBO_NODE_ELEMENT) 
+				if (node->type != GUMBO_NODE_ELEMENT)
 				{
 					return false;
 				}
 
-				GumboVector children = node->v.element.children;
-
-				for (size_t i = 0; i < children.length; i++)
+				if (node->v.element.children.length == 0)
 				{
-					GumboNode* child = (GumboNode*)children.data[i];
-					if (child != nullptr && child->type == GUMBO_NODE_TEXT || child->type == GUMBO_NODE_ELEMENT)
+					return true;
+				}
+
+				const GumboVector* children = &node->v.element.children;
+
+				for (size_t i = 0; i < children->length; i++)
+				{
+					GumboNode* child = static_cast<GumboNode*>(children->data[i]);
+					if (child != nullptr && (child->type == GUMBO_NODE_TEXT || child->type == GUMBO_NODE_ELEMENT))
 					{
 						return false;
 					}
@@ -288,19 +294,28 @@ namespace gq
 		}
 	}
 
-	std::vector< std::shared_ptr<GQNode> > GQSelector::MatchAll(const GumboNode* node) const
+	void GQSelector::MatchAll(const GumboNode* node, std::vector< std::shared_ptr<GQNode> >& results) const
 	{
 		#ifndef NDEBUG
-		assert(node != nullptr && u8"In GQSelector::MatchAll(const GumboNode*) - Nullptr node supplied for matching.");
+		assert(node != nullptr && u8"In GQSelector::MatchAll(const GumboNode*, std::vector< std::shared_ptr<GQNode> >&) - Nullptr node supplied for matching.");
 		#else
-		if (node == nullptr) { throw std::runtime_error(u8"In GQSelector::MatchAll(const GumboNode*) - Nullptr node supplied for matching."); }
+		if (node == nullptr) { throw std::runtime_error(u8"In GQSelector::MatchAll(const GumboNode*, std::vector< std::shared_ptr<GQNode> >&) - Nullptr node supplied for matching."); }
 		#endif
 
-		std::vector< std::shared_ptr<GQNode> > ret;
+		bool skipChildrenOnMatch = false;
+		MatchAllInto(node, results, skipChildrenOnMatch);
+	}
 
-		MatchAllInto(node, ret);
+	void GQSelector::MatchFirst(const GumboNode* node, std::vector < std::shared_ptr<GQNode> >& results) const
+	{
+		#ifndef NDEBUG
+		assert(node != nullptr && u8"In GQSelector::MatchFirst(const GumboNode*, std::vector< std::shared_ptr<GQNode> >&) - Nullptr node supplied for matching.");
+		#else
+		if (node == nullptr) { throw std::runtime_error(u8"In GQSelector::MatchFirst(const GumboNode*, std::vector< std::shared_ptr<GQNode> >&) - Nullptr node supplied for matching."); }
+		#endif
 
-		return ret;
+		bool skipChildrenOnMatch = true;
+		MatchAllInto(node, results, skipChildrenOnMatch);
 	}
 
 	void GQSelector::Filter(std::vector< std::shared_ptr<GQNode> >& nodes) const
@@ -322,7 +337,7 @@ namespace gq
 		m_tagTypeToMatch = GUMBO_TAG_UNKNOWN;
 	}
 
-	void GQSelector::MatchAllInto(const GumboNode* node, std::vector< std::shared_ptr<GQNode> >& nodes) const
+	void GQSelector::MatchAllInto(const GumboNode* node, std::vector< std::shared_ptr<GQNode> >& nodes, const bool& skipChildrenOnMatch) const
 	{
 		#ifndef NDEBUG
 		assert(node != nullptr && u8"In GQSelector::MatchAllInto(const GumboNode*, std::vector<const GumboNode*>&) - Nullptr node supplied for matching.");
@@ -330,23 +345,27 @@ namespace gq
 		if (node == nullptr) { throw std::runtime_error(u8"In GQSelector::MatchAllInto(const GumboNode*, std::vector<const GumboNode*>&) - Nullptr node supplied for matching."); }
 		#endif
 
-		if (Match(node))
-		{
-			nodes.push_back(GQNode::Create(node));
-		}
-
 		if (node->type != GUMBO_NODE_ELEMENT)
 		{
 			return;
 		}
 
+		if (Match(node))
+		{
+			nodes.push_back(GQNode::Create(node));
+
+			if (skipChildrenOnMatch)
+			{
+				return;
+			}
+		}
+
 		for (size_t i = 0; i < node->v.element.children.length; i++)
 		{
 			GumboNode* child = static_cast<GumboNode*>(node->v.element.children.data[i]);
-			MatchAllInto(child, nodes);
+			MatchAllInto(child, nodes, skipChildrenOnMatch);
 		}
-	}
-	
+	}	
 
 } /* namespace gq */
 

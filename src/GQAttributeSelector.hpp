@@ -165,7 +165,7 @@ namespace gq
 		/// <summary>
 		/// The name of the attribute to search for.
 		/// </summary>
-		std::string m_attributeName;
+		std::string m_attributeNameString;
 
 		/// <summary>
 		/// A string_ref wrapper for m_attributeName.
@@ -175,7 +175,7 @@ namespace gq
 		/// <summary>
 		/// The attribute value to match.
 		/// </summary>
-		std::string m_attributeValue;
+		std::string m_attributeValueString;
 
 		/// <summary>
 		/// A string_ref wrapper for m_attributeValueRef.

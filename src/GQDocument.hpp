@@ -98,7 +98,7 @@ namespace gq
 
 		/// <summary>
 		/// Run a selector against the document and return any and all nodes that were matched by
-		/// the supplied selector string.
+		/// the supplied compiled selector.
 		/// </summary>
 		/// <param name="selector">
 		/// The precompiled selector object to query against the document with. 
@@ -108,6 +108,47 @@ namespace gq
 		/// found, the collection will be empty.
 		/// </returns>
 		GQSelection Find(const SharedGQSelector& selector) const;
+
+		/// <summary>
+		/// Run a selector against the document and return the first nodes in heiarchy that were
+		/// matched by the supplied selector string. This function will recursively search for
+		/// matches just like the ::Find(...) method. The difference is that once a match is found
+		/// in a certain branch, the single match is collected and the function exits, igoring all
+		/// descendants of the matched node.
+		/// 
+		/// Note that this method, which accepts a selector as a string, internally calls the
+		/// GQParser::Parse(...) method, which will throw when supplied with invalid selectors. As
+		/// such, be prepared to handle exceptions when using this method.
+		/// 
+		/// Note also that it is recommended to use the GQParser directly to compile selectors
+		/// first, saving the returned GQSharedSelector objects. This is much more efficient if the
+		/// selector is used more than once. Methods that accept raw selector strings will compile
+		/// and discard selectors after use.
+		/// </summary>
+		/// <param name="selectorString">
+		/// The selector string to query against the document with. 
+		/// </param>
+		/// <returns>
+		/// A collection of nodes that were matched by the supplied selector. If no matches were
+		/// found, the collection will be empty.
+		/// </returns>
+		GQSelection FindFirst(const std::string& selectorString) const;
+
+		/// <summary>
+		/// Run a selector against the document and return the first nodes in heiarchy that were
+		/// matched by the supplied compiled selector. This function will recursively search for
+		/// matches just like the ::Find(...) method. The difference is that once a match is found
+		/// in a certain branch, the single match is collected and the function exits, igoring all
+		/// descendants of the matched node.
+		/// </summary>
+		/// <param name="selectorString">
+		/// The selector string to query against the document with. 
+		/// </param>
+		/// <returns>
+		/// A collection of nodes that were matched by the supplied selector. If no matches were
+		/// found, the collection will be empty.
+		/// </returns>
+		GQSelection FindFirst(const SharedGQSelector& selector) const;
 
 	private:
 
@@ -121,6 +162,7 @@ namespace gq
 		/// SharedGQNode to wrap the root node, used for supplying to selection methods.
 		/// </summary>
 		SharedGQNode m_gumboRootNode = nullptr;
+
 	};
 
 } /* namespace gq */

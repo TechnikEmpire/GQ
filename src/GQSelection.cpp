@@ -44,7 +44,7 @@ namespace gq
 		m_nodes.push_back(std::move(node));
 	}
 
-	GQSelection::GQSelection(std::vector<SharedGQNode> nodes) :
+	GQSelection::GQSelection(std::vector<SharedGQNode>& nodes) :
 		m_nodes(std::move(nodes))
 	{
 
@@ -72,7 +72,13 @@ namespace gq
 		{
 			const GumboNode* node = (*it)->m_node;
 
-			auto matched = selector->MatchAll(node);
+			if (node == nullptr || node->type != GUMBO_NODE_ELEMENT)
+			{
+				continue;
+			}
+			
+			std::vector<SharedGQNode> matched;
+			selector->MatchAll(node, matched);
 			GQUtil::UnionNodes(ret, matched);
 		}
 

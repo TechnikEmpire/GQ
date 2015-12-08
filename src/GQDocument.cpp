@@ -28,6 +28,7 @@
 */
 
 #include "GQDocument.hpp"
+#include "GQParser.hpp"
 
 namespace gq
 {
@@ -88,9 +89,11 @@ namespace gq
 			throw std::runtime_error(u8"In GQDocument::Find(const std::string&) - Document is not initialized. You must parse an HTML string, or construct this object around a valid GumboOutput pointer.");
 		}	
 
-		GQSelection selection(m_gumboRootNode);
+		GQParser parser;
 
-		return selection.Find(selectorString);
+		auto selector = parser.CreateSelector(selectorString);
+
+		return Find(selector);
 	}
 
 	GQSelection GQDocument::Find(const SharedGQSelector& selector) const
@@ -100,9 +103,41 @@ namespace gq
 			throw std::runtime_error(u8"In GQDocument::Find(const GQSelector&) - Document is not initialized. You must parse an HTML string, or construct this object around a valid GumboOutput pointer.");
 		}
 
-		GQSelection selection(m_gumboRootNode);
+		std::vector<SharedGQNode> results;
+		selector->MatchAll(m_gumboOutput->root, results);
 
-		return selection.Find(selector);
+		GQSelection selection(results);
+
+		return selection;
+	}
+
+	GQSelection GQDocument::FindFirst(const std::string& selectorString) const
+	{
+		if (m_gumboOutput == nullptr)
+		{
+			throw std::runtime_error(u8"In GQDocument::FindFirst(const std::string&) - Document is not initialized. You must parse an HTML string, or construct this object around a valid GumboOutput pointer.");
+		}
+
+		GQParser parser;
+
+		auto selector = parser.CreateSelector(selectorString);
+
+		return FindFirst(selector);
+	}
+
+	GQSelection GQDocument::FindFirst(const SharedGQSelector& selector) const
+	{
+		if (m_gumboOutput == nullptr)
+		{
+			throw std::runtime_error(u8"In GQDocument::FindFirst(const GQSelector&) - Document is not initialized. You must parse an HTML string, or construct this object around a valid GumboOutput pointer.");
+		}
+
+		std::vector<SharedGQNode> results;
+		selector->MatchFirst(m_gumboOutput->root, results);
+
+		GQSelection selection(results);
+
+		return selection;
 	}
 
 } /* namespace gq */

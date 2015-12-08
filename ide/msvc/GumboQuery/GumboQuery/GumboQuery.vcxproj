@@ -154,48 +154,56 @@
     <IntDir>Intermediates\$(Configuration)\</IntDir>
     <OutDir>$(ProjectDir)..\..\..\..\build\msvc\$(Configuration)\lib\</OutDir>
     <TargetName>gumbo_query</TargetName>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug x64|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <IntDir>Intermediates\$(Configuration)\</IntDir>
     <OutDir>$(ProjectDir)..\..\..\..\build\msvc\$(Configuration)\lib\</OutDir>
     <TargetName>gumbo_query</TargetName>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug x86|x64'">
     <LinkIncremental>true</LinkIncremental>
     <IntDir>Intermediates\$(Configuration)\</IntDir>
     <OutDir>$(ProjectDir)..\..\..\..\build\msvc\$(Configuration)\lib\</OutDir>
     <TargetName>gumbo_query</TargetName>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug x64|x64'">
     <LinkIncremental>true</LinkIncremental>
     <IntDir>Intermediates\$(Configuration)\</IntDir>
     <OutDir>$(ProjectDir)..\..\..\..\build\msvc\$(Configuration)\lib\</OutDir>
     <TargetName>gumbo_query</TargetName>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release x86|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <IntDir>Intermediates\$(Configuration)\</IntDir>
     <OutDir>$(ProjectDir)..\..\..\..\build\msvc\$(Configuration)\lib\</OutDir>
     <TargetName>gumbo_query</TargetName>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release x64|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <IntDir>Intermediates\$(Configuration)\</IntDir>
     <OutDir>$(ProjectDir)..\..\..\..\build\msvc\$(Configuration)\lib\</OutDir>
     <TargetName>gumbo_query</TargetName>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release x86|x64'">
     <LinkIncremental>false</LinkIncremental>
     <IntDir>Intermediates\$(Configuration)\</IntDir>
     <OutDir>$(ProjectDir)..\..\..\..\build\msvc\$(Configuration)\lib\</OutDir>
     <TargetName>gumbo_query</TargetName>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release x64|x64'">
     <LinkIncremental>false</LinkIncremental>
     <IntDir>Intermediates\$(Configuration)\</IntDir>
     <OutDir>$(ProjectDir)..\..\..\..\build\msvc\$(Configuration)\lib\</OutDir>
     <TargetName>gumbo_query</TargetName>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug x86|Win32'">
     <ClCompile>

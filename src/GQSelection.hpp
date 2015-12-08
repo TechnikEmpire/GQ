@@ -62,7 +62,7 @@ namespace gq
 		/// <param name="nodes">
 		/// Existing nodes that make up the selection.
 		/// </param>
-		GQSelection(std::vector<SharedGQNode> nodes);
+		GQSelection(std::vector<SharedGQNode>& nodes);
 
 		/// <summary>
 		/// Default destructor.

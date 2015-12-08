@@ -91,6 +91,7 @@ namespace gq
 
 	const bool GQTextSelector::Match(const GumboNode* node) const
 	{		
+
 		if (node == nullptr)
 		{
 			return false;

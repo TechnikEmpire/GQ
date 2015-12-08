@@ -53,6 +53,7 @@ namespace gq
 
 	const bool GQUnarySelectory::GQUnarySelectory::Match(const GumboNode* node) const
 	{
+
 		// Don't match against stuff like comments, CDATA blocks, etc
 		if (node->type != GUMBO_NODE_ELEMENT)
 		{

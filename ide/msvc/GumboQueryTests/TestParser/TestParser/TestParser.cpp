@@ -26,6 +26,8 @@
 #include <GQDocument.hpp>
 #include <GQNode.hpp>
 #include <GQParser.hpp>
+#include <chrono>
+#include <cmath>
 
 
 /// <summary>
@@ -42,7 +44,11 @@
 /// </summary>
 int main()
 {
-	std::ifstream in(u8"../../parsingtest.data", std::ios::in);
+
+	std::string parsingTestDataFilePath(u8"../../parsingtest.data");
+	std::string htmlTestDataFilePath(u8"../../testhtml.data");
+	
+	std::ifstream in(parsingTestDataFilePath, std::ios::in);
 
 	if (in.fail())
 	{
@@ -65,7 +71,11 @@ int main()
 	std::istringstream tests(testContents);
 	std::string test;
 
+	// For finding out just where the program died if an attempt to parse a test number
+	// and selector fails.
 	int lastRunTestNumber = 0;
+
+	std::vector<std::string> selectors;
 
 	while (std::getline(tests, test))
 	{
@@ -90,7 +100,12 @@ int main()
 			return -1;
 		}			
 
+		// Save the last finished test number in case the above try block fails and we exit due to bad formatting
+		// of the test data.
 		lastRunTestNumber = testNumber;
+
+		// Push back selectors anticipating doing benchmarks.
+		selectors.push_back(selectorString);
 
 		try
 		{
@@ -111,7 +126,117 @@ int main()
 		}	
 	}
 
-	std::cout << "Processed " << totalSelectorsProcessed << " selectors. Had handled errors? " << anyHandledException << std::endl;
+	std::cout << u8"Processed " << totalSelectorsProcessed << u8" selectors. Had handled errors? " << std::boolalpha << anyHandledException << std::endl;
+
+	if (anyHandledException)
+	{
+		std::cout << u8"Aborting benchmarks because errors were detected in the initial parsing test." << std::endl;
+		return -1;
+	}
+
+	std::cout << u8"Benchmarking parsing speed." << std::endl;
+
+	size_t parseCount = 100;
+
+	auto parsingBenchStart = std::chrono::high_resolution_clock::now();
+
+	for (size_t t = 0; t < parseCount; ++t)
+	{
+		for (size_t i = 0; i < selectors.size(); ++i)
+		{
+			auto result = selectorParser.CreateSelector(selectors[i]);
+		}
+	}
+
+	auto parsingBenchEnd = std::chrono::high_resolution_clock::now();
+
+	std::chrono::duration<double, std::milli> parsingBenchTime = parsingBenchEnd - parsingBenchStart;
+
+	std::cout << "Time taken to parse " << (selectors.size() * parseCount) << u8" selectors: " << parsingBenchTime.count() << " ms." << std::endl;
+
+	std::cout << "Processed at a rate of " << (parsingBenchTime.count() / (selectors.size() * parseCount)) << u8" milliseconds per selector or " << ((selectors.size() * parseCount) / parsingBenchTime.count()) << u8" selectors per millisecond." << std::endl;
+
+	// _______________________________________________________________________________________________ //
+	// _______________________________________________________________________________________________ //
+	
+	std::ifstream htmlFile(htmlTestDataFilePath, std::ios::in);
+
+	if (htmlFile.fail())
+	{
+		std::cout << u8"Failed to load \"../../testhtml.data\" test file." << std::endl;
+		return -1;
+	}	
+
+	std::string testHtmlContents;
+	htmlFile.seekg(0, std::ios::end);
+	testHtmlContents.resize(htmlFile.tellg());
+	htmlFile.seekg(0, std::ios::beg);
+	htmlFile.read(&testHtmlContents[0], testHtmlContents.size());
+	htmlFile.close();
+
+	std::vector<gq::SharedGQSelector> precompiledSelectors;
+	precompiledSelectors.reserve(selectors.size());
+
+	for (size_t ind = 0; ind < selectors.size(); ++ind)
+	{
+		auto result = selectorParser.CreateSelector(selectors[ind]);
+		precompiledSelectors.push_back(result);
+	}
+
+	std::cout << u8"Benchmarking selection speed with full recursive matching." << std::endl;
+
+	gq::GQDocument testDocument;
+
+	testDocument.Parse(testHtmlContents);
+
+	size_t selectCount = 1;
+
+	auto selectionBenchStart = std::chrono::high_resolution_clock::now();
+
+	size_t totalMatches = 0;
+
+	for (size_t si = 0; si < selectCount; ++si)
+	{
+		for (size_t i = 0; i < precompiledSelectors.size(); ++i)
+		{
+			auto selectionResults = testDocument.Find(precompiledSelectors[i]);
+			totalMatches += selectionResults.GetNodeCount();
+		}
+	}
+
+	auto selectionBenchEnd = std::chrono::high_resolution_clock::now();
+
+	std::chrono::duration<double, std::milli> selectionBenchTime = selectionBenchEnd - selectionBenchStart;
+
+	std::cout << "Time taken to run " << (precompiledSelectors.size() * selectCount) << u8" selectors against the document: " << selectionBenchTime.count() << u8" ms producing " << totalMatches << u8" total matches." << std::endl;
+
+	std::cout << "Processed at a rate of " << (selectionBenchTime.count() / (precompiledSelectors.size() * selectCount)) << u8" milliseconds per selector or " << ((precompiledSelectors.size() * selectCount) / selectionBenchTime.count()) << u8" selectors per millisecond." << std::endl;	
+
+	// _______________________________________________________________________________________________ //
+	// _______________________________________________________________________________________________ //
+
+	std::cout << u8"Benchmarking selection speed with partial recursive matching. Recursive match function will exit when a node matches, ignoring descendants." << std::endl;
+
+	selectionBenchStart = std::chrono::high_resolution_clock::now();
+
+	totalMatches = 0;
+
+	for (size_t si = 0; si < selectCount; ++si)
+	{
+		for (size_t i = 0; i < precompiledSelectors.size(); ++i)
+		{
+			auto selectionResults = testDocument.FindFirst(precompiledSelectors[i]);
+			totalMatches += selectionResults.GetNodeCount();
+		}
+	}
+
+	selectionBenchEnd = std::chrono::high_resolution_clock::now();
+
+	selectionBenchTime = selectionBenchEnd - selectionBenchStart;
+
+	std::cout << "Time taken to run " << (precompiledSelectors.size() * selectCount) << u8" selectors against the document: " << selectionBenchTime.count() << u8" ms producing " << totalMatches << u8" total matches." << std::endl;
+
+	std::cout << "Processed at a rate of " << (selectionBenchTime.count() / (precompiledSelectors.size() * selectCount)) << u8" milliseconds per selector or " << ((precompiledSelectors.size() * selectCount) / selectionBenchTime.count()) << u8" selectors per millisecond." << std::endl;
 
     return 0;
 }
