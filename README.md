@@ -56,6 +56,30 @@ for(auto& ss : compiledSelectors)
 }
 ```
 
+##Speed
+One of the primary goals with this engine was to maximize speed. For my purposes, I wanted to ensure I could run an insane amount of selectors without any visible delay to the user. Running the TestParser test benchmarks running every single selector in the [EasyList[(https://easylist.adblockplus.org/en/) against a standard high profile website, spare a handful which were removed because they're improperly formatted. The current results on my [dev laptop](https://www.asus.com/ca-en/ROG-Republic-Of-Gamers/ASUS_ROG_G750JM/) are:
+
+```
+Processed 27646 selectors. Had handled errors? false
+Benchmarking parsing speed.
+Time taken to parse 2764600 selectors: 2550.37 ms.
+Processed at a rate of 0.00092251 milliseconds per selector or 1084 selectors per millisecond.
+Benchmarking document parsing.
+Time to build document: 152.981 milliseconds.
+Benchmarking selection speed.
+Time taken to run 2764600 selectors against the document: 9756.02 ms producing 42800 total matches.
+Processed at a rate of 0.00352891 milliseconds per selector or 283.374 selectors per millisecond.
+```
+
+So from these results, a document could be loaded, parsed, and have 27646 precompiled selectors run on it about **436.355** milliseconds, just shy of half a second. Add another 50 msec or so tops to say remove matched nodes and reserialize the document with changes, it's about half a second total. That's stretching the "user doesn't notice" goal, but thankfully nowhere near 30K selectors would never actually need to be run at once.
+
+Speed doesn't mean much if the matching code is broken. As such, over 30 tests currently exist that ensure correct functionality of various types of selectors. I have yet to write tests for nested and combined selectors.
+
+##TODO
+ - Mutability API.
+ - Tests for combined and nested selectors.
+ - Modify `GQSelector::Match()` and related methods to return the final matched node. Required for child selectors and such.
+
 ##Goals  
  - Renaming objects and files and nesting them inside directories to avoid existing conflicts with Gumbo Parser during compilation and inclusion.
  - Wrapping things up in proper namespaces.
