@@ -37,10 +37,7 @@ namespace gq
 
 	/// <summary>
 	/// The GQAttributeSelector, as the name implies, is designed for matching against nodes using
-	/// attribute selectors. All CSS3 attribute selectors are supported, and attribute prefix
-	/// matching is also supported. So, it's possible to match against nodes with selectors like
-	/// [^some$=cool] successfully against a node with the attributes [someguy="someoneCool"],
-	/// [somelady="someoneLadyThatIsCool"], etc.
+	/// attribute selectors.
 	/// </summary>
 	class GQAttributeSelector : public GQSelector
 	{
@@ -50,7 +47,7 @@ namespace gq
 		/// <summary>
 		/// More information here: http://www.w3.org/TR/css3-selectors/#attribute-selectors
 		/// </summary>
-		enum class SelectorOperator
+		enum SelectorOperator
 		{
 			/// <summary>
 			/// Simply verify that the supplied attribute exists.
@@ -101,11 +98,7 @@ namespace gq
 		/// <param name="key">
 		/// The attribute name to match if it exists. 
 		/// </param>
-		/// <param name="keyIsPrefix">
-		/// Determine if the attribute name to match is meant to be a prefix match. If true, then
-		/// attributes that contain the supplied value as prefix only will be considered a match.
-		/// </param>
-		GQAttributeSelector(boost::string_ref key, const bool keyIsPrefix);
+		GQAttributeSelector(boost::string_ref key);
 
 		/// <summary>
 		/// Constructs an attribute selector with a supplied attribute name and value to match
@@ -124,11 +117,7 @@ namespace gq
 		/// <param name="value">
 		/// The attribute value to match. 
 		/// </param>
-		/// <param name="keyIsPrefix">
-		/// Determine if the attribute name to match is meant to be a prefix match. If true, then
-		/// attributes that contain the supplied value as prefix only will be considered a match.
-		/// </param>
-		GQAttributeSelector(SelectorOperator op, boost::string_ref key, boost::string_ref value, const bool keyIsPrefix);
+		GQAttributeSelector(SelectorOperator op, boost::string_ref key, boost::string_ref value);
 
 		/// <summary>
 		/// Default destructor.
@@ -145,7 +134,7 @@ namespace gq
 		/// True if this selector was successfully matched against the supplied node, false
 		/// otherwise.
 		/// </returns>
-		virtual const bool Match(const GumboNode* node) const;
+		virtual const bool Match(const GQNode* node) const;
 
 	private:
 
@@ -155,12 +144,6 @@ namespace gq
 		/// operator class.
 		/// </summary>
 		SelectorOperator m_operator;
-
-		/// <summary>
-		/// It's possible to define a selector where the attribute value is checked for a prefix
-		/// rather than an exact match.
-		/// </summary>
-		bool m_keyIsPrefix;
 
 		/// <summary>
 		/// The name of the attribute to search for.
@@ -182,16 +165,6 @@ namespace gq
 		/// </summary>
 		boost::string_ref m_attributeValueRef;
 
-		/// <summary>
-		/// Removes any quote characters at the first and last positions of the supplied string.
-		/// Since we handle raw values instead of the values after Gumbo Parser has done conversions
-		/// on things such as character references, the original values can/will still have any
-		/// enclosing quotes present. In order to ensure proper matching, they must be trimmed.
-		/// </summary>
-		/// <param name="str">
-		/// The string to trim enclosing quotation characters from. 
-		/// </param>
-		void TrimEnclosingQuotes(boost::string_ref& str) const;
 	};
 
 } /* namespace gq */

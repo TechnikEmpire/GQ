@@ -36,14 +36,50 @@
 namespace gq
 {
 
+	class GQTreeMap;
+
 	/// <summary>
 	/// The GQDocument serves as a lightweight wrapper around a GumboOutput* object, providing
 	/// methods for querying the parsed HTML with selectors.
 	/// </summary>
-	class GQDocument
+	class GQDocument : public GQNode
 	{
 
-	public:
+	public:		
+
+		// If MSVC, must friend this nonsense so that make_shared can access the private constructor
+		// of our class. If not, just friend the template function.
+		#ifdef _MSC_VER
+		friend std::_Ref_count_obj<GQDocument>;
+		#else
+		friend std::shared_ptr<GQNode> std::make_shared<>(const GumboNode*);
+		#endif
+
+		static std::shared_ptr<GQDocument> Create(GumboOutput* gumboOutput = nullptr);
+
+		/// <summary>
+		/// Default destructor.
+		/// </summary>
+		virtual ~GQDocument();
+
+		/// <summary>
+		/// Use Gumbo Parser internally to parse the supplied HTML string into GumboOutput. It is
+		/// the responsibility of the user to ensure that the supplied HTML string is UTF-8 encoded,
+		/// as Gumbo Parser requires this.
+		/// </summary>
+		/// <param name="source">
+		/// A UTF-8 encoded string of a valid HTML. 
+		/// </param>
+		void Parse(const std::string& source);
+
+	protected:
+
+		/// <summary>
+		/// Same concept as GQNode::Init(), which this overrides.
+		/// </summary>
+		virtual void Init();
+
+	private:
 
 		/// <summary>
 		/// Constructs an empty GQDocument object.
@@ -61,107 +97,15 @@ namespace gq
 		GQDocument(GumboOutput* gumboOutput);
 
 		/// <summary>
-		/// Default destructor.
-		/// </summary>
-		~GQDocument();
-
-		/// <summary>
-		/// Use Gumbo Parser internally to parse the supplied HTML string into GumboOutput. It is
-		/// the responsibility of the user to ensure that the supplied HTML string is UTF-8 encoded,
-		/// as Gumbo Parser requires this.
-		/// </summary>
-		/// <param name="source">
-		/// A UTF-8 encoded string of a valid HTML. 
-		/// </param>
-		void Parse(const std::string& source);
-
-		/// <summary>
-		/// Run a selector against the document and return any and all nodes that were matched by
-		/// the supplied selector string. Note that this method, which accepts a selector as a
-		/// string, internally calls the GQParser::Parse(...) method, which will throw when supplied
-		/// with invalid selectors. As such, be prepared to handle exceptions when using this
-		/// method.
-		/// 
-		/// Note also that it is recommended to use the GQParser directly to compile selectors
-		/// first, saving the returned GQSharedSelector objects. This is much more efficient if the
-		/// selector is used more than once. Methods that accept raw selector strings will compile
-		/// and discard selectors after use.
-		/// </summary>
-		/// <param name="selectorString">
-		/// The selector string to query against the document with. 
-		/// </param>
-		/// <returns>
-		/// A collection of nodes that were matched by the supplied selector. If no matches were
-		/// found, the collection will be empty.
-		/// </returns>
-		GQSelection Find(const std::string& selectorString) const;
-
-		/// <summary>
-		/// Run a selector against the document and return any and all nodes that were matched by
-		/// the supplied compiled selector.
-		/// </summary>
-		/// <param name="selector">
-		/// The precompiled selector object to query against the document with. 
-		/// </param>
-		/// <returns>
-		/// A collection of nodes that were matched by the supplied selector. If no matches were
-		/// found, the collection will be empty.
-		/// </returns>
-		GQSelection Find(const SharedGQSelector& selector) const;
-
-		/// <summary>
-		/// Run a selector against the document and return the first nodes in heiarchy that were
-		/// matched by the supplied selector string. This function will recursively search for
-		/// matches just like the ::Find(...) method. The difference is that once a match is found
-		/// in a certain branch, the single match is collected and the function exits, igoring all
-		/// descendants of the matched node.
-		/// 
-		/// Note that this method, which accepts a selector as a string, internally calls the
-		/// GQParser::Parse(...) method, which will throw when supplied with invalid selectors. As
-		/// such, be prepared to handle exceptions when using this method.
-		/// 
-		/// Note also that it is recommended to use the GQParser directly to compile selectors
-		/// first, saving the returned GQSharedSelector objects. This is much more efficient if the
-		/// selector is used more than once. Methods that accept raw selector strings will compile
-		/// and discard selectors after use.
-		/// </summary>
-		/// <param name="selectorString">
-		/// The selector string to query against the document with. 
-		/// </param>
-		/// <returns>
-		/// A collection of nodes that were matched by the supplied selector. If no matches were
-		/// found, the collection will be empty.
-		/// </returns>
-		GQSelection FindFirst(const std::string& selectorString) const;
-
-		/// <summary>
-		/// Run a selector against the document and return the first nodes in heiarchy that were
-		/// matched by the supplied compiled selector. This function will recursively search for
-		/// matches just like the ::Find(...) method. The difference is that once a match is found
-		/// in a certain branch, the single match is collected and the function exits, igoring all
-		/// descendants of the matched node.
-		/// </summary>
-		/// <param name="selectorString">
-		/// The selector string to query against the document with. 
-		/// </param>
-		/// <returns>
-		/// A collection of nodes that were matched by the supplied selector. If no matches were
-		/// found, the collection will be empty.
-		/// </returns>
-		GQSelection FindFirst(const SharedGQSelector& selector) const;
-
-	private:
-
-		/// <summary>
 		/// A pointer to the GumboOutput generated when parsing HTML. This object exclusively holds
 		/// ownership of the raw GumboOutput structure it works with.
 		/// </summary>
 		GumboOutput* m_gumboOutput = nullptr;
 
 		/// <summary>
-		/// SharedGQNode to wrap the root node, used for supplying to selection methods.
+		/// The map for the entire document.
 		/// </summary>
-		SharedGQNode m_gumboRootNode = nullptr;
+		std::unique_ptr<GQTreeMap> m_treeMap = nullptr;
 
 	};
 

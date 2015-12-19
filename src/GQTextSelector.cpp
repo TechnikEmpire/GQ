@@ -30,6 +30,7 @@
 #include "GQTextSelector.hpp"
 #include "GQUtil.hpp"
 #include <boost/algorithm/string.hpp>
+#include "GQNode.hpp"
 
 namespace gq
 {
@@ -53,7 +54,7 @@ namespace gq
 		}
 
 		#ifndef NDEBUG
-			#ifdef GQ_VERBOSE_SELECTOR_COMPILIATION
+			#ifdef GQ_VERBOSE_DEBUG_NFO
 			std::cout << "Built GQTextSelector with operator " << static_cast<size_t>(m_operator) << " with text to match " << m_textToMatch << u8"." << std::endl;
 			#endif
 		#endif
@@ -78,7 +79,7 @@ namespace gq
 		}
 
 		#ifndef NDEBUG
-			#ifdef GQ_VERBOSE_SELECTOR_COMPILIATION
+			#ifdef GQ_VERBOSE_DEBUG_NFO
 			std::cout << "Built GQTextSelector with operator " << static_cast<size_t>(m_operator) << " with text to match " << m_textToMatch << u8"." << std::endl;
 			#endif
 		#endif
@@ -89,25 +90,8 @@ namespace gq
 
 	}
 
-	const bool GQTextSelector::Match(const GumboNode* node) const
+	const bool GQTextSelector::Match(const GQNode* node) const
 	{		
-
-		if (node == nullptr)
-		{
-			return false;
-		}
-
-		// This might seem strange. But, the idea behind text selectors is to match nodes that
-		// eventually contain the text being searched for, not the text itself. If we allow text
-		// nodes to be match results for this type of search, then the user will be expecting a 
-		// returned list of a HTML elements that contain the text, and end up getting somewhere
-		// in those results pure text nodes as well, which isn't really useful at all from a 
-		// selector point of view.
-		if (node->type == GUMBO_NODE_TEXT)
-		{
-			return false;
-		}
-
 		switch (m_operator)
 		{
 			case SelectorOperator::Contains:

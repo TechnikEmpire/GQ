@@ -19,6 +19,7 @@
 */
 
 #include "GQSerializer.hpp"
+#include "GQNode.hpp"
 
 namespace gq
 {
@@ -62,6 +63,11 @@ namespace gq
 
 	GQSerializer::~GQSerializer()
 	{
+	}
+
+	std::string GQSerializer::Serialize(const GQNode* node)
+	{
+		return Serialize(node->m_node);
 	}
 
 	std::string GQSerializer::Serialize(const GumboNode* node)
@@ -129,6 +135,11 @@ namespace gq
 		}
 
 		return results;
+	}
+
+	std::string GQSerializer::SerializeContent(const GQNode* node)
+	{
+		return SerializeContent(node->m_node);
 	}
 
 	std::string GQSerializer::SerializeContent(const GumboNode* node)

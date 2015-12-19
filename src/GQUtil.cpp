@@ -43,23 +43,23 @@ namespace gq
 
 	}
 
-	std::string GQUtil::NodeText(const GumboNode* node)
+	std::string GQUtil::NodeText(const GQNode* node)
 	{
 		std::string text;
-		WriteNodeText(node, text);
+		WriteNodeText(node->m_node, text);
 		return text;
 	}
 
-	std::string GQUtil::NodeOwnText(const GumboNode* node)
+	std::string GQUtil::NodeOwnText(const GQNode* node)
 	{
 		std::string text;
 
-		if (node == nullptr || node->type != GUMBO_NODE_ELEMENT)
+		if (node->m_node == nullptr || node->m_node->type != GUMBO_NODE_ELEMENT)
 		{
 			return text;
 		}
 
-		const GumboVector* children = &node->v.element.children;
+		const GumboVector* children = &node->m_node->v.element.children;
 		for (unsigned int i = 0; i < children->length; i++)
 		{
 			GumboNode* child = static_cast<GumboNode*>(children->data[i]);
@@ -86,26 +86,53 @@ namespace gq
 			}) != nodeCollection.end();
 	}
 
+	void GQUtil::RemoveDuplicates(std::vector< std::shared_ptr<GQNode> >& primaryCollection)
+	{
+		std::sort(primaryCollection.begin(), primaryCollection.end(),
+			[](const std::shared_ptr<GQNode> & lhs, std::shared_ptr<GQNode> & rhs)
+		{
+			return lhs->m_node < rhs->m_node;
+		}
+		);
+
+		auto last = std::unique(primaryCollection.begin(), primaryCollection.end(),
+			[](const std::shared_ptr<GQNode> & lhs, std::shared_ptr<GQNode> & rhs)
+		{
+			return lhs->m_node == rhs->m_node;
+		}
+		);
+
+		primaryCollection.erase(last, primaryCollection.end());
+	}
+
 	void GQUtil::UnionNodes(std::vector< std::shared_ptr<GQNode> >& primaryCollection, const std::vector< std::shared_ptr<GQNode> >& collection)
 	{		
 		primaryCollection.reserve(primaryCollection.size() + collection.size());
 		primaryCollection.insert(primaryCollection.end(), collection.begin(), collection.end());
 		
-		std::sort(primaryCollection.begin(), primaryCollection.end(), 
-			[] (const std::shared_ptr<GQNode> & lhs, std::shared_ptr<GQNode> & rhs)
-			{
-				return lhs->m_node < rhs->m_node;
-			}
-		);
+		RemoveDuplicates(primaryCollection);		
+	}
 
-		auto last = std::unique(primaryCollection.begin(), primaryCollection.end(),
-			[](const std::shared_ptr<GQNode> & lhs, std::shared_ptr<GQNode> & rhs)
+	void GQUtil::TrimEnclosingQuotes(boost::string_ref& str)
+	{
+		if (str.length() >= 3)
+		{
+			switch (str[0])
 			{
-				return lhs->m_node == rhs->m_node;
-			}
-		);
+				case '\'':
+				case '"':
+				{
+					if (str[str.length() - 1] == str[0])
+					{
+						str = str.substr(1, str.length() - 2);
+					}
+				}
+				break;
 
-		primaryCollection.erase(last, primaryCollection.end());
+				default:
+					break;
+			}
+		}
 	}
 
 	void GQUtil::WriteNodeText(const GumboNode* node, std::string& stringContainer)

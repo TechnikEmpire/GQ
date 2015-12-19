@@ -27,14 +27,17 @@
 * THE SOFTWARE.
 */
 
+#include <cstring>
 #include "GQAttributeSelector.hpp"
 #include <boost/algorithm/string.hpp>
+#include "GQNode.hpp"
+#include "GQUtil.hpp"
+#include "GQSpecialTraits.hpp"
 
 namespace gq
 {
-	GQAttributeSelector::GQAttributeSelector(boost::string_ref key, const bool keyIsPrefix) :
+	GQAttributeSelector::GQAttributeSelector(boost::string_ref key) :
 		m_operator(SelectorOperator::Exists),
-		m_keyIsPrefix(keyIsPrefix),
 		m_attributeNameString(key.to_string()),
 		m_attributeNameRef(m_attributeNameString)
 	{
@@ -44,15 +47,17 @@ namespace gq
 		}
 
 		#ifndef NDEBUG
-			#ifdef GQ_VERBOSE_SELECTOR_COMPILIATION
-				std::cout << "Built Exists GQAttributeSelector with key " << m_attributeName << std::endl;
+			#ifdef GQ_VERBOSE_DEBUG_NFO
+				std::cout << "Built Exists GQAttributeSelector with key " << m_attributeNameRef << std::endl;
 			#endif
 		#endif
+
+		// Add attribute key as a match trait for EXISTS, specifying any ("*") as the value.
+		AddMatchTrait(m_attributeNameRef, GQSpecialTraits::GetAnyValue());
 	}
 
-	GQAttributeSelector::GQAttributeSelector(SelectorOperator op, boost::string_ref key, boost::string_ref value, const bool keyIsPrefix) :
+	GQAttributeSelector::GQAttributeSelector(SelectorOperator op, boost::string_ref key, boost::string_ref value) :
 		m_operator(op),
-		m_keyIsPrefix(keyIsPrefix),
 		m_attributeNameString(key.to_string()),
 		m_attributeNameRef(m_attributeNameString),
 		m_attributeValueString(value.to_string()),
@@ -77,106 +82,55 @@ namespace gq
 		}
 
 		#ifndef NDEBUG
-			#ifdef GQ_VERBOSE_SELECTOR_COMPILIATION
-				std::cout << "Built GQAttributeSelector with operator " << static_cast<size_t>(m_operator) << " with key " << m_attributeName << " looking for value " << m_attributeValue << std::endl;
+			#ifdef GQ_VERBOSE_DEBUG_NFO
+				std::cout << "Built GQAttributeSelector with operator " << static_cast<size_t>(m_operator) << " with key " << m_attributeNameRef << " looking for value " << m_attributeValueRef << std::endl;
 			#endif
 		#endif
+
+		switch (m_operator)
+		{
+			case SelectorOperator::ValueEquals:
+			case SelectorOperator::ValueContainsElementInWhitespaceSeparatedList:
+			{
+				AddMatchTrait(m_attributeNameRef, m_attributeValueRef);
+			}
+			break;
+
+			case SelectorOperator::Exists:
+			case SelectorOperator::ValueContains:
+			case SelectorOperator::ValueHasPrefix:
+			case SelectorOperator::ValueHasSuffix:
+			case SelectorOperator::ValueIsHyphenSeparatedListStartingWith:
+			{
+				AddMatchTrait(m_attributeNameRef, GQSpecialTraits::GetAnyValue());
+			}
+			break;
+		}
 	}
 
 	GQAttributeSelector::~GQAttributeSelector()
 	{
 	}
 
-	const bool GQAttributeSelector::Match(const GumboNode* node) const
+	const bool GQAttributeSelector::Match(const GQNode* node) const
 	{		
-
-		if (node->type != GUMBO_NODE_ELEMENT)
-		{
-			return false;
-		}
-
-		const GumboVector* attributes = &node->v.element.attributes;
-
-		if (attributes == nullptr || attributes->length == 0)
-		{
-			return false;
-		}
-
-		// Note that we take the original attribute name and value. This is because Gumbo Parser will
-		// modify these things, such as replacing character references with literal characters. We don't
-		// want to have to convert escaped character references in supplied selectors.
-		boost::string_ref attributeName;
-		boost::string_ref attributeValue;
-
-		bool foundAttribute = false;		
-
-		auto nsz = m_attributeNameRef.size();
-
-		if (m_keyIsPrefix)
-		{
-			for (size_t i = 0; i < attributes->length; i++)
-			{
-				GumboAttribute* attribute = static_cast<GumboAttribute*>(attributes->data[i]);
-
-				if (attribute->original_name.length < nsz)
-				{
-					continue;
-				}
-
-				attributeName = boost::string_ref(attribute->original_name.data, nsz);
-				attributeValue = boost::string_ref(attribute->original_value.data, attribute->original_value.length);
-
-				if (attributeName[0] == m_attributeNameRef[0] && attributeName[nsz - 1] == m_attributeNameRef[nsz - 1])
-				{
-					if (attributeName.compare(m_attributeNameRef) == 0)
-					{
-						foundAttribute = true;
-						break;
-					}
-				}				
-			}
-		}
-		else
-		{	
-			for (size_t ai = 0; ai < node->v.element.attributes.length; ++ai)
-			{
-				GumboAttribute* attr = static_cast<GumboAttribute*>(node->v.element.attributes.data[ai]);
-				if (attr->original_name.length != nsz)
-				{
-					continue;
-				}				
-
-				attributeName = boost::string_ref(attr->original_name.data, attr->original_name.length);
-
-				if (attributeName[0] == m_attributeNameRef[0] && attributeName[1] == m_attributeNameRef[1] && attributeName[nsz - 1] == m_attributeNameRef[nsz - 1])
-				{
-					if (attributeName.compare(m_attributeNameRef) == 0)
-					{
-						attributeValue = boost::string_ref(attr->original_value.data, attr->original_value.length);
-						foundAttribute = true;
-						break;
-					}
-					
-				}				
-			}
-		}
-
-		if (!foundAttribute)
-		{
-			return false;
-		}	
-
 		switch (m_operator)
 		{
 			case SelectorOperator::Exists:
-			{
-				// We've already matched the attribute key, so we're done.
-				return true;
+			{						
+				return node->HasAttribute(m_attributeNameRef);
 			}
 			break;
 
 			case SelectorOperator::ValueContains:
 			{
+				auto attributeValue = node->GetAttributeValue(m_attributeNameRef);
+
+				if (attributeValue.size() == 0)
+				{
+					return false;
+				}
+
 				// Just do a search
 				auto searchResult = attributeValue.find(m_attributeValueRef);
 
@@ -187,39 +141,70 @@ namespace gq
 
 			case SelectorOperator::ValueEquals:
 			{
-				// Values cannot possibly be equal if not present or not the same size.
-				if (attributeValue.size() == 0 || attributeValue.size() < m_attributeValueRef.size())
+				auto attributeValue = node->GetAttributeValue(m_attributeNameRef);
+
+				auto oneSize = attributeValue.size();
+				auto twoSize = m_attributeValueRef.size();
+
+				if (oneSize == 0 || oneSize != twoSize)
 				{
 					return false;
 				}
 
-				TrimEnclosingQuotes(attributeValue);
-
-				if (attributeValue[0] == m_attributeValueRef[0] && attributeValue[m_attributeValueRef.size() - 1] == m_attributeValueRef[m_attributeValueRef.size() - 1])
+				if (oneSize >= 4)
 				{
-					return attributeValue.compare(m_attributeValueRef) == 0;
+					if ((attributeValue[0] == m_attributeValueRef[0]) &&
+						(attributeValue[1] == m_attributeValueRef[1]) &&
+						(attributeValue[oneSize - 1] == m_attributeValueRef[oneSize - 1]) &&
+						(attributeValue[oneSize - 2] == m_attributeValueRef[oneSize - 2]))
+					{
+						return std::memcmp(attributeValue.begin(), m_attributeValueRef.begin(), oneSize) == 0;
+					}
 				}
-
-				return false;
+				else
+				{
+					return std::memcmp(attributeValue.begin(), m_attributeValueRef.begin(), oneSize) == 0;
+				}
 			}
 			break;
 
 			case SelectorOperator::ValueHasPrefix:
 			{
-				TrimEnclosingQuotes(attributeValue);
+				auto attributeValue = node->GetAttributeValue(m_attributeNameRef);
+						
+				auto subSize = m_attributeValueRef.size();
 
-				// If our prefix is greater than the attribute value, we can just move on.
-				if (attributeValue.size() == 0 || m_attributeValueRef.size() >= attributeValue.size())
-				{
+				if (attributeValue.size() == 0 || attributeValue.size() <= subSize)
+				{					
 					return false;
 				}				
 
-				// Test case-insensitive equality of same-length substring.
-				boost::string_ref sub = attributeValue.substr(0, m_attributeValueRef.size());
+				auto sub = attributeValue.substr(0, subSize);
 
-				if (sub[0] == m_attributeValueRef[0] && sub[m_attributeValueRef.size() - 1] == m_attributeValueRef[m_attributeValueRef.size() - 1])
+				subSize = sub.size();
+
+				if (subSize == m_attributeValueRef.size())
 				{
-					return sub.compare(m_attributeValueRef) == 0;
+					if (subSize >= 4)
+					{
+						if ((sub[0] == m_attributeValueRef[0]) &&
+							(sub[1] == m_attributeValueRef[1]) &&
+							(sub[subSize - 1] == m_attributeValueRef[subSize - 1]) &&
+							(sub[subSize - 2] == m_attributeValueRef[subSize - 2]))
+						{
+							if (std::memcmp(sub.begin(), m_attributeValueRef.begin(), subSize) == 0)
+							{
+								return true;
+							}
+						}
+					}
+					else
+					{
+						if (std::memcmp(sub.begin(), m_attributeValueRef.begin(), subSize) == 0)
+						{
+							return true;
+						}
+					}
 				}
 
 				return false;
@@ -228,20 +213,43 @@ namespace gq
 
 			case SelectorOperator::ValueHasSuffix:
 			{
-				TrimEnclosingQuotes(attributeValue);
+				auto attributeValue = node->GetAttributeValue(m_attributeNameRef);
+
+				auto subSize = m_attributeValueRef.size();
 
 				// If our suffix is greater than the attribute value, we can just move on.
-				if (attributeValue.size() == 0 || m_attributeValueRef.size() >= attributeValue.size())
+				if (attributeValue.size() == 0 || subSize >= attributeValue.size())
 				{
 					return false;
 				}
 
-				// Test case-insensitive equality of same-length substring taken from the end.
-				boost::string_ref sub = attributeValue.substr((attributeValue.size() - m_attributeValueRef.size()));
+				// Test equality of same-length substring taken from the end.
+				boost::string_ref sub = attributeValue.substr((attributeValue.size() - subSize));
 
-				if (sub[0] == m_attributeValueRef[0] && sub[m_attributeValueRef.size() - 1] == m_attributeValueRef[m_attributeValueRef.size() - 1])
+				subSize = sub.size();
+
+				if (subSize == m_attributeValueRef.size())
 				{
-					return sub.compare(m_attributeValueRef) == 0;
+					if (subSize >= 4)
+					{
+						if ((sub[0] == m_attributeValueRef[0]) &&
+							(sub[1] == m_attributeValueRef[1]) &&
+							(sub[subSize - 1] == m_attributeValueRef[subSize - 1]) &&
+							(sub[subSize - 2] == m_attributeValueRef[subSize - 2]))
+						{
+							if (std::memcmp(sub.begin(), m_attributeValueRef.begin(), subSize) == 0)
+							{
+								return true;
+							}
+						}
+					}
+					else
+					{
+						if (std::memcmp(sub.begin(), m_attributeValueRef.begin(), subSize) == 0)
+						{
+							return true;
+						}
+					}
 				}
 
 				return false;
@@ -250,7 +258,7 @@ namespace gq
 
 			case SelectorOperator::ValueContainsElementInWhitespaceSeparatedList:
 			{
-				TrimEnclosingQuotes(attributeValue);
+				auto attributeValue = node->GetAttributeValue(m_attributeNameRef);
 
 				// If the attribute value to check is smaller than our value, then we can just return
 				// false right away.
@@ -267,9 +275,21 @@ namespace gq
 					// possible (being the two strings equal length), so letting boost::iequals return
 					// false or true is the right answer either way.
 
-					if (attributeValue[0] == m_attributeValueRef[0] && attributeValue[m_attributeValueRef.size() - 1] == m_attributeValueRef[m_attributeValueRef.size() - 1])
+					auto oneSize = attributeValue.size();
+
+					if (oneSize >= 4)
 					{
-						return attributeValue.compare(m_attributeValueRef) == 0;
+						if ((attributeValue[0] == m_attributeValueRef[0]) && 
+							(attributeValue[1] == m_attributeValueRef[1]) &&
+							(attributeValue[oneSize - 1] == m_attributeValueRef[oneSize - 1]) &&
+							(attributeValue[oneSize - 2] == m_attributeValueRef[oneSize - 2]))
+						{
+							return std::memcmp(attributeValue.begin(), m_attributeValueRef.begin(), oneSize) == 0;
+						}
+					}
+					else
+					{
+						return std::memcmp(attributeValue.begin(), m_attributeValueRef.begin(), oneSize) == 0;
 					}
 
 					return false;
@@ -291,10 +311,32 @@ namespace gq
 					if (firstSpace > 0 && firstSpace == m_attributeValueRef.size())
 					{
 						auto sub = attributeValue.substr(0, firstSpace);
-						if (sub[0] == m_attributeValueRef[0] && sub[m_attributeValueRef.size()-1] == m_attributeValueRef[m_attributeValueRef.size()-1])
+
+						auto subSize = sub.size();
+
+						if (subSize == m_attributeValueRef.size())
 						{
-							return sub.compare(m_attributeValueRef) == 0;
-						}
+							if (subSize >= 4)
+							{
+								if ((sub[0] == m_attributeValueRef[0]) &&
+									(sub[1] == m_attributeValueRef[1]) &&
+									(sub[subSize - 1] == m_attributeValueRef[subSize - 1]) &&
+									(sub[subSize - 2] == m_attributeValueRef[subSize - 2]))
+								{
+									if (std::memcmp(sub.begin(), m_attributeValueRef.begin(), subSize) == 0)
+									{
+										return true;
+									}
+								}
+							}
+							else
+							{
+								if (std::memcmp(sub.begin(), m_attributeValueRef.begin(), subSize) == 0)
+								{
+									return true;
+								}
+							}
+						}						
 					}
 
 					attributeValue = attributeValue.substr(firstSpace + 1);
@@ -307,7 +349,7 @@ namespace gq
 
 			case SelectorOperator::ValueIsHyphenSeparatedListStartingWith:
 			{
-				TrimEnclosingQuotes(attributeValue);
+				auto attributeValue = node->GetAttributeValue(m_attributeNameRef);
 
 				// If the attribute value to check is smaller than our value, then we can just return
 				// false right away.
@@ -324,9 +366,21 @@ namespace gq
 					// possible (being the two strings equal length), so letting boost::iequals return
 					// false or true is the right answer either way.
 
-					if (attributeValue[0] == m_attributeValueRef[0] && attributeValue[m_attributeValueRef.size() - 1] == m_attributeValueRef[m_attributeValueRef.size() - 1])
+					auto oneSize = attributeValue.size();
+
+					if (oneSize >= 4)
 					{
-						return attributeValue.compare(m_attributeValueRef) == 0;
+						if ((attributeValue[0] == m_attributeValueRef[0]) &&
+							(attributeValue[1] == m_attributeValueRef[1]) &&
+							(attributeValue[oneSize - 1] == m_attributeValueRef[oneSize - 1]) &&
+							(attributeValue[oneSize - 2] == m_attributeValueRef[oneSize - 2]))
+						{
+							return std::memcmp(attributeValue.begin(), m_attributeValueRef.begin(), oneSize) == 0;
+						}
+					}
+					else
+					{
+						return std::memcmp(attributeValue.begin(), m_attributeValueRef.begin(), oneSize) == 0;
 					}
 
 					return false;
@@ -354,10 +408,31 @@ namespace gq
 
 				sub = attributeValue.substr(0, m_attributeValueRef.size());
 
-				if (sub[0] == m_attributeValueRef[0] && sub[m_attributeValueRef.size() - 1] == m_attributeValueRef[m_attributeValueRef.size() - 1])
+				auto subSize = sub.size();
+
+				if (subSize == m_attributeValueRef.size())
 				{
-					return sub.compare(m_attributeValueRef) == 0;
-				}
+					if (subSize >= 4)
+					{
+						if ((sub[0] == m_attributeValueRef[0]) &&
+							(sub[1] == m_attributeValueRef[1]) &&
+							(sub[subSize - 1] == m_attributeValueRef[subSize - 1]) &&
+							(sub[subSize - 2] == m_attributeValueRef[subSize - 2]))
+						{
+							if (std::memcmp(sub.begin(), m_attributeValueRef.begin(), subSize) == 0)
+							{
+								return true;
+							}
+						}
+					}
+					else
+					{
+						if (std::memcmp(sub.begin(), m_attributeValueRef.begin(), subSize) == 0)
+						{
+							return true;
+						}
+					}
+				}		
 
 				return false;
 			}
@@ -367,25 +442,4 @@ namespace gq
 		return false;
 	}
 
-	void GQAttributeSelector::TrimEnclosingQuotes(boost::string_ref& str) const
-	{
-		if (str.length() >= 3)
-		{
-			switch (str[0])
-			{
-				case '\'':
-				case '"':
-				{
-					if (str[str.length() - 1] == str[0])
-					{
-						str = str.substr(1, str.length() - 2);
-					}
-				}
-				break;
-
-				default:
-					break;
-			}			
-		}
-	}
 } /* namespace gq */

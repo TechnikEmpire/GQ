@@ -25,9 +25,9 @@ setlocal enabledelayedexpansion
 
 :: Set GUMBO_VERSION to the extracted folder name, which includes the 
 :: version. So, as an example, in 
-:: STAHPIT_ROOT_DIR\libstahp\deps\gumbo-parser, you should have extracted 
+:: PROJECT_ROOT_DIR\deps\gumbo-parser, you should have extracted 
 :: lets say Gumbo Parser 0.10.1. So you'll have 
-:: STAHPIT_ROOT_DIR\libstahp\deps\gumbo-parser\gumbo-parser-0.10.1\SOURCES. 
+:: PROJECT_ROOT_DIR\deps\gumbo-parser\gumbo-parser-0.10.1\SOURCES. 
 :: Therefore, set GUMBO_VERSION to "gumbo-parser-0.10.1" like so:
 :: GUMBO_VERSION=
 set GUMBO_VERSION=

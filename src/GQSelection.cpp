@@ -69,16 +69,9 @@ namespace gq
 		std::vector<SharedGQNode> ret;
 
 		for (std::vector<SharedGQNode>::const_iterator it = m_nodes.begin(); it != m_nodes.end(); ++it)
-		{
-			const GumboNode* node = (*it)->m_node;
-
-			if (node == nullptr || node->type != GUMBO_NODE_ELEMENT)
-			{
-				continue;
-			}
-			
+		{			
 			std::vector<SharedGQNode> matched;
-			selector->MatchAll(node, matched);
+			selector->MatchAll(*it, matched);
 			GQUtil::UnionNodes(ret, matched);
 		}
 

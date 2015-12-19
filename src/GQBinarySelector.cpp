@@ -28,6 +28,7 @@
 */
 
 #include "GQBinarySelector.hpp"
+#include "GQNode.hpp"
 
 namespace gq
 {
@@ -35,18 +36,80 @@ namespace gq
 	GQBinarySelector::GQBinarySelector(SelectorOperator op, SharedGQSelector left, SharedGQSelector right) :
 		m_operator(op), m_leftHandSide(std::move(left)), m_rightHandSide(std::move(right))
 	{
+		#ifndef NDEBUG
+		assert(m_leftHandSide != nullptr && m_rightHandSide != nullptr && u8"In GQBinarySelector::GQBinarySelector(SelectorOperator, SharedGQSelector, SharedGQSelector) - Left or right hand selector is nullptr.");
+		#else
 		if (m_leftHandSide == nullptr || m_rightHandSide == nullptr)
 		{
-			std::string errorMessage(u8"In GQBinarySelector::GQBinarySelector(SelectorOperator, SharedGQSelector, SharedGQSelector) - Left or right hand selector is nullptr. Supplied operator was ");
-			errorMessage.append(std::to_string(static_cast<size_t>(m_operator))).append(u8".");
-			throw std::runtime_error(errorMessage);
+			throw std::runtime_error(u8"In GQBinarySelector::GQBinarySelector(SelectorOperator, SharedGQSelector, SharedGQSelector) - Left or right hand selector is nullptr.");
 		}
+		#endif
+
+		auto leftHandTagType = m_leftHandSide->GetTagTypeToMatch();
+		auto rightHandTagType = m_rightHandSide->GetTagTypeToMatch();
 
 		#ifndef NDEBUG
-			#ifdef GQ_VERBOSE_SELECTOR_COMPILIATION
-			std::cout << "Built GQBinarySelector with operator " << static_cast<size_t>(m_operator) << std::endl;
+			#ifdef GQ_VERBOSE_DEBUG_NFO
+			std::cout 
+				<< u8"Built GQBinarySelector with operator " 
+				<< static_cast<size_t>(m_operator) 
+				<< u8" with left hand tag "
+				<< static_cast<size_t>(leftHandTagType)
+				<< u8" and right hand tag "
+				<< static_cast<size_t>(rightHandTagType)
+				<< u8"."
+				<< std::endl;
 			#endif
-		#endif
+		#endif				
+
+		switch (m_operator)
+		{
+			case SelectorOperator::Sibling:
+			case SelectorOperator::Adjacent:
+			{
+				// We match the left hand side first, so lets take on its traits alone.
+				auto& lhst = m_leftHandSide->GetMatchTraits();
+
+				for (auto& tp : lhst)
+				{
+					AddMatchTrait(tp.first, tp.second);
+				}
+			}
+			break;
+
+			case SelectorOperator::Descendant:
+			case SelectorOperator::Child:
+			{
+				// We match the right hand side first, so lets take on its traits alone.
+				auto& rhst = m_rightHandSide->GetMatchTraits();
+
+				for (auto& tp : rhst)
+				{
+					AddMatchTrait(tp.first, tp.second);
+				}
+			}
+			break;
+
+			case SelectorOperator::Union:
+			case SelectorOperator::Intersection:
+			{
+				// Both traits need to match the same object, so we'll take on both traits.
+				// In the case of union, either can match, so again, take on both.
+				auto& lhst = m_leftHandSide->GetMatchTraits();
+				auto& rhst = m_rightHandSide->GetMatchTraits();
+				
+				for (auto& tp : lhst)
+				{
+					AddMatchTrait(tp.first, tp.second);
+				}
+
+				for (auto& tp : rhst)
+				{
+					AddMatchTrait(tp.first, tp.second);
+				}
+			}
+			break;
+		}
 	}
 
 	GQBinarySelector::~GQBinarySelector()
@@ -54,89 +117,58 @@ namespace gq
 
 	}
 
-	const bool GQBinarySelector::Match(const GumboNode* node) const
+	const bool GQBinarySelector::Match(const GQNode* node) const
 	{
 
 		switch (m_operator)
 		{
 			case SelectorOperator::Adjacent:
 			{
-				if (node->type != GUMBO_NODE_ELEMENT) 
-				{
-					return false;
-				}
-
-				if (node->parent == nullptr)
+				const GQNode* parent = node->GetParent();
+				if (parent == nullptr)
 				{					
 					return false;
 				}
 
-				if (node->index_within_parent == 0)
+				if (node->GetIndexWithinParent() == 0)
 				{
 					// Adjacent right hand side must immediately follow the left hand side element.
 					return false;
 				}
 
 				// Can't possibly have an adjacent sibling match without two children.
-				if (node->parent->v.element.children.length < 2)
+				if (parent->GetNumChildren() < 2)
 				{
 					// If there is only 1 child, then we cannot possibly match adjacent nodes.
 					return false;
-				}
+				}			
 
-				if (!m_rightHandSide->Match(node))
-				{
-					return false;
-				}				
+				auto prevSibling = parent->GetChildAt(node->GetIndexWithinParent() - 1);
 
-				// We don't want to match both sides to the same element, so start at the right
-				// hand side position minus one.
-				long rightHandPrevPosition = static_cast<long>((node->index_within_parent - 1));
-
-				for (long i = rightHandPrevPosition; i >= 0; --i)
-				{
-					GumboNode* prevSibling = static_cast<GumboNode*>(node->parent->v.element.children.data[i]);
-					if (prevSibling->type == GUMBO_NODE_TEXT || prevSibling->type == GUMBO_NODE_COMMENT)
-					{
-						continue;
-					}
-
-					return m_leftHandSide->Match(prevSibling);
-				}
+				return m_rightHandSide->Match(node) == true && m_leftHandSide->Match(prevSibling.get()) == true;
 			}
 			break;
 
 			case SelectorOperator::Child:
 			{
-				if (node->type != GUMBO_NODE_ELEMENT) 
-				{
-					return false;
-				}
+				const GQNode* parent = node->GetParent();
 
 				// Can't be a child without a parent. Boo hoo );
-				if (node->parent == nullptr)
+				if (parent == nullptr)
 				{
 					return false;
 				}
 
-				if (!m_rightHandSide->Match(node))
-				{
-					return false;
-				}
-
-				return  m_leftHandSide->Match(node->parent);
+				return  m_rightHandSide->Match(node) == true && m_leftHandSide->Match(node->GetParent()) == true;
 			}
 			break;
 
 			case SelectorOperator::Descendant:
 			{
-				if (node->type != GUMBO_NODE_ELEMENT) 
-				{
-					return false;
-				}
+				const GQNode* parent = node->GetParent();
 
 				// Can't be a descendant of the void, unless you're Xel'naga.
-				if (node->parent == nullptr)
+				if (parent == nullptr)
 				{
 					return false;
 				}
@@ -146,9 +178,9 @@ namespace gq
 					return false;
 				}
 
-				for (GumboNode* p = node->parent; p != nullptr; p = p->parent)
+				for (parent; parent != nullptr; parent = parent->GetParent())
 				{
-					return m_leftHandSide->Match(p);
+					return m_leftHandSide->Match(parent) == true;
 				}
 
 				return false;
@@ -156,59 +188,49 @@ namespace gq
 			break;
 
 			case SelectorOperator::Intersection:
-			{
-				if (node->type != GUMBO_NODE_ELEMENT) 
-				{
-					return false;
-				}
-
-				if (!m_rightHandSide->Match(node))
-				{
-					return false;
-				}
-
-				return m_leftHandSide->Match(node);
+			{				
+				return m_rightHandSide->Match(node) == true && m_leftHandSide->Match(node) == true;
 			}
 			break;
 
 			case SelectorOperator::Sibling:
 			{
-				if (node->type != GUMBO_NODE_ELEMENT) 
+				const GQNode* parent = node->GetParent();
+				if (parent == nullptr)
 				{
 					return false;
 				}
 
-				if (node->parent == nullptr)
+				if (node->GetIndexWithinParent() == 0)
+				{
+					// Adjacent right hand side must immediately follow the left hand side element.
+					return false;
+				}
+
+				// Can't possibly have an adjacent sibling match without two children.
+				if (parent->GetNumChildren() < 2)
+				{
+					// If there is only 1 child, then we cannot possibly match adjacent nodes.
+					return false;
+				}
+
+				if (m_rightHandSide->Match(node) == false)
 				{
 					return false;
 				}
 
-				if (node->index_within_parent == 0)
+				auto numChildren = parent->GetNumChildren();
+				
+				for (size_t i = 0; i < numChildren; ++i)
 				{
-					// Sibling right hand side must preceed the left hand side element.
-					return false;
-				}
+					if (i == node->GetIndexWithinParent())
+					{
+						continue;
+					}
 
-				// Can't possibly have a sibling match without two children.
-				if (node->parent->v.element.children.length < 2)
-				{
-					return false;
-				}
+					auto sibling = parent->GetChildAt(i);
 
-				if (!m_rightHandSide->Match(node))
-				{
-					return false;
-				}
-
-				// We don't want to match both sides to the same element, so start at the right
-				// hand side position minus one.
-				long rightHandPrevPosition = static_cast<long>((node->index_within_parent - 1));
-
-				for (long i = rightHandPrevPosition; i >= 0; --i)
-				{
-					GumboNode* other = static_cast<GumboNode*>(node->parent->v.element.children.data[i]);
-
-					if (m_leftHandSide->Match(other))
+					if (m_leftHandSide->Match(sibling.get()))
 					{
 						return true;
 					}
@@ -220,12 +242,7 @@ namespace gq
 
 			case SelectorOperator::Union:
 			{
-				if (node->type != GUMBO_NODE_ELEMENT) 
-				{
-					return false;
-				}
-
-				return m_rightHandSide->Match(node) || m_leftHandSide->Match(node);
+				return m_rightHandSide->Match(node) == true || m_leftHandSide->Match(node) == true;
 			}
 			break;
 		}

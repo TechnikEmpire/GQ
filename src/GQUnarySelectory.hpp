@@ -98,7 +98,7 @@ namespace gq
 		/// True if this selector was successfully matched against the supplied node, false
 		/// otherwise.
 		/// </returns>
-		virtual const bool Match(const GumboNode* node) const;
+		virtual const bool Match(const GQNode* node) const;
 
 	private:
 
@@ -126,7 +126,7 @@ namespace gq
 		/// <returns>
 		/// True if any of the supplied nodes descendants was a match, false otherwise. 
 		/// </returns>
-		const bool HasDescendantMatch(const GumboNode* node) const;
+		const bool HasDescendantMatch(const GQNode* node) const;
 
 	};
 

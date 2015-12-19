@@ -102,7 +102,7 @@ namespace gq
 		/// linked to one another by the supplied operator. For example, if the operator is
 		/// Adjascent, then the right hand side must match a node that is an immediate sibling of
 		/// the node matched by the left hand side.
-		/// 
+		/// <para>&#160;</para>
 		/// Neither selector should be nullptr. If either selector argument is nullptr, this
 		/// constructor will throw.
 		/// </summary>
@@ -133,7 +133,7 @@ namespace gq
 		/// True if this selector was successfully matched against the supplied node, false
 		/// otherwise.
 		/// </returns>
-		virtual const bool Match(const GumboNode* node) const;		
+		virtual const bool Match(const GQNode* node) const;
 
 	private:
 

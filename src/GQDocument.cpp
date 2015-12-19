@@ -29,12 +29,32 @@
 
 #include "GQDocument.hpp"
 #include "GQParser.hpp"
+#include "GQTreeMap.hpp"
+#include "GQUtil.hpp"
+#include "GQSerializer.hpp"
 
 namespace gq
 {
+	std::shared_ptr<GQDocument> GQDocument::Create(GumboOutput* gumboOutput)
+	{
+		if (gumboOutput != nullptr)
+		{
+			auto doc = std::make_shared<GQDocument>(gumboOutput);
+			
+			// Must call init to build out and index shared_ptr children.
+			doc->Init();
+
+			return doc;
+		}
+		else
+		{
+			return std::make_shared<GQDocument>();
+		}
+	}
 
 	GQDocument::GQDocument()
 	{
+		m_parent = nullptr;
 	}
 
 	GQDocument::GQDocument(GumboOutput* gumboOutput) :
@@ -47,7 +67,15 @@ namespace gq
 		if (gumboOutput == nullptr) { throw std::runtime_error(u8"In GQDocument::GQDocument(GumboOutput*) - Supplied GumboOutput* is nulltr! Use the parameterless constructor."); }
 		#endif
 		
-		m_gumboRootNode = GQNode::Create(m_gumboOutput->root);
+		m_node = m_gumboOutput->root;		
+
+		m_treeMap.reset(new GQTreeMap());	
+
+		#ifndef NDEBUG		
+		assert(m_treeMap != nullptr && u8"In GQDocument::GQDocument(GumboOutput*) - Failed to allocate m_treeMap. GQTreeMap* member m_treeMap is nullptr.");
+		#else		
+		if (m_treeMap == nullptr) { throw std::runtime_error(u8"In GQDocument::GQDocument(GumboOutput*) - Failed to allocate m_treeMap. GQTreeMap* member m_treeMap is nullptr."); }
+		#endif	
 	}
 
 	GQDocument::~GQDocument()
@@ -79,65 +107,33 @@ namespace gq
 			throw std::runtime_error(u8"In GQDocument::Parse(const std::string&) - Failed to parse and or allocate GumboOutput.");
 		}
 
-		m_gumboRootNode = GQNode::Create(m_gumboOutput->root);
+		m_node = m_gumboOutput->root;
+
+		m_treeMap.reset(new GQTreeMap());
+
+		#ifndef NDEBUG		
+		assert(m_treeMap != nullptr && u8"In GQDocument::Parse(GumboOutput*) - Failed to allocate m_treeMap. GQTreeMap* member m_treeMap is nullptr.");
+		#else		
+		if (m_treeMap == nullptr) { throw std::runtime_error(u8"In GQDocument::Parse(GumboOutput*) - Failed to allocate m_treeMap. GQTreeMap* member m_treeMap is nullptr."); }
+		#endif	
+
+		// Must call init to build out and index shared_ptr children.
+		Init();
 	}
 
-	GQSelection GQDocument::Find(const std::string& selectorString) const
+	void GQDocument::Init()
 	{
-		if (m_gumboOutput == nullptr)
-		{
-			throw std::runtime_error(u8"In GQDocument::Find(const std::string&) - Document is not initialized. You must parse an HTML string, or construct this object around a valid GumboOutput pointer.");
-		}	
+		m_nodeUniqueId = "0";
+		m_indexWithinParent = 0;
+		m_parent = nullptr;
 
-		GQParser parser;
+		// Needed so that we don't have to override entire methods just to use a different pointer.
+		// Yeah it's a little gross, this design. This is the product of suddenly drastically changing
+		// the design to having GQDocument subclass GQNode. XXX TODO find a more elegant way to clean this up.
+		m_rootTreeMap = m_treeMap.get();
 
-		auto selector = parser.CreateSelector(selectorString);
-
-		return Find(selector);
-	}
-
-	GQSelection GQDocument::Find(const SharedGQSelector& selector) const
-	{
-		if (m_gumboOutput == nullptr)
-		{
-			throw std::runtime_error(u8"In GQDocument::Find(const GQSelector&) - Document is not initialized. You must parse an HTML string, or construct this object around a valid GumboOutput pointer.");
-		}
-
-		std::vector<SharedGQNode> results;
-		selector->MatchAll(m_gumboOutput->root, results);
-
-		GQSelection selection(results);
-
-		return selection;
-	}
-
-	GQSelection GQDocument::FindFirst(const std::string& selectorString) const
-	{
-		if (m_gumboOutput == nullptr)
-		{
-			throw std::runtime_error(u8"In GQDocument::FindFirst(const std::string&) - Document is not initialized. You must parse an HTML string, or construct this object around a valid GumboOutput pointer.");
-		}
-
-		GQParser parser;
-
-		auto selector = parser.CreateSelector(selectorString);
-
-		return FindFirst(selector);
-	}
-
-	GQSelection GQDocument::FindFirst(const SharedGQSelector& selector) const
-	{
-		if (m_gumboOutput == nullptr)
-		{
-			throw std::runtime_error(u8"In GQDocument::FindFirst(const GQSelector&) - Document is not initialized. You must parse an HTML string, or construct this object around a valid GumboOutput pointer.");
-		}
-
-		std::vector<SharedGQNode> results;
-		selector->MatchFirst(m_gumboOutput->root, results);
-
-		GQSelection selection(results);
-
-		return selection;
+		BuildAttributes();
+		BuildChildren();
 	}
 
 } /* namespace gq */

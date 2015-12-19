@@ -34,6 +34,7 @@
 #include <gumbo.h>
 #include <vector>
 #include <cassert>
+#include <boost/utility/string_ref.hpp>
 
 // For printing debug information about compiled selectors to the console.
 #ifndef NDEBUG
@@ -52,6 +53,10 @@ namespace gq
 	/// </summary>
 	class GQSelector
 	{
+
+		// So that the GQParser can copy/set the original source selector string at
+		// the request of the user.
+		friend class GQParser;
 
 	public:
 
@@ -83,13 +88,15 @@ namespace gq
 			Tag
 		};
 
+		GQSelector();
+
 		/// <summary>
 		/// Constructs a GQSelector with the specified operator. 
 		/// </summary>
 		/// <param name="op">
 		/// The operator to define the functionality of this selector. 
 		/// </param>
-		GQSelector(SelectorOperator op = SelectorOperator::Dummy);
+		GQSelector(SelectorOperator op);
 
 		/// <summary>
 		/// Construct a selector meant to match a single element. 
@@ -143,8 +150,27 @@ namespace gq
 		/// <returns>
 		/// The GumboTag, if any, that this selector is to match against.
 		/// </returns>
-		const GumboTag GetTagTypeToMatch() const;		
+		const GumboTag GetTagTypeToMatch() const;	
+
+		/// <summary>
+		/// Gets the normalized tag name that this selector should match against. 
+		/// </summary>
+		/// <returns>
+		/// The normalized tag name that this selector should match against. Empty no tag is
+		/// specified.
+		/// </returns>
+		const boost::string_ref GetNormalizedTagTypeToMatch() const;
 		
+		/// <summary>
+		/// Get a collection of attributes that this selector requires for the sake of matching.
+		/// These attributes are used internally in GQNode and GQDocument to filter potential match
+		/// candidates by.
+		/// </summary>
+		/// <returns>
+		/// A collection of attributes that can be used to narrow down potential match candidates. 
+		/// </returns>
+		const std::vector< std::pair<boost::string_ref, boost::string_ref> >& GetMatchTraits() const;
+
 		/// <summary>
 		/// Check if this selector is a match against the supplied node. 
 		/// </summary>
@@ -155,7 +181,7 @@ namespace gq
 		/// True if this selector was successfully matched against the supplied node, false
 		/// otherwise.
 		/// </returns>
-		virtual const bool Match(const GumboNode* node) const;
+		virtual const bool Match(const GQNode* node) const;
 
 		/// <summary>
 		/// Recursively tests for matches against the supplied node and all of its descendants,
@@ -167,10 +193,7 @@ namespace gq
 		/// <returns>
 		/// A collection of all nodes matched by this selector. 
 		/// </returns>
-		void MatchAll(const GumboNode* node, std::vector< std::shared_ptr<GQNode> >& results) const;
-
-
-		void MatchFirst(const GumboNode* node, std::vector < std::shared_ptr<GQNode> >& results) const;
+		void MatchAll(const std::shared_ptr<GQNode>& node, std::vector< std::shared_ptr<GQNode> >& results) const;
 
 		/// <summary>
 		/// Accepts an existing collection of nodes and removes all nodes in the collection that do
@@ -181,8 +204,56 @@ namespace gq
 		/// </param>
 		void Filter(std::vector< std::shared_ptr<GQNode> >& nodes) const;
 
+		/// <summary>
+		/// Fetches the original selector string that the selector was built from. This will only be
+		/// set to a non-empty string if it was specified at selector construction that the original
+		/// string should be copied and retained.
+		/// </summary>
+		/// <returns>
+		/// </returns>
+		boost::string_ref GetOriginalSelectorString() const;
+
+	protected:
+
+		/// <summary>
+		/// Allows subclasses to modify the tag to match. Updates the member variables that are returned
+		/// from ::GetTagTypeToMatch() and GetNormalizedTagTypeToMatch().
+		/// </summary>
+		/// <param name="tag">
+		/// The tag type that this selector should match against, if any.
+		/// </param>
+		void SetTagTypeToMatch(const GumboTag tag);
+
+		/// <summary>
+		/// Adds the supplied trait to the selector's internal traits collection. These traits are
+		/// used for quickly finding potential match canadidates as opposed to doing manual,
+		/// recursive match testing.
+		/// </summary>
+		/// <param name="key">
+		/// The trait key. The key should be the name of some attribute in a potential candidate. 
+		/// </param>
+		/// <param name="value">
+		/// The trait value. The value should either be an exact value match sought in a potential
+		/// candidate, or a "*" if specifying an exact value match is not possible. In the event of
+		/// an asterik value, any node containing the supplied attribute will be selected as a
+		/// potential match candidate, so use wisely.
+		/// </param>
+		void AddMatchTrait(boost::string_ref key, boost::string_ref value);
+
 	private:
 		
+		/// <summary>
+		/// If the selector is a tag selector, this member will store the type of GumboTag the
+		/// selector must match against.
+		/// </summary>
+		GumboTag m_tagTypeToMatch = GumboTag(0);
+
+		/// <summary>
+		/// The value of gumbo_normalized_tagname(m_tagTypeToMatch), if m_tagTypeToMatch !=
+		/// GUMBO_TAG_UNKNOWN.
+		/// </summary>
+		boost::string_ref m_normalizedTagTypeToMatch;
+
 		/// <summary>
 		/// Defines how the matching in this selector will work. Based on the option, the text to be
 		/// matched will be matched in different ways. See comments in the operator class.
@@ -222,17 +293,29 @@ namespace gq
 		/// iterating through siblings/children on such selectors, we need to ignore anything not of
 		/// the same type as the node we're trying to match when counting. nth-last-of-type(2) is
 		/// very easy to calculate when you only count siblings/children of the same type.
-		/// 
+		/// <para>&#160;</para>
 		/// I know I've explained this to death, but I want to save the user the burden I had of
 		/// resolving the true meaning/purpose of this member.
 		/// </summary>
-		bool m_matchType;
-		
+		bool m_matchType;	
+
 		/// <summary>
-		/// If the selector is a tag selector, this member will store the type of GumboTag the
-		/// selector must match against.
+		/// A copy of the original selector string. Is only set if the user requested that the
+		/// original string be retained when constructing the selector. Default constructed to empty
+		/// string.
 		/// </summary>
-		GumboTag m_tagTypeToMatch;
+		std::string m_originalSelectorString;
+
+		/// <summary>
+		/// Stores "traits" about potential candidates. This is used heavily in the core matching
+		/// API for quickly looking up candidates based on such traits. Manual recursive matching is
+		/// highly undesirable because it absolutely murders performance. As such, it is absolutely
+		/// required that any selector of any type generates and stores accurate traits for finding
+		/// matches. Manual searching can/will happen but only when absolutely necessary. It is a
+		/// goal for this project that manual searching should be eliminated as a requirement
+		/// altogether.
+		/// </summary>
+		std::vector< std::pair<boost::string_ref, boost::string_ref> > m_matchTraits;
 
 		/// <summary>
 		/// Init member defaults across multiple constructors.
@@ -249,11 +332,7 @@ namespace gq
 		/// <param name="nodes">
 		/// The existing collection of matched nodes to append matches to. 
 		/// </param>
-		/// <param name="skipChildrenOnMatch">
-		/// If the node is a match, it will be added to the collection and the function will
-		/// immediately return.
-		/// </param>
-		void MatchAllInto(const GumboNode* node, std::vector< std::shared_ptr<GQNode> >& nodes, const bool& skipChildrenOnMatch) const;
+		void MatchAllInto(const std::shared_ptr<GQNode>& node, std::vector< std::shared_ptr<GQNode> >& nodes) const;
 
 	};
 

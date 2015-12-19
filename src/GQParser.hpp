@@ -34,9 +34,7 @@
 #include "GQTextSelector.hpp"
 #include "GQUnarySelectory.hpp"
 #include <unordered_map>
-#include <boost/functional/hash.hpp>
-#include <boost/utility/string_ref.hpp>
-#include <boost/algorithm/string.hpp>
+#include "GQStrRefHash.hpp"
 #include <stdexcept>
 #include <locale>
 
@@ -70,23 +68,16 @@ namespace gq
 		/// <param name="selectorString">
 		/// The raw selector string to parse and compile into a selector. 
 		/// </param>
+		/// <param name="retainOriginalString">
+		/// If true, the original string will be copied into the returned selector. This is not
+		/// necessary, and is only recommended for debugging selectors. Default is false.
+		/// </param>
 		/// <returns>
 		/// The compiled selector object. 
 		/// </returns>
-		SharedGQSelector CreateSelector(std::string selectorString);
+		SharedGQSelector CreateSelector(std::string selectorString, const bool retainOriginalString = false) const;
 
-	private:
-
-		/// <summary>
-		/// Hash implementation for string_ref keys in unordered_maps.
-		/// </summary>
-		struct StringRefHasher
-		{
-			size_t operator()(const boost::string_ref& strRef) const
-			{				
-				return boost::hash_range(strRef.begin(), strRef.end());
-			}
-		};
+	private:		
 
 		/// <summary>
 		/// Enumeration of the pseudo selectors supported by the parser.
@@ -130,7 +121,7 @@ namespace gq
 		/// separated by a "," into a chain of GQBinarySelector objects using the Union operator,
 		/// which are also represented by a single GQSelector which is the topmost element in the
 		/// chain.
-		/// 
+		/// <para>&#160;</para>
 		/// As with all other parsing members, this function will consume characters from the front
 		/// of the supplied string. If no error is thrown, the consumption should leave the supplied
 		/// string in a valid state that the parser can continue from. If an error is thrown, the
@@ -152,7 +143,7 @@ namespace gq
 		/// selectors where the returned GQSelector is the topmost element in the chain. This
 		/// function delegates parsing individual selectors to methods such as
 		/// ::ParseSimpleSelectorSequence(...) and then handles the combining, if any, internally.
-		/// 
+		/// <para>&#160;</para>
 		/// As with all other parsing members, this function will consume characters from the front
 		/// of the supplied string. If no error is thrown, the consumption should leave the supplied
 		/// string in a valid state that the parser can continue from. If an error is thrown, the
@@ -173,7 +164,7 @@ namespace gq
 		/// selectors to other members such as ::ParsePseudoclassSelector(...),
 		/// ::ParseAttributeSelector(...) depending on the type of selector that this function has
 		/// determined needs to be parsed based on the input string.
-		/// 
+		/// <para>&#160;</para>
 		/// As with all other parsing members, this function will consume characters from the front
 		/// of the supplied string. If no error is thrown, the consumption should leave the supplied
 		/// string in a valid state that the parser can continue from. If an error is thrown, the
@@ -192,7 +183,7 @@ namespace gq
 		/// Parses a single pseudo class selector from the supplied string. Returns a single,
 		/// non-chained selector which may or may not be combined into a selector chain object. That
 		/// is left up to invoking methods such as ::ParseSelector(...).
-		/// 
+		/// <para>&#160;</para>
 		/// As with all other parsing members, this function will consume characters from the front
 		/// of the supplied string. If no error is thrown, the consumption should leave the supplied
 		/// string in a valid state that the parser can continue from. If an error is thrown, the
@@ -211,7 +202,7 @@ namespace gq
 		/// Parses a single attribute selector from the supplied string. Returns a single,
 		/// non-chained selector which may or may not be combined into a selector chain object. That
 		/// is left up to invoking methods such as ::ParseSelector(...).
-		/// 
+		/// <para>&#160;</para>
 		/// As with all other parsing members, this function will consume characters from the front
 		/// of the supplied string. If no error is thrown, the consumption should leave the supplied
 		/// string in a valid state that the parser can continue from. If an error is thrown, the
@@ -230,7 +221,7 @@ namespace gq
 		/// Parses a single class selector from the supplied string. Returns a single,
 		/// non-chained selector which may or may not be combined into a selector chain object. That
 		/// is left up to invoking methods such as ::ParseSelector(...).
-		/// 
+		/// <para>&#160;</para>
 		/// As with all other parsing members, this function will consume characters from the front
 		/// of the supplied string. If no error is thrown, the consumption should leave the supplied
 		/// string in a valid state that the parser can continue from. If an error is thrown, the
@@ -249,7 +240,7 @@ namespace gq
 		/// Parses a ID selector from the supplied string. Returns a single, non-chained selector
 		/// which may or may not be combined into a selector chain object. That is left up to
 		/// invoking methods such as ::ParseSelector(...).
-		/// 
+		/// <para>&#160;</para>
 		/// As with all other parsing members, this function will consume characters from the front
 		/// of the supplied string. If no error is thrown, the consumption should leave the supplied
 		/// string in a valid state that the parser can continue from. If an error is thrown, the
@@ -269,7 +260,7 @@ namespace gq
 		/// the supplied string. Returns a single, non-chained selector which may or may not be
 		/// combined into a selector chain object. That is left up to invoking methods such as
 		/// ::ParseSelector(...).
-		/// 
+		/// <para>&#160;</para>
 		/// As with all other parsing members, this function will consume characters from the front
 		/// of the supplied string. If no error is thrown, the consumption should leave the supplied
 		/// string in a valid state that the parser can continue from. If an error is thrown, the
@@ -287,7 +278,7 @@ namespace gq
 		/// <summary>
 		/// Attempts to parse the left hand and right hand side of the supplied nth parameter
 		/// string. Handles nth notation such as -n4, 3n+2, odd/even etc.
-		/// 
+		/// <para>&#160;</para>
 		/// As with all other parsing members, this function will consume characters from the front
 		/// of the supplied string. If no error is thrown, the consumption should leave the supplied
 		/// string in a valid state that the parser can continue from. If an error is thrown, the
@@ -309,7 +300,7 @@ namespace gq
 		/// <summary>
 		/// Attempts to extract a number from the front of the supplied selector string, converting
 		/// it to an integer.
-		/// 
+		/// <para>&#160;</para>
 		/// As with all other parsing members, this function will consume characters from the front
 		/// of the supplied string. If no error is thrown, the consumption should leave the supplied
 		/// string in a valid state that the parser can continue from. If an error is thrown, the
@@ -346,7 +337,7 @@ namespace gq
 		/// function will throw, because either the supplied selector string is fundamentally
 		/// broken, or the user has mad an error in logic by calling this method when it ought not
 		/// to be.
-		/// 
+		/// <para>&#160;</para>
 		/// As with all other parsing members, this function will consume characters from the front
 		/// of the supplied string. If no error is thrown, the consumption should leave the supplied
 		/// string in a valid state that the parser can continue from. If an error is thrown, the
@@ -376,12 +367,12 @@ namespace gq
 		/// supplied string begins with a single quote, then all of the contents between that first
 		/// character and the first discovered single quote not preceeded by a forward slash ("\")
 		/// are extracted and returned.
-		/// 
+		/// <para>&#160;</para>
 		/// Note that this function absolutely expects that the first character is either a single
 		/// or double quote, and an acceptabled closing quote of the same kind is present in the
 		/// string. Supplying a string to this function that does not meet those requirements will
 		/// cause this function to throw.
-		/// 
+		/// <para>&#160;</para>
 		/// As with all other parsing members, this function will consume characters from the front
 		/// of the supplied string. If no error is thrown, the consumption should leave the supplied
 		/// string in a valid state that the parser can continue from. If an error is thrown, the
@@ -406,7 +397,7 @@ namespace gq
 		/// that this behavior is not acceptable for using with Gumbo Parser, as Gumbo Parser
 		/// ignores escaped character sequences, embedding them directly, while also converting
 		/// character references.
-		/// 
+		/// <para>&#160;</para>
 		/// So, ParseIdentifier was modified to accept escaped characters, and skip over named or
 		/// numbered character sequences, accepting them as a valid part of an identifier. At this
 		/// stage, I had removed a significant portion of the original code functionality, bypassing
@@ -414,7 +405,7 @@ namespace gq
 		/// and handled. Being wary, I have left this function for temporary legacy purposes until I
 		/// can confirm with complete confidence that my changes are valid and this function can be
 		/// removed and replaced with ::ParseIdentifier(...). It's left here to remind me.
-		/// 
+		/// <para>&#160;</para>
 		/// As with all other parsing members, this function will consume characters from the front
 		/// of the supplied string. If no error is thrown, the consumption should leave the supplied
 		/// string in a valid state that the parser can continue from. If an error is thrown, the
@@ -433,12 +424,12 @@ namespace gq
 		/// <summary>
 		/// Extracts a valid identifier from the front of the supplied string, removing it from the
 		/// supplied string and replacing it in the return object.
-		/// 
+		/// <para>&#160;</para>
 		/// Accepts named character and numbered character references as valid portions of an
 		/// indetifier. Also accepts escaped characters like "\E9 " as valid portions of an
 		/// identifier. The format for escaped characters must be followed, however. Must be a
 		/// slash, followed by ONLY valid hex digits, then a single space. Anything else will throw.
-		/// 
+		/// <para>&#160;</para>
 		/// As with all other parsing members, this function will consume characters from the front
 		/// of the supplied string. If no error is thrown, the consumption should leave the supplied
 		/// string in a valid state that the parser can continue from. If an error is thrown, the

@@ -39,19 +39,19 @@ namespace gq
 	/// <summary>
 	/// The GQTextSelector is designed to match specifically against text elements. There are four
 	/// types of operations supported by the GQTextSelector.
-	/// 
+	/// <para>&#160;</para>
 	/// Match against a node where itself or any of its descendants contains a specific string.
 	/// Match against a node where itself or any of its direct children contain a specific string.
 	/// Match against a node where itself or any of its descendants contain text that is positively
 	/// matched against by a regular expression. Match against a node where itself or any of its
 	/// direct children contain text that is positively matched against by a regular expression.
-	/// 
+	/// <para>&#160;</para>
 	/// Currently the regex implementation is rigid in some regards. Regular expressions such as
 	/// "/some.*stuff/gi" are not supported, because this would involve parsing the expression from
 	/// the options and converting options to implementation specific flags, maybe. I say maybe
 	/// because I didn't even bother investigating really, as I have not read the w3 standard on the
 	/// matter. For time constraints some things such as this are presently left on the to do list.
-	/// 
+	/// <para>&#160;</para>
 	/// The grammar is specified to be ECMAScript which is supposed to be implemented as defined in
 	/// ECMA-262 section [28.13].
 	/// </summary>
@@ -133,7 +133,7 @@ namespace gq
 		/// True if this selector was successfully matched against the supplied node, false
 		/// otherwise.
 		/// </returns>
-		virtual const bool Match(const GumboNode* node) const;
+		virtual const bool Match(const GQNode* node) const;
 
 	private:
 

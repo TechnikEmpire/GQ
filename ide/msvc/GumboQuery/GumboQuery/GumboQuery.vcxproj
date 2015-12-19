@@ -43,9 +43,12 @@
     <ClInclude Include="..\..\..\..\src\GQSelection.hpp" />
     <ClInclude Include="..\..\..\..\src\GQSelector.hpp" />
     <ClInclude Include="..\..\..\..\src\GQSerializer.hpp" />
+    <ClInclude Include="..\..\..\..\src\GQSpecialTraits.hpp" />
     <ClInclude Include="..\..\..\..\src\GQTextSelector.hpp" />
+    <ClInclude Include="..\..\..\..\src\GQTreeMap.hpp" />
     <ClInclude Include="..\..\..\..\src\GQUnarySelectory.hpp" />
     <ClInclude Include="..\..\..\..\src\GQUtil.hpp" />
+    <ClInclude Include="..\..\..\..\src\GQStrRefHash.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\src\GQAttributeSelector.cpp" />
@@ -56,7 +59,9 @@
     <ClCompile Include="..\..\..\..\src\GQSelection.cpp" />
     <ClCompile Include="..\..\..\..\src\GQSelector.cpp" />
     <ClCompile Include="..\..\..\..\src\GQSerializer.cpp" />
+    <ClCompile Include="..\..\..\..\src\GQSpecialTraits.cpp" />
     <ClCompile Include="..\..\..\..\src\GQTextSelector.cpp" />
+    <ClCompile Include="..\..\..\..\src\GQTreeMap.cpp" />
     <ClCompile Include="..\..\..\..\src\GQUnarySelectory.cpp" />
     <ClCompile Include="..\..\..\..\src\GQUtil.cpp" />
   </ItemGroup>
@@ -211,8 +216,9 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;GUMBQUERY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>GQ_VERBOSE_DEBUG_NFO;WIN32;_DEBUG;_WINDOWS;_USRDLL;GUMBQUERY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\include;$(ProjectDir)..\..\..\..\third-party\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4503;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -235,8 +241,9 @@ xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)\..\include"</Command>
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;GUMBQUERY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>GQ_VERBOSE_DEBUG_NFO;WIN32;_DEBUG;_WINDOWS;_USRDLL;GUMBQUERY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\include;$(ProjectDir)..\..\..\..\third-party\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4503;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -259,8 +266,9 @@ xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)\..\include"</Command>
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>_DEBUG;_WINDOWS;_USRDLL;GUMBQUERY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>GQ_VERBOSE_DEBUG_NFO;_DEBUG;_WINDOWS;_USRDLL;GUMBQUERY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\include;$(ProjectDir)..\..\..\..\third-party\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4503;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -283,8 +291,9 @@ xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)\..\include"</Command>
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>_DEBUG;_WINDOWS;_USRDLL;GUMBQUERY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>GQ_VERBOSE_DEBUG_NFO;_DEBUG;_WINDOWS;_USRDLL;GUMBQUERY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\include;$(ProjectDir)..\..\..\..\third-party\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4503;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -309,8 +318,9 @@ xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)\..\include"</Command>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;GUMBQUERY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>GQ_VERBOSE_DEBUG_NFO;WIN32;NDEBUG;_WINDOWS;_USRDLL;GUMBQUERY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\include;$(ProjectDir)..\..\..\..\third-party\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4503;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -337,8 +347,9 @@ xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)\..\include"</Command>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;GUMBQUERY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>GQ_VERBOSE_DEBUG_NFO;WIN32;NDEBUG;_WINDOWS;_USRDLL;GUMBQUERY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\include;$(ProjectDir)..\..\..\..\third-party\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4503;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -365,8 +376,9 @@ xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)\..\include"</Command>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>NDEBUG;_WINDOWS;_USRDLL;GUMBQUERY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>GQ_VERBOSE_DEBUG_NFO;NDEBUG;_WINDOWS;_USRDLL;GUMBQUERY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\include;$(ProjectDir)..\..\..\..\third-party\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4503;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -393,8 +405,9 @@ xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)\..\include"</Command>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>NDEBUG;_WINDOWS;_USRDLL;GUMBQUERY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>GQ_VERBOSE_DEBUG_NFO;NDEBUG;_WINDOWS;_USRDLL;GUMBQUERY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\include;$(ProjectDir)..\..\..\..\third-party\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4503;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

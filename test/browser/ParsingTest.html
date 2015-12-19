@@ -6,99 +6,34 @@
 </head>
 	<body>
 	
-		<input type="file" id="testsFile" name="testsFile" />
+		<div id="testdataWrapper">
+		<p>
+		<p>Select Test File "parsingtest.data". Will reject any other file.</p>
+		<p>On success, this input will be removed.</p>
+		<input type="file" id="testsFile" name="testsFile" ></input>
+		</p>
+		</div>
+		
+		<br/>
+		<br/>
+		
+		<div id="testhtmlWrapper">
+		<p>
+		<p>Select Test HTML File "testhtml.data". Will reject any other file.</p>
+		<p>On success, this input will be removed.</p>
 		<input type="file" id="testHtmlFile" name="testHtmlFile" />
-	
+		</p>
+		</div>
+		
 		<script src="jquery-1.11.3.js"></script>
 		
 		<script>
 		
-			function RunTest(testNumber, testExpectedMatches, testSelector, testHtml, dontCheckMatches)
-			{
-				if(testSelector.indexOf("\^attribute-be") !== -1)
-				{
-					// Jquery has no support for the attribute key begins with syntax I guess. AFAIK this isn't standard
-					// presently so that's understandable. As such, we skip the test.
-					return -1;
-				}
-				
-				if(testSelector.indexOf("haschild") !== -1)
-				{
-					// I blindly ported support for the :haschild pseudo selector found in gumbo-query, but I think this isn'table
-					// even a valid pseudo. To jquery it certainly isn't, so we need to skip this test. Return -1 to indicate skipped.
-					return -1;
-				}
-				
-				if(testSelector.indexOf("containsown") !== -1)
-				{
-					// jsoup accepts this, but not jquery, so again, we have to skip it. Return -1 to indicate skipped.
-					return -1;
-				}
-				
-				if(testSelector.indexOf("matches") !== -1 || testSelector.indexOf("matchesown") !== -1)
-				{
-					// These are proposed selectors (non-standard) and they are implemented as regex searches for text
-					// within node descendants (matches) and node direct children (matchesown) in cascadia and as such
-					// in GQ and gumbo-query (from which GQ is derived). Must skip. Also, going to the current working
-					// draft for matches, this implementation is completely wrong anyway. Yeehaw, go cowboy coding.
-					// Return -1 to indicate skipped.
-					return -1;
-				}
-				
-				// We don't need to check || !testSelector || !testHtml because
-				// we already verify the strings are valid in the parsing loop.
-				if(testNumber === -1 || testExpectedMatches === -1)
-				{
-					alert("Invalid test number or invalid expected matches number. The test file is improperly formatted. Aborting.");
-					// Return 0 to indicate test failed.
-					return 0;
-				}
-				
-				var matchResult = $(document).find(testSelector);
-				
-				if(matchResult.length != testExpectedMatches)
-				{
-					console.log("Test number " + testNumber + " failed due to the number of matches " + matchResult.length + " differing from the number of expected matches " + testExpectedMatches + ".");
-					console.log("Failed Selector: "  + testSelector);
-					console.log("Failed HTML: "  + $(testHtml).html());
-					// Return 0 to indicate test failed.
-					return 0;
-				}
-				
-				if(dontCheckMatches === false)
-				{
-					console.log("Test number " + testNumber + " passed without validating the content of the matches.");
-					// Return 1 to indicate test passed.
-					return 1;
-				}
-				else
-				{
-					for(var i = 0; i < matchResult.length; ++i)
-					{
-						if($(matchResult[i]).text().indexOf("FAIL") != -1)
-						{
-							console.log("Test number " + testNumber + " failed because the content of one of the matches indicated a FAIL.");
-							console.log("Failed Selector: "  + testSelector);
-							console.log("Failed HTML: "  + $(testHtml).html());
-							// Return 0 to indicate test failed.
-							return 0;
-						}
-					}
-					
-					console.log("Test number " + testNumber + " passed by checking the number of matches and validating the content of the matches.");
-					// Return 1 to indicate test passed.
-					return 1
-				}
-			}
+			var parsedSelectors = [];			
 		
-			function RunTests(testData)
+			function ParseSelectors(selectorTestData)
 			{
-				var tests = testData.split("\n");
-				
-				var testsRun = 0;
-				var testsPassed = 0;
-				var testsFailed = 0;
-				var testsSkipped = 0;
+				var tests = selectorTestData.split("\n");
 				
 				for(var i = 0; i < tests.length; ++i){
 					
@@ -108,135 +43,80 @@
 						continue;
 					}
 					
-					var testParts = tests[i].split("%");
-					
-					var testNumber = -1;
-					var testExpectedMatches = -1;
-					var testSelector = "";
-					var testHtml = "";
-					
-					for(var j = 0; j < testParts.length; ++j)
+					var selectorPos = tests[i].indexOf("TestSelector@");
+					if(selectorPos != -1)
 					{
-						var splitPos = testParts[j].indexOf("@");
-						var testVariableName = testParts[j].substring(0, splitPos);
-						var testVariableValue = testParts[j].substring(splitPos+1);
-						
-						var checkForPassFail = true;
-						
-						if(testVariableName && testVariableValue)
+						var selector = tests[i].substring(selectorPos+13);
+						if(selector)
 						{
-							switch (testVariableName)
-							{
-								case "TestNumber":
-									testNumber = parseInt(testVariableValue);
-								break;
-								
-								case "TestSelector":
-									// In cascadia, gumbo-query and GQ, numeric character references can be directly
-									// embedded without the need to be enclosed like &#E9;. However, this isn't true 
-									// with jquery. So, we need to convert any such instances to proper NCR's. However,
-									// just FYI, these are parsed incorrectly in gumbo-query.
-									//
-									// UPDATE - This is no longer true. Named and Numeric character references should
-									// absolutely be required to be wrapped appropriately, no spaces. GQ has been changed
-									// to only accepted properly declared named/numbered character references. However,
-									// the original gumbo-query still handles these incorrectly. If you supply an improperly
-									// formatted Named/Numbered character reference to GQ, at best you'll get an error thrown
-									// about it, at worst it'll slip by and destroy the final compiled selector and it will
-									// not function correctly.
-									//testVariableValue = testVariableValue.replace(/(\\([a-fA-F0-9]{1,6}) )/gi, "&#x$2;")
-									
-									// In GQ, we can simply accept selectors with character references. In jquery, we can't. The character
-									// references need to be decoded first before we can put them to use.
-									testSelector = $("<div/>").html(testVariableValue).text();
-								break;
-								
-								case "TestExpectedMatches":
-									testExpectedMatches = parseInt(testVariableValue);
-									checkForPassFail = true;
-								break;
-								
-								case "TestExpectedUncheckedMatches":
-									// This is necessary for checking selectors like contains and containsown, matches etc. 
-									// Can't easily verify that the selector is actually as match (rather, too lazy to) soft
-									// as long as we get the expected number of matches, we'll call it a pass.
-									testExpectedMatches = parseInt(testVariableValue);
-									checkForPassFail = false;
-								break;
-								
-								case "TestHtml":
-									// In cascadia, gumbo-query and GQ, numeric character references can be directly
-									// embedded without the need to be enclosed like &#E9;. However, this isn't true 
-									// with jquery. So, we need to convert any such instances to proper NCR's. However,
-									// just FYI, these are parsed incorrectly in gumbo-query.
-									//
-									// UPDATE - This is no longer true. Named and Numeric character references should
-									// absolutely be required to be wrapped appropriately, no spaces. GQ has been changed
-									// to only accepted properly declared named/numbered character references. However,
-									// the original gumbo-query still handles these incorrectly. If you supply an improperly
-									// formatted Named/Numbered character reference to GQ, at best you'll get an error thrown
-									// about it, at worst it'll slip by and destroy the final compiled selector and it will
-									// not function correctly.
-									//testVariableValue = testVariableValue.replace(/(\\([a-fA-F0-9]{1,6}) )/gi, "&#x$2;")
-									
-									testHtml = testVariableValue;
-									
-									// Replace the current document with the newly loaded document. This is necessary, because
-									// if we just use jquery's parseHtml with some trickery to get a second DOM, it will not be
-									// properly formatted and will fudge the test results.
-									var newDoc = document.open("text/html", "replace");
-									newDoc.write(testHtml);
-									newDoc.close();
-								break;
-								
-								default:
-									alert("Invalid test variable: " + testVariableName + ". The test file is improperly formatted. Aborting.");
-									return;
-							}
-							
-							
+							parsedSelectors.push(selector);
 						}
 						else
 						{
-							alert("Failed to extract test variable name and value. The test file is improperly formatted. Aborting.");
+							alert("Null or empty selector string: " + selector + ". The test file is improperly formatted. Aborting.");
 							return;
 						}
 					}
-					
-					var testResult = RunTest(testNumber, testExpectedMatches, testSelector, testHtml, checkForPassFail);
-					
-					++testsRun;
-					
-					switch (testResult)
+					else
 					{
-						case -1:
-							testsSkipped++;
-						break;
-						
-						case 0:
-							testsFailed++;
-						break;
-						
-						case 1:
-							testsPassed++;
-						break;
-						
-						default:
-							console.log("Invalid test result returned.");
-					}
+						console.log(tests[i]);
+						alert("Failed to extract test variable name and value. The test file is improperly formatted. Aborting.");
+						return;
+					}			
+				}
+			}
+		
+			var testSelectorData = "";
+			var testHtmlData = "";		
+			
+			function StartTest()
+			{			
+				ParseSelectors(testSelectorData);
+				
+				try
+				{				
+					var otherDoc = $.parseHTML(testHtmlData);
+				}catch(e)
+				{
+					console.log(e);
 				}
 				
-				// Put back an empty body to display test results.
+				var totalMatches = 0;
+				var totalRun = 0;
+				
+				var start = window.performance.now();
+				
+				for(var i = 0; i < parsedSelectors.length; ++i)
+				{
+					try
+					{
+						var matches = $(otherDoc).find(parsedSelectors[i]);
+						totalMatches += matches.length;
+						++totalRun;
+					}catch(e)
+					{
+						console.log(e);
+					}					
+				}
+				
+				var end = window.performance.now();
+				
+				var msec = end - start;
+				var msecPerSelector = (msec / (parsedSelectors.length));
+				var selectorsPerMsec = ((parsedSelectors.length) / msec);
+				
 				var newDoc = document.open("text/html", "replace");
 				newDoc.write("<html><body></body></html>");
 				newDoc.close();
 				
-				$("body").append("<ul> " + " <li> Tests Run: " + testsRun + "</li> " + " <li> Tests Skipped: " + testsSkipped + "</li> " + " <li> Tests Failed: " + testsFailed + "</li> " + " <li> Tests Passed: " + testsPassed + "</li> " + " </ul><br/><br/>Check console log for more information.")
+				$("body").show();
+				
+				$("body").append("<ul> " + " <li> Total Matches: " + totalMatches + "</li> " + " <li> Total Time in msec: " + msec + "</li> " + " <li> Msec per selector: " + msecPerSelector + "</li> " + " <li> Selectors per msec: " + selectorsPerMsec + "</li> " + " <li> Total selectors run: " + totalRun + "</li> " + " </ul><br/><br/>Check console log for more information.")
 			}
-		
+			
 			$( document ).ready(function() {
 				 
-				$("#files").change(function()
+				$("#testsFile").change(function()
 				{
 					var files = this.files;
 					if(files.length > 0)
@@ -249,7 +129,14 @@
 							
 							if(fileContents)
 							{
-								RunTests(fileContents);
+								testSelectorData = fileContents;
+								$("#testdataWrapper").remove();
+								
+								if(testHtmlData.length > 0)
+								{
+									// Test HTML is already loaded, so start the test.
+									StartTest();
+								}
 							}
 							else
 							{
@@ -257,9 +144,9 @@
 							}							
 						});
 						
-						if(files[0].name !== "matchingtest.data")
+						if(files[0].name !== "parsingtest.data")
 						{
-							alert("Expected the file \"matchingtest.data\", but got the file \"" + files[0].name + "\" instead. Please load the \"matchingtest.data\" file that this test is designed to use.");
+							alert("Expected the file \"parsingtest.data\", but got the file \"" + files[0].name + "\" instead. Please load the \"parsingtest.data\" file that this test is designed to use.");
 							return;
 						}
 						
@@ -271,6 +158,47 @@
 					}					
 				});
 				
+				$("#testHtmlFile").change(function()
+				{				
+					var files = this.files;
+					if(files.length > 0)
+					{						
+						var freader = new FileReader();
+						
+						$(freader).load(function() 
+						{
+							var fileContents = this.result;
+							
+							if(fileContents)
+							{
+								testHtmlData = fileContents;
+								$("#testhtmlWrapper").remove();
+								
+								if(testSelectorData.length > 0)
+								{
+									// Test selector data is already loaded, so start the test.
+									StartTest();
+								}
+							}
+							else
+							{
+								alert("Failed to load any valid string content from the selected file.");
+							}							
+						});
+						
+						if(files[0].name !== "testhtml.data")
+						{
+							alert("Expected the file \"testhtml.data\", but got the file \"" + files[0].name + "\" instead. Please load the \"testhtml.data\" file that this test is designed to use.");
+							return;
+						}
+						
+						freader.readAsText(files[0]);
+					}
+					else
+					{
+						alert("No files selected!");
+					}	
+				});
 			});
 		</script>
 	</body>

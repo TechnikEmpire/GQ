@@ -30,23 +30,54 @@
 #include "GQNode.hpp"
 #include "GQUtil.hpp"
 #include "GQSelection.hpp"
+#include "GQParser.hpp"
+#include "GQTreeMap.hpp"
+#include "GQSpecialTraits.hpp"
+#include "GQSerializer.hpp"
+#include <typeinfo>
 
 namespace gq
 {
 
-	std::shared_ptr<GQNode> GQNode::Create(const GumboNode* node)
+	std::shared_ptr<GQNode> GQNode::Create(const GumboNode* node, GQTreeMap* map, const std::string& parentId, const size_t indexWithinParent, GQNode* parent)
 	{
-		return std::make_shared<GQNode>(node);
+		auto newNode = std::make_shared<GQNode>(node, parentId, indexWithinParent, parent);
+
+		#ifndef NDEBUG		
+		assert(map != nullptr && u8"In GQNode::Create(const GumboNode*, GQTreeMap*, const std::string&, const size_t, GQNode*) - Cannot initialize a GQNode without a valid GQTreeMap* pointer. GQTreeMap* is nullptr.");
+		#else		
+		if (map == nullptr) { throw std::runtime_error(u8"In GQNode::Create(const GumboNode*, GQTreeMap*, const std::string&, const size_t, GQNode*) - Cannot initialize a GQNode without a valid GQTreeMap* pointer. GQTreeMap* is nullptr."); }
+		#endif	
+
+		newNode->m_rootTreeMap = map;
+
+		newNode->Init();
+
+		return newNode;
 	}
 
-	GQNode::GQNode(const GumboNode* node) : 
-		m_node(node)
+	GQNode::GQNode()
+	{
+		m_parent = nullptr;
+	}
+
+	GQNode::GQNode(const GumboNode* node, const std::string& parentId, const size_t indexWithinParent, GQNode* parent) :
+		m_node(node), 
+		m_nodeUniqueId(parentId + std::to_string(node->index_within_parent)),
+		m_indexWithinParent(indexWithinParent), 
+		m_parent(parent)
 	{		
 		#ifndef NDEBUG
-		assert(node != nullptr && u8"In GQNode::GQNode(const GumboNode*) - Cannot construct a GQNode around a nullptr.");
+		assert(node != nullptr && u8"In GQNode::GQNode(const GumboNode*) - Cannot construct a GQNode around a nullptr.");		
 		#else
-		if (node == nullptr) { throw std::runtime_error(u8"In GQNode::GQNode(const GumboNode*) - Cannot construct a GQNode around a nullptr."); }
-		#endif		
+		if (node == nullptr) { throw std::runtime_error(u8"In GQNode::GQNode(const GumboNode*) - Cannot construct a GQNode around a nullptr."); }		
+		#endif			
+	}	
+
+	void GQNode::Init()
+	{
+		BuildAttributes();
+		BuildChildren();
 	}
 
 	GQNode::~GQNode()
@@ -54,114 +85,82 @@ namespace gq
 
 	}
 
-	SharedGQNode GQNode::GetParent()
+	GQNode* GQNode::GetParent() const
 	{
-		if (m_sharedParent == nullptr
-			&& m_node->parent != nullptr)
-		{
-			m_sharedParent = Create(m_node->parent);
-		}
-
-		return m_sharedParent;
+		return m_parent;
 	}
 
-	const size_t GQNode::GetIndexWithinParent() const
+	const size_t& GQNode::GetIndexWithinParent() const
 	{
-		return m_node->index_within_parent;
-	}
-
-	SharedGQNode GQNode::GetPreviousSibling()
-	{
-		if (m_sharedPreviousSibling == nullptr 
-			&& m_node->parent != nullptr 
-			&& m_node->index_within_parent > 0)
-		{
-			GumboNode* prevSibling = static_cast<GumboNode*>(m_node->parent->v.element.children.data[m_node->index_within_parent - 1]);
-			
-			m_sharedPreviousSibling = Create(prevSibling);
-		}
-
-		return m_sharedPreviousSibling;
-	}
-
-	SharedGQNode GQNode::GetNextSibling()
-	{
-		if (m_sharedNextSibling == nullptr
-			&& m_node->parent != nullptr
-			&& m_node->parent->v.element.children.length > 0
-			&& m_node->index_within_parent > 0)
-		{
-			GumboNode* nextSibling = static_cast<GumboNode*>(m_node->parent->v.element.children.data[m_node->index_within_parent + 1]);
-
-			m_sharedNextSibling = Create(nextSibling);
-		}
-
-		return m_sharedNextSibling;
+		return m_indexWithinParent;
 	}
 
 	const size_t GQNode::GetNumChildren() const
 	{
-		if (m_node->type != GUMBO_NODE_ELEMENT)
-		{
-			return 0;
-		}
-
-		return m_node->v.element.children.length;
+		return m_children.size();
 	}
 
-	SharedGQNode GQNode::GetChildAt(const size_t position) const
+	SharedGQNode GQNode::GetChildAt(const size_t index) const
 	{
-		if (m_node->type != GUMBO_NODE_ELEMENT || position >= m_node->v.element.children.length)
+		if (index >= m_children.size())
 		{
 			throw std::runtime_error(u8"In GQNode::GetChildAt(const size_t) - Supplied index is out of bounds.");
 		}
 
-		return Create(static_cast<GumboNode*>(m_node->v.element.children.data[position]));
+		return m_children[index];
 	}
 
-	std::string GQNode::GetAttributeValue(const std::string& attributeName) const
-	{	
-		boost::string_ref attributeNameStringRef(attributeName);
-
-		auto result = GetAttributeValue(attributeNameStringRef);
-
-		return result.to_string();
+	const bool GQNode::HasAttribute(const std::string& attributeName) const
+	{
+		boost::string_ref ref(attributeName);
+		return HasAttribute(ref);
 	}
 
-	boost::string_ref GQNode::GetAttributeValue(const boost::string_ref& attributeName) const
-	{	
-		boost::string_ref result;
+	const bool GQNode::HasAttribute(const boost::string_ref attributeName) const
+	{
+		auto search = m_attributes.find(attributeName);
+		return search != m_attributes.end();
+	}
 
-		if (m_node->type != GUMBO_NODE_ELEMENT)
+	const bool GQNode::IsEmpty() const
+	{
+		if (m_children.size() > 0)
 		{
-			return result;
+			return false;
 		}
 
-		const GumboVector* attributes = &m_node->v.element.attributes;
-
-		for (unsigned int i = 0; i < attributes->length; i++)
+		for (size_t i = 0; i < m_node->v.element.children.length; ++i)
 		{
-			GumboAttribute* attr = static_cast<GumboAttribute*>(attributes->data[i]);
+			const GumboNode* cnode = static_cast<GumboNode*>(m_node->v.element.children.data[i]);
 
-			boost::string_ref attrName(attr->name);
-
-			if (boost::iequals(attributeName, attrName))
+			if (cnode->type == GUMBO_NODE_TEXT || cnode->type == GUMBO_NODE_TEMPLATE)
 			{
-				result = boost::string_ref(attr->value);
+				return false;
 			}
 		}
 
-		return result;
+		return true;
+	}
+
+	boost::string_ref GQNode::GetAttributeValue(const boost::string_ref attributeName) const
+	{			
+		auto res = m_attributes.find(attributeName);
+		if (res != m_attributes.end())
+		{
+			return res->second;
+		}
+
+		return boost::string_ref();
 	}
 
 	std::string GQNode::GetText() const
 	{
-		return GQUtil::NodeText(m_node);
+		return GQUtil::NodeText(this);
 	}
 
 	std::string GQNode::GetOwnText() const
 	{
-		return GQUtil::NodeOwnText(m_node);
+		return GQUtil::NodeOwnText(this);
 	}
 
 	const size_t GQNode::GetStartPosition() const
@@ -268,38 +267,270 @@ namespace gq
 		}
 	}
 
-	std::string GQNode::GetTagName() const
+	boost::string_ref GQNode::GetTagName() const
 	{	
 		if (m_node->type != GUMBO_NODE_ELEMENT)
 		{
-			return "";
+			return boost::string_ref();
 		}
 
-		return std::string(gumbo_normalized_tagname(m_node->v.element.tag));
+		return boost::string_ref(gumbo_normalized_tagname(m_node->v.element.tag));
 	}
 
-	GumboTag GQNode::GetTag() const
+	const GumboTag& GQNode::GetTag() const
 	{
-		if (m_node->type != GUMBO_NODE_ELEMENT)
-		{
-			return GumboTag(0);
-		}
-
 		return m_node->v.element.tag;
 	}
 
-	GQSelection GQNode::Find(const std::string& selector)
+	const GQSelection GQNode::Find(const std::string& selectorString) const
 	{
-		GQSelection selection(shared_from_this());
+		GQParser parser;
 
-		return selection.Find(selector);
+		auto selector = parser.CreateSelector(selectorString);
+
+		return Find(selector);
 	}
 
-	GQSelection GQNode::Find(const SharedGQSelector& selector)
+	const GQSelection GQNode::Find(const SharedGQSelector& selector) const
 	{
-		GQSelection selection(shared_from_this());
+		// This NO_OP can be ignored. I've kept it for verifying that the indexed
+		// method returns the same results as full recursive searching. This full
+		// recurise searching is so slow, observing it might actually kill you.
+		// It's so bad that my mother told me she was disappointed in the man I've 
+		// become when I first wrote it. My father hasn't spoken to me since.
+		// Bjarne Stroustrup refunded me on my purchases of his books just so that
+		// he didn't have any association with me. I hear he wakes up in cold sweats
+		// gripped in fear, questioning his life over this code. When he says that
+		// "most people don't use C++ correctly", he's actually just referring to me.
+		// Don't use it. Ever.
+		#ifdef GQ_FIND_NO_OP
+		std::vector<SharedGQNode> results;
+		selector->MatchAll(shared_from_this(), results);
 
-		return selection.Find(selector);
+		#ifdef GQ_VERBOSE_DEBUG_NFO
+		for (auto& start = results.begin(); start != results.end(); ++start)
+		{
+			// Print out the matches.
+			std::cout << GQSerializer::Serialize(start->get()) << std::endl;
+		}
+		#endif
+
+		GQSelection selection(results);
+
+		return selection;
+		#else
+
+		#ifndef NDEBUG
+			#ifdef GQ_VERBOSE_DEBUG_NFO
+					std::cout << u8"GQNode::Find(const SharedGQSelector&)" << std::endl;
+			#endif
+		#endif
+
+		std::vector<SharedGQNode> matchResults;
+
+		const auto& traits = selector->GetMatchTraits();
+
+		// The collected map ensure that we don't store duplicate matches. Any time a
+		// match is made, it's pushed to the collected map.
+		FastAttributeMap collected;
+
+		for (auto& traitsIt = traits.begin(); traitsIt != traits.end(); ++traitsIt)
+		{
+
+			#ifndef NDEBUG
+				#ifdef GQ_VERBOSE_DEBUG_NFO
+					std::cout << u8"In GQNode::Find(const SharedGQSelector&) - Finding potential matches at scope " << GetUniqueId() << u8" by trait: " << traitsIt->first << u8" ::: " << traitsIt->second << std::endl;
+			#endif
+			#endif
+
+			if (traitsIt->first.size() == 0)
+			{
+				#ifndef NDEBUG
+					#ifdef GQ_VERBOSE_DEBUG_NFO
+							std::cout << u8"In GQNode::Find(const SharedGQSelector&) - Got trait with empty key. Skipping..." << std::endl;
+					#endif
+				#endif
+				continue;
+			}
+
+			const std::vector< std::shared_ptr<GQNode> >* fromTrait = nullptr;
+
+			if (traitsIt->second.size() == 0)
+			{
+				fromTrait = m_rootTreeMap->Get(GetUniqueId(), traitsIt->first);
+			}
+			else
+			{
+				fromTrait = m_rootTreeMap->Get(GetUniqueId(), traitsIt->first, traitsIt->second);
+			}
+
+			if (fromTrait != nullptr)
+			{
+				auto tSize = fromTrait->size();
+
+				if (matchResults.capacity() < tSize)
+				{
+					matchResults.reserve(matchResults.capacity() + tSize);
+				}
+
+				for (size_t i = 0; i < tSize; ++i)
+				{
+					// It's actually significantly faster to simply match then search for duplicates, rather than eliminate duplicates
+					// first and then attempt a match.
+					auto& pNode = (*fromTrait)[i];
+
+					if (selector->Match(pNode.get()))
+					{
+						if (collected.find(pNode->GetUniqueId()) == collected.end())
+						{
+							matchResults.emplace_back(pNode);
+							collected.insert({ pNode->GetUniqueId(), pNode->GetUniqueId() });
+						}
+					}
+				}
+			}
+		}
+
+		#ifndef NDEBUG
+			#ifdef GQ_VERBOSE_DEBUG_NFO
+				std::cout << u8"Returning " << objectsToSearch.size() << u8" matches for selector " << selector->GetOriginalSelectorString() << u8"." << std::endl;
+			#endif
+		#endif
+
+		return GQSelection(matchResults);
+		#endif
+	}
+
+	const boost::string_ref GQNode::GetUniqueId() const
+	{
+		return boost::string_ref(m_nodeUniqueId);
+	}
+
+	std::string GQNode::GetInnerHtml() const
+	{
+		return GQSerializer::SerializeContent(this);
+	}
+
+	std::string GQNode::GetOuterHtml() const
+	{
+		return GQSerializer::Serialize(this);
+	}
+
+	void GQNode::BuildChildren()
+	{
+		auto numChildren = m_node->v.element.children.length;
+
+		if (numChildren == 0)
+		{
+			return;
+		}
+
+		m_children.reserve(numChildren);
+
+		size_t trueIndex = 0;
+
+		for (size_t i = 0; i < numChildren; ++i)
+		{
+			const GumboNode* child = static_cast<GumboNode*>(m_node->v.element.children.data[i]);
+			if (child->type != GUMBO_NODE_ELEMENT && child->type != GUMBO_NODE_TEMPLATE)
+			{				
+				continue;
+			}
+
+			auto sChild = GQNode::Create(child, m_rootTreeMap, m_nodeUniqueId, trueIndex, this);
+			if (sChild != nullptr)
+			{
+				m_children.push_back(sChild);
+				++trueIndex;
+			}			
+		}
+	}
+
+	void GQNode::BuildAttributes()
+	{
+
+		// Create an attribute map specifically for the GQTreeMap object. This is separate
+		// from the unordered_map that we use for a local attribute map. The GQTreeMap::AttributeMap
+		// object is a multimap, as we split whitespace separated attribute values into duplicate
+		// key entries with different values.
+		GQTreeMap::AttributeMap treeAttribMap;
+
+		auto nodeTagName = GetTagName();
+
+		// Push the node normalized tag name as an attribute
+		treeAttribMap.insert({ GQSpecialTraits::GetTagKey(), nodeTagName });
+
+		const GumboVector* attribs = &m_node->v.element.attributes;
+
+		if (attribs != nullptr && attribs->length > 0)
+		{
+			for (size_t i = 0; i < attribs->length; ++i)
+			{
+				const GumboAttribute* attribute = static_cast<GumboAttribute*>(attribs->data[i]);
+
+				boost::string_ref attribName;
+				boost::string_ref attribValue;
+
+				if (attribute->original_name.length > 0)
+				{
+					attribName = boost::string_ref(attribute->original_name.data, attribute->original_name.length);
+				}
+
+				if (attribute->original_value.length > 0)
+				{
+					attribValue = boost::string_ref(attribute->original_value.data, attribute->original_value.length);
+				}
+
+				GQUtil::TrimEnclosingQuotes(attribName);
+				GQUtil::TrimEnclosingQuotes(attribValue);
+
+				if (attribName.size() == 0)
+				{
+					continue;
+				}
+
+				m_attributes.insert({ attribName, attribValue });
+
+				treeAttribMap.insert({ attribName, attribValue });
+
+				// Split the attribute values up and store them individually
+				auto anySplittablePos = attribValue.find(' ');
+
+				if (anySplittablePos != boost::string_ref::npos)
+				{
+					bool splitOnce = false;
+					while (anySplittablePos != boost::string_ref::npos && attribValue.size() > 0)
+					{
+						if (anySplittablePos > 0)
+						{
+							splitOnce = true;
+							auto singleValue = attribValue.substr(0, anySplittablePos);
+							treeAttribMap.insert({ attribName, singleValue });
+						}
+
+						attribValue = attribValue.substr(anySplittablePos + 1);
+						anySplittablePos = attribValue.find(' ');
+					}
+					if (splitOnce && attribValue.size() > 0)
+					{
+						treeAttribMap.insert({ attribName, attribValue });
+					}
+				}
+			}
+		}		
+
+		#ifndef GQ_FIND_NO_OP
+		// Add the attributes to the tree map
+		m_rootTreeMap->Add(GetUniqueId(), shared_from_this(), treeAttribMap);
+
+		// Now we need to recursively append upwards. 
+		for (GQNode* parent = GetParent(); parent != nullptr; parent = parent->GetParent())
+		{
+			auto parentScopeId = parent->GetUniqueId();
+
+			m_rootTreeMap->Add(parentScopeId, shared_from_this(), treeAttribMap);
+		}
+		#endif
 	}
 
 } /* namespace gq */

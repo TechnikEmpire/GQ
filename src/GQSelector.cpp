@@ -27,19 +27,38 @@
 * THE SOFTWARE.
 */
 
-#include "GQSelector.hpp"
-
-#include "GQNode.hpp"
-
 #include <unordered_set>
+#include "GQSelector.hpp"
+#include "GQNode.hpp"
+#include "GQSpecialTraits.hpp"
 
 namespace gq
 {
+	GQSelector::GQSelector()
+	{
+		InitDefaults();
+	}
 
 	GQSelector::GQSelector(SelectorOperator op)
 	{
 		InitDefaults();
 		m_selectorOperator = op;
+
+		if (m_selectorOperator == SelectorOperator::Dummy)
+		{
+			// A dummy can match anything. So we add a trait that it can match against any tag type.
+			AddMatchTrait(GQSpecialTraits::GetTagKey(), GQSpecialTraits::GetAnyValue());
+		}
+
+		#ifndef NDEBUG
+			#ifdef GQ_VERBOSE_DEBUG_NFO
+				std::cout
+					<< u8"Built GQSelector with operator "
+					<< static_cast<size_t>(op)
+					<< u8"."
+					<< std::endl;
+			#endif
+		#endif
 	}
 
 	GQSelector::GQSelector(const bool matchType)
@@ -47,6 +66,17 @@ namespace gq
 		InitDefaults();
 		m_selectorOperator = SelectorOperator::OnlyChild;
 		m_matchType = matchType;
+
+		#ifndef NDEBUG
+			#ifdef GQ_VERBOSE_DEBUG_NFO
+				std::cout
+					<< u8"Built GQSelector for only child matching"
+					<< u8" with matching type set to "
+					<< std::boolalpha << matchType
+					<< u8"."
+					<< std::endl;
+			#endif
+		#endif
 	}
 
 	GQSelector::GQSelector(const int leftHandSideOfNth, const int rightHandSideOfNth, const bool matchLast, const bool matchType)
@@ -59,7 +89,7 @@ namespace gq
 		m_matchType = matchType;
 
 		#ifndef NDEBUG
-			#ifdef GQ_VERBOSE_SELECTOR_COMPILIATION
+			#ifdef GQ_VERBOSE_DEBUG_NFO
 			std::cout 
 				<< u8"Built GQSelector for nth matching with lhs of "
 				<< std::to_string(leftHandSideOfNth) 
@@ -79,10 +109,10 @@ namespace gq
 	{
 		InitDefaults();
 		m_selectorOperator = SelectorOperator::Tag;
-		m_tagTypeToMatch = tagTypeToMatch;
+		SetTagTypeToMatch(tagTypeToMatch);
 
 		#ifndef NDEBUG
-			#ifdef GQ_VERBOSE_SELECTOR_COMPILIATION
+			#ifdef GQ_VERBOSE_DEBUG_NFO
 			std::cout << "Built GQSelector for matching GumboTag " << gumbo_normalized_tagname(tagTypeToMatch) << u8"." << std::endl;
 			#endif
 		#endif
@@ -97,52 +127,37 @@ namespace gq
 		return m_tagTypeToMatch;
 	}
 
-	const bool GQSelector::Match(const GumboNode* node) const
+	const boost::string_ref GQSelector::GetNormalizedTagTypeToMatch() const
+	{
+		return m_normalizedTagTypeToMatch;
+	}
+
+	const std::vector< std::pair<boost::string_ref, boost::string_ref> >& GQSelector::GetMatchTraits() const
+	{
+		return m_matchTraits;
+	}
+
+	const bool GQSelector::Match(const GQNode* node) const
 	{
 
 		switch (m_selectorOperator)
 		{
 			case SelectorOperator::Dummy:
-			{
+			{				
 				return true;
 			}
 			break;
 
 			case SelectorOperator::Empty:
 			{
-				if (node->type != GUMBO_NODE_ELEMENT)
-				{
-					return false;
-				}
-
-				if (node->v.element.children.length == 0)
-				{
-					return true;
-				}
-
-				const GumboVector* children = &node->v.element.children;
-
-				for (size_t i = 0; i < children->length; i++)
-				{
-					GumboNode* child = static_cast<GumboNode*>(children->data[i]);
-					if (child != nullptr && (child->type == GUMBO_NODE_TEXT || child->type == GUMBO_NODE_ELEMENT))
-					{
-						return false;
-					}
-				}
-
-				return true;
+				return node->IsEmpty();
 			}
 			break;
 
 			case SelectorOperator::OnlyChild:
 			{
-				if (node->type != GUMBO_NODE_ELEMENT) 
-				{
-					return false;
-				}
-
-				if (node->parent == nullptr)
+				const GQNode* parent = node->GetParent();
+				if (parent == nullptr)
 				{
 					// Can't be a child without parents. :( Poor node. So sad.
 					return false;
@@ -150,11 +165,13 @@ namespace gq
 
 				int count = 0;
 				
-				for (size_t i = 0; i < node->parent->v.element.children.length; i++)
+				auto pNumChild = parent->GetNumChildren();
+				
+				for (size_t i = 0; i < pNumChild; i++)
 				{
-					GumboNode* child = static_cast<GumboNode*>(node->parent->v.element.children.data[i]);
+					auto child = parent->GetChildAt(i);
 
-					if (child->type != GUMBO_NODE_ELEMENT || (m_matchType && node->v.element.tag != child->v.element.tag))
+					if (m_matchType && node->GetTag() != child->GetTag())
 					{
 						// When m_matchType is true, we want to ignore all nodes that are not of the same type, because
 						// in this circumstance, we'd be processing an only-of-type selector. So, to not screw up our
@@ -177,12 +194,8 @@ namespace gq
 
 			case SelectorOperator::NthChild:
 			{
-				if (node->type != GUMBO_NODE_ELEMENT)
-				{
-					return false;
-				}
-
-				if (node->parent == nullptr)
+				const GQNode* parent = node->GetParent();
+				if (parent == nullptr)
 				{
 					// Can't be a child without parents. :( Poor node. So sad.
 					return false;
@@ -207,10 +220,10 @@ namespace gq
 				// tell if we have a match or not.
 				std::unordered_set<int> validNths;
 
-				for (size_t j = 0; j < node->parent->v.element.children.length; j++)
+				for (size_t j = 0; j < parent->GetNumChildren(); j++)
 				{					
-					GumboNode* child = static_cast<GumboNode*>(node->parent->v.element.children.data[j]);
-					if (child->type != GUMBO_NODE_ELEMENT || (m_matchType && node->v.element.tag != child->v.element.tag))
+					auto child = parent->GetChildAt(j);
+					if ((m_matchType && node->GetTag() != child->GetTag()))
 					{
 						// If m_matchType is true, we're not counting any children that are not the same
 						// tag type as valid children. We're pretending that they don't exist. We're doing
@@ -232,7 +245,7 @@ namespace gq
 
 					// Once the child is found, we store its "true" index, aka the index after we've
 					// ignored everything we don't want to count as real children for the sake of maths.
-					if (child == node)
+					if (child.get() == node)
 					{						
 						actualIndex = validChildCount;
 
@@ -285,7 +298,7 @@ namespace gq
 
 			case SelectorOperator::Tag:
 			{				
-				return node->type == GUMBO_NODE_ELEMENT && node->v.element.tag == m_tagTypeToMatch;
+				return node->GetTag() == m_tagTypeToMatch;
 			}
 			break;
 
@@ -294,7 +307,7 @@ namespace gq
 		}
 	}
 
-	void GQSelector::MatchAll(const GumboNode* node, std::vector< std::shared_ptr<GQNode> >& results) const
+	void GQSelector::MatchAll(const std::shared_ptr<GQNode>& node, std::vector< std::shared_ptr<GQNode> >& results) const
 	{
 		#ifndef NDEBUG
 		assert(node != nullptr && u8"In GQSelector::MatchAll(const GumboNode*, std::vector< std::shared_ptr<GQNode> >&) - Nullptr node supplied for matching.");
@@ -302,20 +315,7 @@ namespace gq
 		if (node == nullptr) { throw std::runtime_error(u8"In GQSelector::MatchAll(const GumboNode*, std::vector< std::shared_ptr<GQNode> >&) - Nullptr node supplied for matching."); }
 		#endif
 
-		bool skipChildrenOnMatch = false;
-		MatchAllInto(node, results, skipChildrenOnMatch);
-	}
-
-	void GQSelector::MatchFirst(const GumboNode* node, std::vector < std::shared_ptr<GQNode> >& results) const
-	{
-		#ifndef NDEBUG
-		assert(node != nullptr && u8"In GQSelector::MatchFirst(const GumboNode*, std::vector< std::shared_ptr<GQNode> >&) - Nullptr node supplied for matching.");
-		#else
-		if (node == nullptr) { throw std::runtime_error(u8"In GQSelector::MatchFirst(const GumboNode*, std::vector< std::shared_ptr<GQNode> >&) - Nullptr node supplied for matching."); }
-		#endif
-
-		bool skipChildrenOnMatch = true;
-		MatchAllInto(node, results, skipChildrenOnMatch);
+		MatchAllInto(node, results);
 	}
 
 	void GQSelector::Filter(std::vector< std::shared_ptr<GQNode> >& nodes) const
@@ -323,9 +323,37 @@ namespace gq
 		nodes.erase(std::remove_if(nodes.begin(), nodes.end(), 
 			[this](const std::shared_ptr<GQNode>& sharedNode)
 			{
-				return !Match(sharedNode->m_node);
+				return !Match(sharedNode.get());
 			}
 		), nodes.end());
+	}
+
+	boost::string_ref GQSelector::GetOriginalSelectorString() const
+	{
+		return boost::string_ref(m_originalSelectorString);
+	}
+
+	void GQSelector::SetTagTypeToMatch(const GumboTag tag)
+	{
+		m_tagTypeToMatch = tag;
+
+		if (m_tagTypeToMatch != GUMBO_TAG_UNKNOWN)
+		{
+			const char* normalName = gumbo_normalized_tagname(m_tagTypeToMatch);
+			m_normalizedTagTypeToMatch = boost::string_ref(normalName);
+
+			// Add the tag type as a match trait
+			AddMatchTrait(GQSpecialTraits::GetTagKey(), m_normalizedTagTypeToMatch);
+		}
+	}
+
+	void GQSelector::AddMatchTrait(boost::string_ref key, boost::string_ref value)
+	{
+		auto pair = std::make_pair(key, value);
+		if (std::find(m_matchTraits.begin(), m_matchTraits.end(), pair) == m_matchTraits.end())
+		{
+			m_matchTraits.emplace_back(std::move(pair));
+		}
 	}
 
 	void GQSelector::InitDefaults()
@@ -337,7 +365,7 @@ namespace gq
 		m_tagTypeToMatch = GUMBO_TAG_UNKNOWN;
 	}
 
-	void GQSelector::MatchAllInto(const GumboNode* node, std::vector< std::shared_ptr<GQNode> >& nodes, const bool& skipChildrenOnMatch) const
+	void GQSelector::MatchAllInto(const std::shared_ptr<GQNode>& node, std::vector< std::shared_ptr<GQNode> >& nodes) const
 	{
 		#ifndef NDEBUG
 		assert(node != nullptr && u8"In GQSelector::MatchAllInto(const GumboNode*, std::vector<const GumboNode*>&) - Nullptr node supplied for matching.");
@@ -345,25 +373,17 @@ namespace gq
 		if (node == nullptr) { throw std::runtime_error(u8"In GQSelector::MatchAllInto(const GumboNode*, std::vector<const GumboNode*>&) - Nullptr node supplied for matching."); }
 		#endif
 
-		if (node->type != GUMBO_NODE_ELEMENT)
+		if (Match(node.get()))
 		{
-			return;
+			nodes.push_back(node);
 		}
 
-		if (Match(node))
+		auto nNumChildren = node->GetNumChildren();
+		
+		for (size_t i = 0; i < nNumChildren; i++)
 		{
-			nodes.push_back(GQNode::Create(node));
-
-			if (skipChildrenOnMatch)
-			{
-				return;
-			}
-		}
-
-		for (size_t i = 0; i < node->v.element.children.length; i++)
-		{
-			GumboNode* child = static_cast<GumboNode*>(node->v.element.children.data[i]);
-			MatchAllInto(child, nodes, skipChildrenOnMatch);
+			auto child = node->GetChildAt(i);
+			MatchAllInto(child, nodes);
 		}
 	}	
 

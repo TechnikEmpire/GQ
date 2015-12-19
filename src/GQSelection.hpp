@@ -40,7 +40,7 @@ namespace gq
 {
 
 	/// <summary>
-	/// 
+	/// <para>&#160;</para>
 	/// </summary>
 	class GQSelection
 	{

@@ -29,6 +29,8 @@
 namespace gq
 {
 
+	class GQNode;
+
 	/// <summary>
 	/// The GQSerializer can take a single Gumbo Parser node and convert its contents back into an
 	/// HTML string. Two methods are exposed, one will serialize the node and its contents, the
@@ -50,7 +52,32 @@ namespace gq
 		/// <returns>
 		/// The HTML string built from the node and all of its contents. 
 		/// </returns>
+		static std::string Serialize(const GQNode* node);
+
+		/// <summary>
+		/// Converts the supplied node and all of its contents back into an HTML string. This can be
+		/// used behind the scenes to give the behavior of the jquery method .Html().
+		/// </summary>
+		/// <param name="node">
+		/// The node to serialize along with all of its contents. 
+		/// </param>
+		/// <returns>
+		/// The HTML string built from the node and all of its contents. 
+		/// </returns>
 		static std::string Serialize(const GumboNode* node);
+
+		/// <summary>
+		/// Converts the supplied node contents back into an HTML string, without including the HTML
+		/// of the supplied node. Only its contents are serialized. This can be used behind the
+		/// scenes to give the behavior of the jquery method .InnerHtml().
+		/// </summary>
+		/// <param name="node">
+		/// The node containing the contents to serialize.
+		/// </param>
+		/// <returns>
+		/// The HTML string built from the node contents.
+		/// </returns>
+		static std::string SerializeContent(const GQNode* node);
 
 		/// <summary>
 		/// Converts the supplied node contents back into an HTML string, without including the HTML

@@ -34,6 +34,7 @@
 #include <vector>
 #include <memory>
 #include <algorithm>
+#include <boost/utility/string_ref.hpp>
 
 namespace gq
 {	
@@ -58,7 +59,7 @@ namespace gq
 		/// <returns>
 		/// All text contained in the supplied node and all of its descendants combined. 
 		/// </returns>
-		static std::string NodeText(const GumboNode* node);
+		static std::string NodeText(const GQNode* node);
 
 		/// <summary>
 		/// Get the text of only the children of the supplied node.
@@ -69,7 +70,7 @@ namespace gq
 		/// <returns>
 		/// All text contained in the direct children of the supplied node combined.
 		/// </returns>
-		static std::string NodeOwnText(const GumboNode* node);
+		static std::string NodeOwnText(const GQNode* node);
 
 		/// <summary>
 		/// Checks if the supplied node to search for already exists inside the supplied collection
@@ -88,10 +89,18 @@ namespace gq
 		static bool NodeExists(const std::vector< std::shared_ptr<GQNode> >& nodeCollection, const GumboNode* search);
 
 		/// <summary>
+		/// Removes duplicate nodes from the collection.
+		/// </summary>
+		/// <param name="primaryCollection">
+		/// The collection which may contain duplicate nodes.
+		/// </param>
+		static void RemoveDuplicates(std::vector< std::shared_ptr<GQNode> >& primaryCollection);
+
+		/// <summary>
 		/// Takes the supplied primary collection and adds any nodes to it contained in the second
 		/// collection which it does not already contain. This is for merging new match results into
 		/// existing match results without creating duplicate matches.
-		/// 
+		/// <para>&#160;</para>
 		/// Null checks are not performed. It is the responsibility of the user to ensure that the
 		/// supplied collections are populated with valid pointers.
 		/// </summary>
@@ -108,10 +117,21 @@ namespace gq
 		/// </returns>
 		static void UnionNodes(std::vector< std::shared_ptr<GQNode> >& primaryCollection, const std::vector< std::shared_ptr<GQNode> >& collection);
 
+		/// <summary>
+		/// Removes any quote characters at the first and last positions of the supplied string.
+		/// Since we handle raw values instead of the values after Gumbo Parser has done conversions
+		/// on things such as character references, the original values can/will still have any
+		/// enclosing quotes present. In order to ensure proper matching, they must be trimmed.
+		/// </summary>
+		/// <param name="str">
+		/// The string to trim enclosing quotation characters from. 
+		/// </param>
+		static void TrimEnclosingQuotes(boost::string_ref& str);
+
 	private:
 
 		/// <summary>
-		/// 
+		/// <para>&#160;</para>
 		/// </summary>
 		/// <param name="node"></param>
 		/// <param name="stringContainer"></param>

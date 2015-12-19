@@ -32,7 +32,7 @@
 namespace gq
 {
 
-	const std::unordered_map<boost::string_ref, GQParser::PseudoOp, GQParser::StringRefHasher> GQParser::PseudoOps =
+	const std::unordered_map<boost::string_ref, GQParser::PseudoOp, StringRefHasher> GQParser::PseudoOps =
 	{ 
 		{ u8"not", PseudoOp::Not },
 		{ u8"has", PseudoOp::Has },
@@ -63,13 +63,27 @@ namespace gq
 	{
 	}
 
-	SharedGQSelector GQParser::CreateSelector(std::string selectorString)
+	SharedGQSelector GQParser::CreateSelector(std::string selectorString, const bool retainOriginalString) const
 	{
 		boost::string_ref input = boost::string_ref(selectorString);
 
 		try
 		{
 			SharedGQSelector result = ParseSelectorGroup(input);
+
+			if (input.size() != 0) 
+			{ 
+				// There's no assert on debug here, because it's expected that user input may contain invalid data. Passing a poorly
+				// formatted selector string isn't a matter of a developer user using the library improperly, so no assert. The idea
+				// is that any user should expect this method to throw and hence be ready to handle it, and that a detailed message
+				// of the issue be returned in the error.
+				throw std::runtime_error(u8"In GQParser::CreateSelector(std::string, const bool) - Improperly formatted selector string."); 
+			}
+
+			if (retainOriginalString)
+			{
+				result->m_originalSelectorString = std::move(selectorString);
+			}			
 
 			return result;
 		}
@@ -129,8 +143,17 @@ namespace gq
 				if (selectorStr.size() > 0 && combinator == ' ' && IsCombinator(selectorStr[0]))
 				{
 					combinator = selectorStr[0];
+					
+					if (!IsCombinator(combinator))
+					{
+						throw new std::runtime_error(u8"In GQParser::ParseSelector(boost::string_ref&) - Invalid combinator supplied.");
+					}
+
 					selectorStr = selectorStr.substr(1);
-					TrimLeadingWhitespace(selectorStr);
+					if (!TrimLeadingWhitespace(selectorStr))
+					{
+						throw new std::runtime_error(u8"In GQParser::ParseSelector(boost::string_ref&) - Invalid combinator supplied. Combinator had leading whitespace without trailing whitespace.");
+					}
 				}
 			}
 
@@ -152,11 +175,11 @@ namespace gq
 				}
 				break;
 
-				default:
-				{
-					notDone = false;
-				}
-				break;
+				//default:
+				//{
+				//	notDone = false;
+				//}
+				//break;
 			}
 
 			if (combinator == 0)
@@ -169,35 +192,37 @@ namespace gq
 
 			switch (combinator)
 			{
-			case ' ':
-			{
-				ret = std::make_shared<GQBinarySelector>(GQBinarySelector::SelectorOperator::Descendant, ret, selector);
-			}
-			break;
+				case ' ':
+				{
+					ret = std::make_shared<GQBinarySelector>(GQBinarySelector::SelectorOperator::Descendant, ret, selector);
+				}
+				break;
 
-			case '>':
-			{
-				ret = std::make_shared<GQBinarySelector>(GQBinarySelector::SelectorOperator::Child, ret, selector);
-			}
-			break;
+				case '>':
+				{
+					ret = std::make_shared<GQBinarySelector>(GQBinarySelector::SelectorOperator::Child, ret, selector);
+				}
+				break;
 
-			case '+':
-			{
-				ret = std::make_shared<GQBinarySelector>(GQBinarySelector::SelectorOperator::Adjacent, ret, selector);
-			}
-			break;
+				case '+':
+				{
+					ret = std::make_shared<GQBinarySelector>(GQBinarySelector::SelectorOperator::Adjacent, ret, selector);
+				}
+				break;
 
-			case '~':
-			{
-				ret = std::make_shared<GQBinarySelector>(GQBinarySelector::SelectorOperator::Sibling, ret, selector);
-			}
-			break;
+				case '~':
+				{
+					ret = std::make_shared<GQBinarySelector>(GQBinarySelector::SelectorOperator::Sibling, ret, selector);
+				}
+				break;
 
-			default:
-				// This should never happen, since we've correctly only accepted valid combinators.
-				// However, if somehow this happens, we should explode the universe.				
-				throw std::runtime_error(u8"In GQParser::ParseSelector(boost::string_ref&) - Invalid combinator supplied.");
+				default:
+					// This should never happen, since we've correctly only accepted valid combinators.
+					// However, if somehow this happens, we should explode the universe.				
+					throw std::runtime_error(u8"In GQParser::ParseSelector(boost::string_ref&) - Invalid combinator supplied.");
 			}
+
+			combinator = 0;
 		}
 
 		return ret;
@@ -282,14 +307,27 @@ namespace gq
 				case ':':
 				{
 					selector = ParsePseudoclassSelector(selectorStr);
+
+					if (ret == nullptr)
+					{
+						// This means that we've encountered a pseudo class selector that has no previous qualifiers
+						// such as a specific tag or other attribute to bind to, such as div:last-child. As such,
+						// in order to properly handle this when using the map based approach to candidate searching,
+						// a dummy selector needs to be combined with this pseudo class selector. A dummy selector
+						// will generate appropriate search attributes in the event that this pseudo class selector
+						// makes up the primary function of the selector. If we didn't do this, there would be
+						// no reliable attributes by which to discover candidates.
+						// 
+						// Consider the pseudo class selector ":not(p)". Without this little trick, the only attributes
+						// we'd get from such a selector are { NORMALIZED_TAG_NAME_KEY, p }, which would only find
+						// candidates which actually cannot possibly ever match this selector.
+						selector = std::make_shared<GQBinarySelector>(GQBinarySelector::SelectorOperator::Intersection, std::make_shared<GQSelector>(GQSelector::SelectorOperator::Dummy), selector);
+					}
 				}
 				break;
 
 				default:
-				{
-					//std::string errorMessage(u8"In GQParser::ParseSimpleSelectorSequence(boost::string_ref&) - Expected start of simple selector, got ");
-					//errorMessage.append(selectorStr.to_string()).append(u8" instead.");
-					///throw std::runtime_error(errorMessage);
+				{					
 					notDone = false;
 				}
 				break;
@@ -506,9 +544,12 @@ namespace gq
 		//		something="theend"
 		//		someone="frontend"
 		//		someplace="theplaceattheend"
+		//
+		// XXX TODO it has been decided that the complexity this adds is undesirable.
 		bool doesAttributeHasPrefix = false;
 		if (selectorStr[0] == '^')
 		{
+			throw std::runtime_error(u8"In GQParser::ParseAttributeSelector(boost::string_ref&) - Attribute name as prefix selector is unsupported.");
 			doesAttributeHasPrefix = true;
 			selectorStr = selectorStr.substr(1);
 		}
@@ -535,7 +576,7 @@ namespace gq
 			// bracket though as well.
 			selectorStr = selectorStr.substr(1);
 
-			return std::make_shared<GQAttributeSelector>(key, doesAttributeHasPrefix);
+			return std::make_shared<GQAttributeSelector>(key);
 		}
 		break;
 
@@ -660,7 +701,7 @@ namespace gq
 		// Consume the closing bracket
 		selectorStr = selectorStr.substr(1);
 
-		return std::make_shared<GQAttributeSelector>(op, key, value, doesAttributeHasPrefix);
+		return std::make_shared<GQAttributeSelector>(op, key, value);
 	}
 
 	SharedGQSelector GQParser::ParseClassSelector(boost::string_ref& selectorStr) const
@@ -685,7 +726,7 @@ namespace gq
 
 		boost::string_ref clazz = u8"class";
 
-		return std::make_shared<GQAttributeSelector>(GQAttributeSelector::SelectorOperator::ValueContainsElementInWhitespaceSeparatedList, clazz, className, false);
+		return std::make_shared<GQAttributeSelector>(GQAttributeSelector::SelectorOperator::ValueContainsElementInWhitespaceSeparatedList, clazz, className);
 	}
 
 	SharedGQSelector GQParser::ParseIDSelector(boost::string_ref& selectorStr) const
@@ -709,8 +750,8 @@ namespace gq
 		}
 
 		boost::string_ref id = u8"id";
-
-		return std::make_shared<GQAttributeSelector>(GQAttributeSelector::SelectorOperator::ValueContains, id, elementId, false);
+		
+		return std::make_shared<GQAttributeSelector>(GQAttributeSelector::SelectorOperator::ValueEquals, id, elementId);
 	}
 
 	SharedGQSelector GQParser::ParseTypeSelector(boost::string_ref& selectorStr) const
@@ -808,22 +849,25 @@ namespace gq
 					}
 					else
 					{
-						size_t i = 0;
-
-						if (lhss[0] == '-' || lhss[0] == '+')
+						if (lhss.size() > 0)
 						{
-							i = 1;
-						}
+							size_t i = 0;
 
-						for (i; i < lhss.length(); ++i)
-						{
-							if (!std::isdigit(lhss[i], m_localeEnUS))
+							if (lhss[0] == '-' || lhss[0] == '+')
 							{
-								throw std::runtime_error(u8"In GQParser::ParseNth(boost::string_ref&, const int& ,const int&) - Nth parameter left hand side contained non-digit input.");
+								i = 1;
 							}
-						}
 
-						lhs = std::stoi(lhss);
+							for (i; i < lhss.length(); ++i)
+							{
+								if (!std::isdigit(lhss[i], m_localeEnUS))
+								{
+									throw std::runtime_error(u8"In GQParser::ParseNth(boost::string_ref&, const int& ,const int&) - Nth parameter left hand side contained non-digit input.");
+								}
+							}
+
+							lhs = std::stoi(lhss);
+						}						
 					}
 
 					// The right hand side must be just a number, be it positive, negative, doesn't matter. That's all it can be.
@@ -834,11 +878,15 @@ namespace gq
 						rhsStartPos = 1;
 					}
 
-					for (size_t i = rhsStartPos; i < rhss.length(); ++i)
+					size_t rhsslen = rhss.length();
+					
+					for (size_t i = rhsStartPos; i < rhsslen; ++i)
 					{
 						if (!std::isdigit(rhss[i], m_localeEnUS))
-						{
-							throw std::runtime_error(u8"In GQParser::ParseNth(boost::string_ref&, const int& ,const int&) - Nth parameter right hand side contained non-digit input.");
+						{							
+							std::string errMessage(u8"In GQParser::ParseNth(boost::string_ref&, const int& ,const int&) - Nth parameter right hand side \"");
+							errMessage.append(rhss).append(u8"\" contained non-digit input.");
+							throw std::runtime_error(errMessage.c_str());
 						}
 					}
 
@@ -854,7 +902,7 @@ namespace gq
 				{
 					lhs = 0;
 
-					boost::string_ref wholeParam = selectorStr.substr(closingParenPosition);
+					boost::string_ref wholeParam = selectorStr.substr(0, closingParenPosition);
 					boost::string_ref rightHandSide = wholeParam.substr(1);
 
 					selectorStr = selectorStr.substr(closingParenPosition);
@@ -874,7 +922,9 @@ namespace gq
 					{
 						if (!std::isdigit(rhss[i], m_localeEnUS))
 						{
-							throw std::runtime_error(u8"In GQParser::ParseNth(boost::string_ref&, const int& ,const int&) - Nth parameter right hand side contained non-digit input.");
+							std::string errMessage(u8"In GQParser::ParseNth(boost::string_ref&, const int& ,const int&) - Nth parameter right hand side \"");
+							errMessage.append(rhss).append(u8"\" contained non-digit input.");
+							throw std::runtime_error(errMessage.c_str());
 						}
 					}
 

@@ -28,6 +28,7 @@
 */
 
 #include "GQUnarySelectory.hpp"
+#include "GQNode.hpp"
 
 namespace gq
 {
@@ -41,27 +42,28 @@ namespace gq
 		}
 
 		#ifndef NDEBUG
-			#ifdef GQ_VERBOSE_SELECTOR_COMPILIATION
+			#ifdef GQ_VERBOSE_DEBUG_NFO
 			std::cout << "Built GQUnarySelectory with operator " << static_cast<size_t>(m_operator) << u8"." << std::endl;
 			#endif
 		#endif
+
+		// Take on the traits of the selector.
+		auto& t = m_selector->GetMatchTraits();
+		for (auto& tp : t)
+		{
+			AddMatchTrait(tp.first, tp.second);
+		}
 	}
 
 	GQUnarySelectory::~GQUnarySelectory()
 	{
 	}
 
-	const bool GQUnarySelectory::GQUnarySelectory::Match(const GumboNode* node) const
+	const bool GQUnarySelectory::GQUnarySelectory::Match(const GQNode* node) const
 	{
 
-		// Don't match against stuff like comments, CDATA blocks, etc
-		if (node->type != GUMBO_NODE_ELEMENT)
-		{
-			return false;
-		}
-
 		// If it's not a not selector, and there's no children, we can't do a child or descendant match
-		if (m_operator != SelectorOperator::Not && node->v.element.children.length == 0)
+		if (m_operator != SelectorOperator::Not && node->GetNumChildren() == 0)
 		{
 			return false;
 		}
@@ -82,17 +84,13 @@ namespace gq
 
 			case SelectorOperator::HasChild:
 			{
-				for (size_t i = 0; i < node->v.element.children.length; i++)
+				auto nNumChildren = node->GetNumChildren();
+			
+				for (size_t i = 0; i < nNumChildren; i++)
 				{
-					GumboNode* child = static_cast<GumboNode*>(node->v.element.children.data[i]);
+					auto child = node->GetChildAt(i);
 
-					// Don't match against stuff like comments, CDATA blocks, etc
-					if (child->type != GUMBO_NODE_ELEMENT && child->type != GUMBO_NODE_TEXT && child->type != GUMBO_NODE_DOCUMENT)
-					{
-						continue;
-					}
-
-					if (m_selector->Match(child))
+					if (m_selector->Match(child.get()))
 					{
 						return true;
 					}
@@ -107,24 +105,13 @@ namespace gq
 		return false;
 	}
 
-	const bool GQUnarySelectory::HasDescendantMatch(const GumboNode* node) const
+	const bool GQUnarySelectory::HasDescendantMatch(const GQNode* node) const
 	{
-		if (node->type != GUMBO_NODE_ELEMENT)
+		for (size_t i = 0; i < node->GetNumChildren(); i++)
 		{
-			return false;
-		}
+			auto child = node->GetChildAt(i);
 
-		for (size_t i = 0; i < node->v.element.children.length; i++)
-		{
-			GumboNode* child = static_cast<GumboNode*>(node->v.element.children.data[i]);
-
-			// Don't match against stuff like comments, CDATA blocks, etc
-			if (child->type != GUMBO_NODE_ELEMENT && child->type != GUMBO_NODE_TEXT && child->type != GUMBO_NODE_DOCUMENT)
-			{
-				continue;
-			}
-
-			if (m_selector->Match(child) || HasDescendantMatch(child))
+			if (m_selector->Match(child.get()) || HasDescendantMatch(child.get()))
 			{
 				return true;
 			}

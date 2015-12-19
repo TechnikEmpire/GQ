@@ -29,21 +29,24 @@
 
 #pragma once
 
-#include <boost/utility/string_ref.hpp>
 #include <memory>
+#include <map>
+#include <boost/utility/string_ref.hpp>
 #include <boost/algorithm/string.hpp>
 #include "GQSelector.hpp"
+#include "GQStrRefHash.hpp"
 
 namespace gq
 {
 	
-	class GQSelection;	
+	class GQSelection;
+	class GQTreeMap;
 
 	/// <summary>
 	/// The GQNode class serves as a wrapper around a GumboNode raw pointer. It is not possible to
 	/// construct a GQNode around a nullptr GumboNode* object, so if the GQNode is valid, then its
 	/// internal GumboNode* is guaranteed to be valid.
-	/// 
+	/// <para>&#160;</para>
 	/// Note that since GumboNode objects are owned exclusively by the GumboOutput root object, this
 	/// wrapper does not manage the lifetime of the raw pointer it matches. Users still need to
 	/// take care that manually generated GumboOutput is destroyed correctly.
@@ -64,12 +67,12 @@ namespace gq
 		/// So, I don't really like the idea of this friend business and having to forward declare
 		/// types to resolve circular dependencies, to me that means there's probably a better way.
 		/// Unfortunately, I'm trying to work within design that I started out with.
-		/// 
+		/// <para>&#160;</para>
 		/// In the original library, the CNode (GQNode now) was completely separate from everything
 		/// else, but local instances were generated and copied all over the place whenever the user
 		/// needed to search against a non-document node, or access a specific child. I didn't like
 		/// this, so I opted to change this, making them shared.
-		/// 
+		/// <para>&#160;</para>
 		/// This then forced the design all the way back down the library into complementary
 		/// selection code which stored matched nodes in collections, vectors. In order to make the
 		/// new design consistent, these all had to be changed to hold shared_ptrs of GQNode, not
@@ -82,28 +85,15 @@ namespace gq
 		friend class GQSelection;
 		friend class GQUtil;
 		friend class GQSelector;
+		friend class GQTreeIndex;
+		friend class GQSerializer;
 
-	public:
-
-		/// <summary>
-		/// Interface to create a SharedGQNode instance. Since GQNode inherits from
-		/// enabled_shared_from_this and calls shared_from_this internally for some matching
-		/// methods, its necessary to enforce that an object of this type cannot exist but already
-		/// wrapped in a shared_ptr.
-		/// </summary>
-		/// <param name="node">
-		/// The GumboNode* object that the GQNode is to wrap. This must be a valid pointer, or this
-		/// method will throw.
-		/// </param>
-		/// <returns>
-		/// A SharedGQNode instance. 
-		/// </returns>
-		static std::shared_ptr<GQNode> Create(const GumboNode* node);
+	public:		
 
 		/// <summary>
 		/// Default destructor.
 		/// </summary>
-		~GQNode();
+		virtual ~GQNode();
 
 		/// <summary>
 		/// Gets the parent of this node. May be nullptr.
@@ -113,39 +103,18 @@ namespace gq
 		/// node does not have a valid parent, a node is returned but its ::IsValid() member will
 		/// report false.
 		/// </returns>
-		std::shared_ptr<GQNode> GetParent();
+		GQNode* GetParent() const;
 
 		/// <summary>
-		/// Gets the index of this node within its parent. If the node is internally invalid or has
-		/// no parent, the result is -1. In all other circumstances, the value is a positive value
-		/// representing the true index.
+		/// Gets the index of this node within its parent. This index differs from the actual index
+		/// of the raw GumboNode->index_within_parent. Since GQNode/Document only stores nodes that
+		/// are of type ELEMENT, returning GumboNode->index_within_parent would give the wrong index
+		/// certainly as far as these containers are concerned.
 		/// </summary>
 		/// <returns>
-		/// The index within the parent. If the node is internally invalid or the node has no
-		/// parent, the return value will be -1. In all other circumstances, the return value will
-		/// be the true index of this node within its parent.
+		/// The index within the parent.
 		/// </returns>
-		const size_t GetIndexWithinParent() const;
-
-		/// <summary>
-		/// Get the previous sibling. May be nullptr if the node does not have a previous sibling.
-		/// </summary>
-		/// <returns>
-		/// A SharedGQNode which may or may not be valid. If its ::IsValid() member reports true,
-		/// then the returned object indeed represents the previous sibling. If not, then it is a
-		/// dummy object.
-		/// </returns>
-		std::shared_ptr<GQNode> GetPreviousSibling();
-
-		/// <summary>
-		/// Get the next sibling. May be nullptr if the node does not have a next sibling.
-		/// </summary>
-		/// <returns>
-		/// A SharedGQNode which may or may not be valid. If its ::IsValid() member reports true,
-		/// then the returned object indeed represents the next sibling. If not, then it is a dummy
-		/// object.
-		/// </returns>
-		std::shared_ptr<GQNode> GetNextSibling();
+		const size_t& GetIndexWithinParent() const;
 
 		/// <summary>
 		/// Gets the number of children this node has.
@@ -161,26 +130,51 @@ namespace gq
 		/// value greater than zero, and that supplied indices are less than the number of children
 		/// returned (zero based index).
 		/// </summary>
-		/// <param name="position">
-		/// The position of the child to retrieve. 
+		/// <param name="index">
+		/// The index of the child to retrieve. 
 		/// </param>
 		/// <returns>
 		/// A valid and non-nullptr SharedGQNode representing the child at the supplied index. 
 		/// </returns>
-		std::shared_ptr<GQNode> GetChildAt(const size_t position) const;
+		std::shared_ptr<GQNode> GetChildAt(const size_t index) const;
 
 		/// <summary>
-		/// Gets the value of the supplied attribute name. If the supplied named attribute is not
-		/// found, or no value is defined, an empty string will be returned.
+		/// Checks if the attribute by the name given exists for this node. Does not support prefix
+		/// searching.
 		/// </summary>
 		/// <param name="attributeName">
-		/// The named attribute to return the value of. 
+		/// The name of the attribute to check. 
 		/// </param>
 		/// <returns>
-		/// A string which may be empty if the supplied named attribute was not found or contained
-		/// no value.
+		/// True if the attribute exists, false otherwise. 
 		/// </returns>
-		std::string GetAttributeValue(const std::string& attributeName) const;
+		const bool HasAttribute(const std::string& attributeName) const;
+
+		/// <summary>
+		/// Overload that takes the named attribute by boost::string_ref const reference and returns
+		/// whether or not the named attribute exists on this element. Does not support prefix
+		/// searching.
+		/// </summary>
+		/// <param name="attributeName">
+		/// The name of the attribute to check. 
+		/// </param>
+		/// <returns>
+		/// True if the attribute exists, false otherwise. 
+		/// </returns>
+		const bool HasAttribute(const boost::string_ref attributeName) const;
+
+		/// <summary>
+		/// Check if the node is actually completely empty, or if it contains non-html element
+		/// children. This is necessary for the :empty pseudo class selector because it's sort of a
+		/// special case. For all other purposes, we don't care about non-html entity children. As
+		/// such, we don't push things like gumbo text nodes as GQNodes into the m_children
+		/// container. But, the :empty pseudo class selector needs to know about these things.
+		/// </summary>
+		/// <returns>
+		/// True if the object contains absolutely no children of any kind, even text nodes, false
+		/// otherwise.
+		/// </returns>
+		const bool IsEmpty() const;
 
 		/// <summary>
 		/// Overload that takes the named attribute by boost::string_ref const reference and returns
@@ -194,7 +188,7 @@ namespace gq
 		/// A boost::string_ref which may be empty if the supplied named attribute was not found or
 		/// contained no value.
 		/// </returns>
-		boost::string_ref GetAttributeValue(const boost::string_ref& attributeName) const;
+		boost::string_ref GetAttributeValue(const boost::string_ref attributeName) const;
 
 		/// <summary>
 		/// Gets the text of this node and all of its text descendants combined. 
@@ -258,7 +252,7 @@ namespace gq
 		/// <returns>
 		/// The tag of the node as a string.
 		/// </returns>
-		std::string GetTagName() const;
+		boost::string_ref GetTagName() const;
 
 		/// <summary>
 		/// Gets the tag of the node.
@@ -266,45 +260,87 @@ namespace gq
 		/// <returns>
 		/// The tag of the node.
 		/// </returns>
-		GumboTag GetTag() const;
+		const GumboTag& GetTag() const;
 
 		/// <summary>
-		/// Queries this node and its descendants using the supplied selector string. Note that this
-		/// method, which accepts a selector as a string, internally calls the GQParser::Parse(...)
-		/// method, which will throw when supplied with invalid selectors. As such, be prepared to
-		/// handle exceptions when using this method.
-		/// 
+		/// Run a selector against the node and its descendants and return any and all nodes that
+		/// were matched by the supplied selector string. Note that this method, which accepts a
+		/// selector as a string, internally calls the GQParser::Parse(...) method, which will throw
+		/// when supplied with invalid selectors. As such, be prepared to handle exceptions when
+		/// using this method.
+		/// <para>&#160;</para>
 		/// Note also that it is recommended to use the GQParser directly to compile selectors
 		/// first, saving the returned GQSharedSelector objects. This is much more efficient if the
 		/// selector is used more than once. Methods that accept raw selector strings will compile
 		/// and discard selectors after use.
 		/// </summary>
-		/// <param name="selector">
-		/// The selector string to compile and query against this node and its descendants for
-		/// matches.
+		/// <param name="selectorString">
+		/// The selector string to query against the node and its descendants with. 
 		/// </param>
 		/// <returns>
-		/// A GQSelection object that holds any and all matches found using the supplied selector
-		/// string.
+		/// A collection of nodes that were matched by the supplied selector. If no matches were
+		/// found, the collection will be empty.
 		/// </returns>
-		GQSelection Find(const std::string& selector);
+		const GQSelection Find(const std::string& selectorString) const;
 
 		/// <summary>
-		/// Queries this node and its descendants using the supplied selector string. Note that
-		/// unlike the overload that allows a string argument, this version cannot potentially
-		/// throw. This overload is the recommended overload to use, because it recycles previously
-		/// compiled selectors rather than compiling them and discarding them on the fly.
+		/// Run a selector against the node and its descendants and return any and all nodes that
+		/// were matched by the supplied compiled selector.
 		/// </summary>
 		/// <param name="selector">
-		/// The compiled selector to query against this node and its descendants for matches. 
+		/// The precompiled selector object to query against the node and its descendants with. 
 		/// </param>
 		/// <returns>
-		/// A GQSelection object that holds any and all matches found using the supplied selector
-		/// string.
+		/// A collection of nodes that were matched by the supplied selector. If no matches were
+		/// found, the collection will be empty.
 		/// </returns>
-		GQSelection Find(const SharedGQSelector& selector);
+		const GQSelection Find(const SharedGQSelector& selector) const;
 
-	private:
+		/// <summary>
+		/// Gets the unique ID of the node. See nodes on m_nodeUniqueId for more.
+		/// </summary>
+		/// <returns>
+		/// The unique ID of the node.
+		/// </returns>
+		const boost::string_ref GetUniqueId() const;
+
+		/// <summary>
+		/// Gets the inner HTML for the node and its descendants in string format.
+		/// </summary>
+		/// <returns>
+		/// The inner HTML for the node and its descendants in string format.
+		/// </returns>
+		std::string GetInnerHtml() const;
+
+		/// <summary>
+		/// Gets the outer HTML for the node and its descendants in string format.
+		/// </summary>
+		/// <returns>
+		/// The outer HTML for the node and its descendants in string format.
+		/// </returns>
+		std::string GetOuterHtml() const;
+
+	protected:
+
+		/// <summary>
+		/// Interface to create a SharedGQNode instance. Since GQNode inherits from
+		/// enabled_shared_from_this and calls shared_from_this internally for some matching
+		/// methods, its necessary to enforce that an object of this type cannot exist but already
+		/// wrapped in a shared_ptr.
+		/// </summary>
+		/// <param name="node">
+		/// The GumboNode* object that the GQNode is to wrap. This must be a valid pointer, or this
+		/// method will throw.
+		/// </param>
+		/// <returns>
+		/// A SharedGQNode instance. 
+		/// </returns>
+		static std::shared_ptr<GQNode> Create(const GumboNode* node, GQTreeMap* map, const std::string& parentId, const size_t indexWithinParent = 0, GQNode* parent = nullptr);
+
+		/// <summary>
+		/// Empty constructor to satisfy GQDocument.
+		/// </summary>
+		GQNode();
 
 		/// <summary>
 		/// Constructs a new node around a raw GumboNode pointer.
@@ -312,7 +348,7 @@ namespace gq
 		/// <param name="node">
 		/// Pointer to a GumboNode. Default is nullptr.
 		/// </param>
-		GQNode(const GumboNode* node);
+		GQNode(const GumboNode* node, const std::string& parentId, const size_t indexWithinParent, GQNode* parent);
 
 		/// <summary>
 		/// The raw GumboNode* that this object wraps.
@@ -320,23 +356,207 @@ namespace gq
 		const GumboNode* m_node;
 
 		/// <summary>
-		/// A SharedGQNode that wraps the parent node. May be nullptr if this node has no parent.
+		/// A pointer to this node's parent, if any.
 		/// </summary>
-		std::shared_ptr<GQNode> m_sharedParent;
+		GQNode* m_parent = nullptr;
 
 		/// <summary>
-		/// A SharedGQNode that wraps the immediate previous sibling of this node. If the parent
-		/// node is nullptr, or this node is an only child or this node is at position zero within
-		/// the parent, it will be nullptr.
+		/// Since we're excluding nodes that are not element nodes, we can't rely on the index value
+		/// specified in GumboNode->index_within_parent. We have to generate and save our own proper
+		/// index.
 		/// </summary>
-		std::shared_ptr<GQNode> m_sharedPreviousSibling;
+		size_t m_indexWithinParent;
 
 		/// <summary>
-		/// A SharedGQNode that wraps the immediate next sibling of this node. If the parent node is
-		/// nullptr, or this node is an only child or this node is the last child within the parent,
-		/// it will be nullptr.
+		/// A unique ID for the node composed of its position within parent, and its parent's position
+		/// within their parents all the way back to the root. If we were using integers for this, it
+		/// simply wouldn't work (could never be unique), but by storing as string, this is possible.
 		/// </summary>
-		std::shared_ptr<GQNode> m_sharedNextSibling;
+		std::string m_nodeUniqueId;
+
+		/// <summary>
+		/// Container holding all valid html elements that are children of this html element.
+		/// </summary>
+		std::vector < std::shared_ptr<GQNode> > m_children;
+
+		struct StringRefComparer : public std::binary_function<std::string,
+			std::string, bool>
+		{
+			bool operator()(const boost::string_ref strOne, const boost::string_ref strTwo) const
+			{
+				auto oneSize = strOne.size();
+				auto twoSize = strTwo.size();
+				
+				if (oneSize == twoSize)
+				{
+					if ((strOne[0] == strTwo[0]) && (strOne[strTwo.length() - 1] == strTwo[strTwo.length() - 1]) && (strOne[strTwo.length() - 2] == strTwo[strTwo.length() - 2]))
+					{
+						return strOne.compare(strTwo) == 0;
+					}
+				}
+
+				return false;
+			}
+		};
+
+		/// <summary>
+		/// This is about 25 percent faster than using an unordered_map or map. Too great of a performance
+		/// increase to pass up.
+		/// </summary>
+		struct FastAttributeMap
+		{
+
+		public:
+
+			FastAttributeMap()
+			{
+
+			}
+
+			std::vector<std::pair<boost::string_ref, boost::string_ref>>::const_iterator begin() const
+			{								
+				return m_collection.begin();
+			}
+
+			std::vector<std::pair<boost::string_ref, boost::string_ref>>::const_iterator end() const
+			{
+				return m_collection.end();
+			}
+
+			void insert(std::pair<boost::string_ref, boost::string_ref> value)
+			{
+				if (std::find_if(m_collection.begin(), m_collection.end(),
+					[value](const std::pair<boost::string_ref, boost::string_ref>& str)-> bool
+					{
+						auto oneSize = str.first.size();
+						auto twoSize = value.first.size();
+						
+						if (oneSize != twoSize)
+						{
+							return false;
+						}
+
+						if (oneSize >= 4)
+						{
+							if ((str.first[0] == value.first[0]) && 
+								(str.first[1] == value.first[1]) && 
+								(str.first[oneSize - 1] == value.first[oneSize - 1]) && 
+								(str.first[oneSize - 2] == value.first[oneSize - 2]))
+							{
+								return std::memcmp(str.first.begin(), value.second.begin(), oneSize) == 0;
+								//return str.first.compare(value.second) == 0;
+							}
+						}
+						else
+						{
+							return std::memcmp(str.first.begin(), value.second.begin(), oneSize) == 0;
+							//return str.first.compare(value.second) == 0;
+						}
+
+						return false;
+					}
+				) == m_collection.end())
+				{
+					m_collection.emplace_back(std::move(value));
+				}
+			}
+
+			std::vector<std::pair<boost::string_ref, boost::string_ref>>::const_iterator find(const boost::string_ref key) const
+			{
+				return std::find_if(m_collection.begin(), m_collection.end(),
+					[key](const std::pair<boost::string_ref, boost::string_ref>& str)-> bool
+				{
+					auto oneSize = str.first.size();
+					auto twoSize = key.size();
+
+					if (oneSize != twoSize)
+					{
+						return false;
+					}
+
+					if (oneSize >= 4)
+					{
+						if ((str.first[0] == key[0]) && 
+							(str.first[1] == key[1]) && 
+							(str.first[oneSize - 1] == key[oneSize - 1]) && 
+							(str.first[oneSize - 2] == key[oneSize - 2]))
+						{
+							return std::memcmp(str.first.begin(), key.begin(), oneSize) == 0;
+							//return str.first.compare(key) == 0;
+						}
+					}
+					else
+					{
+						return std::memcmp(str.first.begin(), key.begin(), oneSize) == 0;
+						//return str.first.compare(key) == 0;
+					}
+
+					return false;
+				}
+				);
+			}
+
+		private:
+
+			std::vector<std::pair<boost::string_ref, boost::string_ref>> m_collection;
+		};
+
+		/// <summary>
+		/// Holds preprocessed attributes for quick lookup. The attribute values in this member are
+		/// untouched except for the fact that any enclosing quotes are pre-trimmed from the value
+		/// string. This container differs from the m_allAttributeValues member in that it simply
+		/// stores all instances of attribute/value. For example, consider the attribute "class='one
+		/// two three'". This member, when "class" us used as the key, will return a single value of
+		/// "one two three", without the quotes.
+		/// <para>&#160;</para>
+		/// The m_allAttributeValues member on the other hand would return an unordered set for the
+		/// same key, containing individual entries of "one" "two" "three".
+		/// </summary>
+		FastAttributeMap m_attributes;
+
+		/// <summary>
+		/// Since we have all of this crazyness with SharedGQNode sprinkled everywhere, and due to
+		/// the nature of the GQTreeMap and how we must work with it, an Init() member is required
+		/// which must be called post-object construction. The GQTreeMap holds shared_ptr's to nodes
+		/// for quick lookup based on attributes. When a GQNode is constructed, it needs to build
+		/// its attributes and give it to the GQTreeMap. We simply cannot called shared_from_this()
+		/// within the constructor, because the shared_ptr is not yet fully constructed at that
+		/// point. As such, we need this.
+		/// </summary>
+		virtual void Init();
+
+		/// <summary>
+		/// Populate the m_children element. Since this is invoked in the constructor, this will
+		/// recursively build out all descendants of this node in the same way. We must ensure
+		/// that nodes are only created from the GQDocument, so that duplicate trees like this
+		/// are not build, just for the sake of not wastefully duplicating.
+		/// </summary>
+		void BuildChildren();
+
+		/// <summary>
+		/// Extracts the attributes, if any, for this element, processes them by trimming enclosing
+		/// quotes, and then populates the m_attributes unorder_map with values. Uses string_ref,
+		/// so the values are not copied anywhere.
+		/// </summary>
+		void BuildAttributes();
+
+		/// <summary>
+		/// Object composition is getting pretty ugly at this point. GQDocument holds the single
+		/// GQTreeMap in a unique_ptr as a private member. GQNode can't hold a shared_ptr to such an
+		/// object because the GQTreeMap holds shared_ptr's to nodes that use it. This would create
+		/// a circular reference, leading to memory leaks. Same reason that m_parent must be a raw
+		/// pointer. GQDocument is also a subclass of of GQNode, so we can't just hold a pointer to
+		/// the document root and access it that way. As such, when GQDocument creates all of the
+		/// GQNode objects for the document, it supplies the GQTreeMap* raw pointer, so we'll save
+		/// the pointer to the tree map in a private member. Nodes need to reference the map when
+		/// performing searches.
+		/// <para>&#160;</para>
+		/// As ugly (confusing) as this is getting internally, the user still only needs to keep
+		/// GQDocument alive, which is a very simple and reasonable requirement (to keep the
+		/// document alive for so long as you're using it). In the event that the user honors this
+		/// contract, m_rootTreeMap should never end up being null, so this should be reliable.
+		/// </summary>
+		GQTreeMap* m_rootTreeMap = nullptr;
 
 	};
 
