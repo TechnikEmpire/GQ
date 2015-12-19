@@ -5,7 +5,7 @@ Fork of https://github.com/lazytiger/gumbo-query. I opted to have this be an uno
 
 ##Usage
 
-You can either construct a GQDocument around an existing GumboOutput pointer, at which point the GQDocument will assume managing the lifetime of the GQDocument, or you can supply a raw string of HTML for GQDocument to parse and also maintain.
+You can either construct a GQDocument around an existing GumboOutput pointer, at which point the GQDocument will assume managing the lifetime of the GumboOutput, or you can supply a raw string of HTML for GQDocument to parse and also maintain.
 ```c++
 std::string someHtmlString = "...";
 std::string someSelectorString = "...";
