@@ -80,7 +80,7 @@ Speed doesn't mean much if the matching code is broken. As such, over 30 tests c
  - Tests for combined and nested selectors.
  - Modify `GQSelector::Match()` and related methods to return the final matched node. Required for child selectors and such.
 
-##Goals  
+##Original Goals  
  - Renaming objects and files and nesting them inside directories to avoid existing conflicts with Gumbo Parser during compilation and inclusion.
  - Wrapping things up in proper namespaces.
  - Remove custom rolled automatic reference counting and replace with standard `shared_ptr` types.  
