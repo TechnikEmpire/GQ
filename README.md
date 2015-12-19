@@ -56,6 +56,8 @@ for(auto& ss : compiledSelectors)
 }
 ```
 
+The contract placed on the end user is very light. Keep GQDocument alive for as long as you're storing or accessing any GQNode object, directly or indirectly. That's basically it.
+
 ##Speed
 One of the primary goals with this engine was to maximize speed. For my purposes, I wanted to ensure I could run an insane amount of selectors without any visible delay to the user. Running the TestParser test benchmarks running every single selector in [EasyList](https://easylist.adblockplus.org/en/) (spare a handful which were removed because they're improperly formatted) against a standard high profile website's landing page HTML. The current results on my [dev laptop](https://www.asus.com/ca-en/ROG-Republic-Of-Gamers/ASUS_ROG_G750JM/) are:
 
