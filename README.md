@@ -15,12 +15,12 @@ testDocument->Parse(someHtmlString);
 try
 {
     auto results = testDocument->Find(someSelectorString);
+    auto numResults = results.GetNodeCount();
 }
 catch(std::runtime_error& e)
 {
     // Necessary because naturally, the parser can throw.
 }
-auto numResults = results.GetNodeCount();
 ```
 
 As you can see, you can run raw selector strings into the `::Find(...)` method, but each time, the selector string will be "compiled" into a GQSharedSelector and destroyed. You can alternatively "precompile" and save built selectors, and as such avoid wrapping every `::Find(...)` call in a try/catch.
