@@ -23,7 +23,7 @@ catch(std::runtime_error& e)
 auto numResults = results.GetNodeCount();
 ```
 
-As you can see, you run raw selector strings into the `::Find(...)` method, but each time, the selector string will be "compiled" into a GQSharedSelector and destroyed. You can alternatively "precompile" and save built selectors, and as such avoid wrapping every `::Find(...)` call in a try/catch.
+As you can see, you can run raw selector strings into the `::Find(...)` method, but each time, the selector string will be "compiled" into a GQSharedSelector and destroyed. You can alternatively "precompile" and save built selectors, and as such avoid wrapping every `::Find(...)` call in a try/catch.
 
 ```
 GumboOutput* output = SOMETHING_NOT_NULL;
