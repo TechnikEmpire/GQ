@@ -6,7 +6,7 @@ Fork of https://github.com/lazytiger/gumbo-query. I opted to have this be an uno
 ##Usage
 
 You can either construct a GQDocument around an existing GumboOutput pointer, at which point the GQDocument will assume managing the lifetime of the GQDocument, or you can supply a raw string of HTML for GQDocument to parse and also maintain.
-```
+```c++
 std::string someHtmlString = "...";
 std::string someSelectorString = "...";
 auto testDocument = gq::GQDocument::Create();
@@ -25,7 +25,7 @@ auto numResults = results.GetNodeCount();
 
 As you can see, you can run raw selector strings into the `::Find(...)` method, but each time, the selector string will be "compiled" into a GQSharedSelector and destroyed. You can alternatively "precompile" and save built selectors, and as such avoid wrapping every `::Find(...)` call in a try/catch.
 
-```
+```c++
 GumboOutput* output = SOMETHING_NOT_NULL;
 auto testDocument = gq::GQDocument::Create(output);
 
