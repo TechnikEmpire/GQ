@@ -80,9 +80,9 @@ Speed doesn't mean much if the matching code is broken. As such, over 30 tests c
 ##TODO
  - Mutability API.
  - ~~Tests for combined and nested selectors.~~
- - Reduce candidate collections BEFORE attempting to match in the even that the selector is a GQBinarySelector with the
+ - Reduce candidate collections BEFORE attempting to match in the event that the selector is a GQBinarySelector with the
  intersection operator. Can reduce sets by only keeping candidates that match the traits from both the left and right
- hand sides of the GQBinarySelector, which would drastically reduce candidates and this drastically increase matching speed.
+ hand sides of the GQBinarySelector, which would drastically reduce candidates and thus drastically increase matching speed.
  - Modify `GQSelector::Match()` and related methods to return the final matched node. Required for child selectors and such.
 
 ##Original Goals  
