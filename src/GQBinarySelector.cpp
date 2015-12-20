@@ -275,7 +275,7 @@ namespace gq
 
 				auto lshResult = m_leftHandSide->Match(node);
 
-				if (rhsResult)
+				if (lshResult)
 				{
 					return lshResult;
 				}

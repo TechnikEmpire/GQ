@@ -41,7 +41,8 @@ namespace gq
 
 	std::shared_ptr<GQNode> GQNode::Create(const GumboNode* node, GQTreeMap* map, const std::string& parentId, const size_t indexWithinParent, GQNode* parent)
 	{
-		auto newNode = std::make_shared<GQNode>(node, parentId, indexWithinParent, parent);
+		std::string newNodeId = parentId + std::string(u8"A") + std::to_string(indexWithinParent);
+		auto newNode = std::make_shared<GQNode>(node, newNodeId, indexWithinParent, parent);
 
 		#ifndef NDEBUG		
 		assert(map != nullptr && u8"In GQNode::Create(const GumboNode*, GQTreeMap*, const std::string&, const size_t, GQNode*) - Cannot initialize a GQNode without a valid GQTreeMap* pointer. GQTreeMap* is nullptr.");
@@ -61,9 +62,9 @@ namespace gq
 		m_parent = nullptr;
 	}
 
-	GQNode::GQNode(const GumboNode* node, const std::string& parentId, const size_t indexWithinParent, GQNode* parent) :
+	GQNode::GQNode(const GumboNode* node, const std::string newUniqueId, const size_t indexWithinParent, GQNode* parent) :
 		m_node(node), 
-		m_nodeUniqueId(parentId + std::to_string(node->index_within_parent)),
+		m_nodeUniqueId(std::move(newUniqueId)),
 		m_indexWithinParent(indexWithinParent), 
 		m_parent(parent)
 	{		
@@ -364,6 +365,19 @@ namespace gq
 				fromTrait = m_rootTreeMap->Get(GetUniqueId(), traitsIt->first, traitsIt->second);
 			}
 
+			#ifndef NDEBUG
+				#ifdef GQ_VERBOSE_DEBUG_NFO
+					if (fromTrait != nullptr)
+					{
+						std::cout << u8"In GQNode::Find(const SharedGQSelector&) - Got " << fromTrait->size() << u8" candidates from trait." << std::endl;
+					}
+					else
+					{
+						std::cout << u8"In GQNode::Find(const SharedGQSelector&) - Got zero candidates from trait." << std::endl;
+					}
+				#endif
+			#endif
+
 			if (fromTrait != nullptr)
 			{
 				auto tSize = fromTrait->size();
@@ -385,9 +399,9 @@ namespace gq
 						auto matchedNode = matchTest.GetResult();
 
 						if (collected.find(matchedNode->GetUniqueId()) == collected.end())
-						{
-							matchResults.emplace_back(matchedNode);
+						{							
 							collected.insert({ matchedNode->GetUniqueId(), matchedNode->GetUniqueId() });
+							matchResults.emplace_back(std::move(matchedNode));
 						}
 					}
 				}

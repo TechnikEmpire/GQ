@@ -51,7 +51,7 @@ namespace gq
 		// GQTreeMap member holds references too all such constructed nodes, it should be
 		// safe to hold a raw pointer here and call shared_from_this() if and when the user
 		// actually wants a copy of the shared node.
-		if (m_result == nullptr) { return nullptr; }
+		if (m_result == nullptr) { return std::shared_ptr<GQNode>(nullptr); }
 		return m_result->shared_from_this();
 	}
 

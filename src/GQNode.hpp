@@ -343,12 +343,26 @@ namespace gq
 		GQNode();
 
 		/// <summary>
-		/// Constructs a new node around a raw GumboNode pointer.
+		/// Constructs a new node around a raw GumboNode pointer. 
 		/// </summary>
 		/// <param name="node">
-		/// Pointer to a GumboNode. Default is nullptr.
+		/// Pointer to a GumboNode. Must not be nullptr. 
 		/// </param>
-		GQNode(const GumboNode* node, const std::string& parentId, const size_t indexWithinParent, GQNode* parent);
+		/// <param name="newUniqueId">
+		/// The generated unique ID for the new node. This must be completely constructed before
+		/// being passed into this parameter.
+		/// </param>
+		/// <param name="indexWithinParent">
+		/// The index within the parent. Node that this index is not necessarily equal to
+		/// GumboNode::index_within_parent. This index rather, is the index when only
+		/// GUMBO_NODE_ELEMENT objects are considered children. All GQNode objects are valid
+		/// GUMBO_NODE_ELEMENTs. No other type of Gumbo element should be constructed into a GQNode
+		/// object.
+		/// </param>
+		/// <param name="parent">
+		/// Pointer to the parent GumboNode. Can be nullptr. 
+		/// </param>
+		GQNode(const GumboNode* node, const std::string newUniqueId, const size_t indexWithinParent, GQNode* parent);
 
 		/// <summary>
 		/// The raw GumboNode* that this object wraps.

@@ -26,6 +26,7 @@
 #include <GQDocument.hpp>
 #include <GQNode.hpp>
 #include <GQParser.hpp>
+#include <GQSerializer.hpp>
 
 /// <summary>
 /// The purpose of this test is to load the "matchingtest.data" data file and run the tests laid out
@@ -40,7 +41,8 @@
 /// </summary>
 int main()
 {
-	std::string matchingTestDataFilePath(u8"../../matchingtest.data");
+	//std::string matchingTestDataFilePath(u8"../../matchingtest.data");
+	std::string matchingTestDataFilePath(u8"C:\\Github\\GumboQuery\\test\\matchingtest.data");
 
 	std::ifstream in(matchingTestDataFilePath, std::ios::binary | std::ios::in);
 
@@ -150,8 +152,13 @@ int main()
 
 				if (result.GetNodeCount() != testExpectedMatches[i].second)
 				{
-					std::cout << u8"Test Number " << testNumbers[i] << u8" failed using selector " << testSelectors[i] << u8" because " << testExpectedMatches[i].second << u8" matches were expected, received " << result.GetNodeCount() << std::endl;
+					std::cout << u8"Test Number " << testNumbers[i] << u8" failed using selector " << testSelectors[i] << u8" because " << testExpectedMatches[i].second << u8" matches were expected, received " << result.GetNodeCount() << std::endl << std::endl;
 					++testsFailed;
+					for (size_t ri = 0; ri < result.GetNodeCount(); ++ri)
+					{
+						auto node = result.GetNodeAt(ri);
+						std::cout << gq::GQSerializer::Serialize(node.get()) << std::endl;
+					}
 					continue;
 				}
 				else
@@ -171,6 +178,8 @@ int main()
 								foundInvalidData = true;
 								break;
 							}
+
+							std::cout << gq::GQSerializer::Serialize(node.get()) << std::endl;
 						}
 
 						if (foundInvalidData)
