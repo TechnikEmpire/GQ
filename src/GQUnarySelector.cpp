@@ -27,23 +27,23 @@
 * THE SOFTWARE.
 */
 
-#include "GQUnarySelectory.hpp"
+#include "GQUnarySelector.hpp"
 #include "GQNode.hpp"
 
 namespace gq
 {
 
-	GQUnarySelectory::GQUnarySelectory(SelectorOperator op, SharedGQSelector selector) :
+	GQUnarySelector::GQUnarySelector(SelectorOperator op, SharedGQSelector selector) :
 		m_operator(op), m_selector(std::move(selector))
 	{
 		if (m_selector == nullptr)
 		{
-			throw std::runtime_error(u8"In GQUnarySelectory::GQUnarySelectory(SelectorOperator, SharedGQSelector) - Supplied shared selector is nullptr.");
+			throw std::runtime_error(u8"In GQUnarySelector::GQUnarySelector(SelectorOperator, SharedGQSelector) - Supplied shared selector is nullptr.");
 		}
 
 		#ifndef NDEBUG
 			#ifdef GQ_VERBOSE_DEBUG_NFO
-			std::cout << "Built GQUnarySelectory with operator " << static_cast<size_t>(m_operator) << u8"." << std::endl;
+			std::cout << "Built GQUnarySelector with operator " << static_cast<size_t>(m_operator) << u8"." << std::endl;
 			#endif
 		#endif
 
@@ -55,11 +55,11 @@ namespace gq
 		}
 	}
 
-	GQUnarySelectory::~GQUnarySelectory()
+	GQUnarySelector::~GQUnarySelector()
 	{
 	}
 
-	const bool GQUnarySelectory::GQUnarySelectory::Match(const GQNode* node) const
+	const GQSelector::GQMatchResult GQUnarySelector::GQUnarySelector::Match(const GQNode* node) const
 	{
 
 		// If it's not a not selector, and there's no children, we can't do a child or descendant match
@@ -72,7 +72,16 @@ namespace gq
 		{
 			case SelectorOperator::Not:
 			{
-				return m_selector->Match(node) == false;
+				auto result = m_selector->Match(node);
+
+				if (result == false)
+				{
+					return GQMatchResult(node);
+				}
+				else
+				{
+					result;
+				}
 			}
 			break;
 
@@ -90,9 +99,11 @@ namespace gq
 				{
 					auto child = node->GetChildAt(i);
 
-					if (m_selector->Match(child.get()))
+					auto childMatch = m_selector->Match(child.get());
+
+					if (childMatch)
 					{
-						return true;
+						return childMatch;
 					}
 				}
 
@@ -105,15 +116,23 @@ namespace gq
 		return false;
 	}
 
-	const bool GQUnarySelectory::HasDescendantMatch(const GQNode* node) const
+	const GQSelector::GQMatchResult GQUnarySelector::HasDescendantMatch(const GQNode* node) const
 	{
 		for (size_t i = 0; i < node->GetNumChildren(); i++)
 		{
 			auto child = node->GetChildAt(i);
 
-			if (m_selector->Match(child.get()) || HasDescendantMatch(child.get()))
+			auto childMatch = m_selector->Match(child.get());
+			if (childMatch)
 			{
-				return true;
+				return GQMatchResult(node);
+			}
+
+			childMatch = HasDescendantMatch(child.get());
+
+			if (childMatch)
+			{
+				return GQMatchResult(node);
 			}
 		}
 

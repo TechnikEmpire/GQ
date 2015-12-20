@@ -133,7 +133,7 @@ namespace gq
 		/// True if this selector was successfully matched against the supplied node, false
 		/// otherwise.
 		/// </returns>
-		virtual const bool Match(const GQNode* node) const;
+		virtual const GQMatchResult Match(const GQNode* node) const;
 
 	private:
 

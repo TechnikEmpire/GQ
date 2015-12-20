@@ -70,32 +70,6 @@ namespace gq
 		~GQSelection();
 
 		/// <summary>
-		/// Run a selector against the document and return any and all nodes that were matched by
-		/// the supplied selector string.
-		/// </summary>
-		/// <param name="selectorString">
-		/// The selector string to query against the document with. 
-		/// </param>
-		/// <returns>
-		/// A collection of nodes that were matched by the supplied selector. If no matches were
-		/// found, the collection will be empty.
-		/// </returns>
-		GQSelection Find(const std::string& selectorString) const;
-
-		/// <summary>
-		/// Run a selector against the document and return any and all nodes that were matched by
-		/// the supplied selector string.
-		/// </summary>
-		/// <param name="selector">
-		/// The precompiled selector object to query against the document with. 
-		/// </param>
-		/// <returns>
-		/// A collection of nodes that were matched by the supplied selector. If no matches were
-		/// found, the collection will be empty.
-		/// </returns>
-		GQSelection Find(const SharedGQSelector& selector) const;
-
-		/// <summary>
 		/// Check the total number of nodes held in this selection. This number represents how many
 		/// nodes were either supplied to this selection at construction, or were gathered into this
 		/// selection as a result of them matching against a selector query that generated this

@@ -117,7 +117,7 @@ namespace gq
 
 	}
 
-	const bool GQBinarySelector::Match(const GQNode* node) const
+	const GQSelector::GQMatchResult GQBinarySelector::Match(const GQNode* node) const
 	{
 
 		switch (m_operator)
@@ -145,7 +145,13 @@ namespace gq
 
 				auto prevSibling = parent->GetChildAt(node->GetIndexWithinParent() - 1);
 
-				return m_rightHandSide->Match(node) == true && m_leftHandSide->Match(prevSibling.get()) == true;
+				auto rhsResult = m_rightHandSide->Match(node);
+
+				if (rhsResult && m_leftHandSide->Match(prevSibling.get()) == true)
+				{
+					// We return the right-most match.
+					return rhsResult;
+				}
 			}
 			break;
 
@@ -159,7 +165,12 @@ namespace gq
 					return false;
 				}
 
-				return  m_rightHandSide->Match(node) == true && m_leftHandSide->Match(node->GetParent()) == true;
+				auto rhsResult = m_rightHandSide->Match(node);
+
+				if (rhsResult && m_leftHandSide->Match(node->GetParent()) == true)
+				{
+					return rhsResult;
+				}
 			}
 			break;
 
@@ -173,14 +184,19 @@ namespace gq
 					return false;
 				}
 
-				if (!m_rightHandSide->Match(node))
+				auto rhsResult = m_rightHandSide->Match(node);
+
+				if (!rhsResult)
 				{
-					return false;
+					return rhsResult;
 				}
 
 				for (parent; parent != nullptr; parent = parent->GetParent())
 				{
-					return m_leftHandSide->Match(parent) == true;
+					if (m_leftHandSide->Match(parent) == true)
+					{
+						return rhsResult;
+					}
 				}
 
 				return false;
@@ -188,8 +204,15 @@ namespace gq
 			break;
 
 			case SelectorOperator::Intersection:
-			{				
-				return m_rightHandSide->Match(node) == true && m_leftHandSide->Match(node) == true;
+			{			
+				auto rhsResult = m_rightHandSide->Match(node);
+
+				if (rhsResult && m_leftHandSide->Match(node) == true)
+				{
+					return rhsResult;
+				}
+
+				return false;
 			}
 			break;
 
@@ -214,7 +237,9 @@ namespace gq
 					return false;
 				}
 
-				if (m_rightHandSide->Match(node) == false)
+				auto rhsResult = m_rightHandSide->Match(node);
+
+				if (rhsResult == false)
 				{
 					return false;
 				}
@@ -232,7 +257,7 @@ namespace gq
 
 					if (m_leftHandSide->Match(sibling.get()))
 					{
-						return true;
+						return rhsResult;
 					}
 				}
 
@@ -242,7 +267,20 @@ namespace gq
 
 			case SelectorOperator::Union:
 			{
-				return m_rightHandSide->Match(node) == true || m_leftHandSide->Match(node) == true;
+				auto rhsResult = m_rightHandSide->Match(node);
+				if (rhsResult)
+				{
+					return rhsResult;
+				}
+
+				auto lshResult = m_leftHandSide->Match(node);
+
+				if (rhsResult)
+				{
+					return lshResult;
+				}
+
+				return false;				
 			}
 			break;
 		}

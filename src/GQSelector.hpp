@@ -88,6 +88,64 @@ namespace gq
 			Tag
 		};
 
+		/// <summary>
+		/// Not all selectors are simple. Some selectors search for children or even descendants of
+		/// nodes. When such selectors are run, they are expected to return the most righthand
+		/// object specified in the selector. As such, returning a simple boolean on the public
+		/// interface is not sufficient to give users an accurate collection of matched nodes.
+		/// 
+		/// To meet this requirement, it's necessary to return a structure, rather than a simple
+		/// bool yes or no that the supplied GQNode is a match, since while a match may have been
+		/// found, the match may be in actuality a descendant of the supplied GQNode.
+		/// </summary>
+		struct GQMatchResult
+		{
+
+			// Only GQSelector and subclasses should be able to construct these.
+			friend class GQSelector;
+			friend class GQBinarySelector;
+			friend class GQAttributeSelector;
+			friend class GQUnarySelector;
+			friend class GQTextSelector;
+
+		public:
+
+			/// <summary>
+			/// Default destructor.
+			/// </summary>
+			~GQMatchResult();
+
+			/// <summary>
+			/// Gets the result of the match. May or may not be nullptr. Use the bool operator of
+			/// this structure to conveniently determine if the match is nullptr or not.
+			/// </summary>
+			/// <returns>
+			/// The node matched by the most right hand side of a single or combined selector. Will
+			/// be nullptr if there was no successful match. Valid otherwise.
+			/// </returns>
+			const std::shared_ptr<GQNode> GetResult() const;			
+
+			/// <summary>
+			/// Determine if this result contains a valid match or not. 
+			/// </summary>
+			/// <returns>
+			/// True if this object represents a successful match and contains a pointer to the node
+			/// matching the most righthand side of the selector that matched, false otherwise.
+			/// </returns>
+			operator bool() const;
+
+			const bool operator==(const bool other) const;
+
+			const bool operator!=(const bool other) const;
+
+		private:
+
+			GQMatchResult(const GQNode* result = nullptr);
+
+			GQNode* m_result;
+
+		};
+
 		GQSelector();
 
 		/// <summary>
@@ -181,7 +239,7 @@ namespace gq
 		/// True if this selector was successfully matched against the supplied node, false
 		/// otherwise.
 		/// </returns>
-		virtual const bool Match(const GQNode* node) const;
+		virtual const GQMatchResult Match(const GQNode* node) const;
 
 		/// <summary>
 		/// Recursively tests for matches against the supplied node and all of its descendants,

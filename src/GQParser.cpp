@@ -28,6 +28,10 @@
 */
 
 #include "GQParser.hpp"
+#include "GQAttributeSelector.hpp"
+#include "GQBinarySelector.hpp"
+#include "GQTextSelector.hpp"
+#include "GQUnarySelector.hpp"
 
 namespace gq
 {
@@ -387,22 +391,22 @@ namespace gq
 
 				ConsumeClosingParenthesis(selectorStr);
 
-				GQUnarySelectory::SelectorOperator op;
+				GQUnarySelector::SelectorOperator op;
 
 				if (pseudoOperatorResult->second == PseudoOp::Not)
 				{
-					op = GQUnarySelectory::SelectorOperator::Not;
+					op = GQUnarySelector::SelectorOperator::Not;
 				}
 				else if (pseudoOperatorResult->second == PseudoOp::Has)
 				{
-					op = GQUnarySelectory::SelectorOperator::HasDescendant;
+					op = GQUnarySelector::SelectorOperator::HasDescendant;
 				}
 				else if (pseudoOperatorResult->second == PseudoOp::HasChild)
 				{
-					op = GQUnarySelectory::SelectorOperator::HasChild;
+					op = GQUnarySelector::SelectorOperator::HasChild;
 				}
 
-				return std::make_shared<GQUnarySelectory>(op, sel);
+				return std::make_shared<GQUnarySelector>(op, sel);
 			}
 			break;
 

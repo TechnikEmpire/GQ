@@ -379,12 +379,15 @@ namespace gq
 					// first and then attempt a match.
 					auto& pNode = (*fromTrait)[i];
 
-					if (selector->Match(pNode.get()))
+					auto matchTest = selector->Match(pNode.get());
+					if (matchTest)
 					{
-						if (collected.find(pNode->GetUniqueId()) == collected.end())
+						auto matchedNode = matchTest.GetResult();
+
+						if (collected.find(matchedNode->GetUniqueId()) == collected.end())
 						{
-							matchResults.emplace_back(pNode);
-							collected.insert({ pNode->GetUniqueId(), pNode->GetUniqueId() });
+							matchResults.emplace_back(matchedNode);
+							collected.insert({ matchedNode->GetUniqueId(), matchedNode->GetUniqueId() });
 						}
 					}
 				}
@@ -393,7 +396,7 @@ namespace gq
 
 		#ifndef NDEBUG
 			#ifdef GQ_VERBOSE_DEBUG_NFO
-				std::cout << u8"Returning " << objectsToSearch.size() << u8" matches for selector " << selector->GetOriginalSelectorString() << u8"." << std::endl;
+				std::cout << u8"Returning " << matchResults.size() << u8" matches for selector " << selector->GetOriginalSelectorString() << u8"." << std::endl;
 			#endif
 		#endif
 

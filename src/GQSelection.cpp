@@ -55,29 +55,6 @@ namespace gq
 
 	}
 
-	GQSelection GQSelection::Find(const std::string& selectorString) const
-	{
-		GQParser parser;
-
-		SharedGQSelector selector = parser.CreateSelector(selectorString);
-	
-		return Find(selector);
-	}
-
-	GQSelection GQSelection::Find(const SharedGQSelector& selector) const
-	{
-		std::vector<SharedGQNode> ret;
-
-		for (std::vector<SharedGQNode>::const_iterator it = m_nodes.begin(); it != m_nodes.end(); ++it)
-		{			
-			std::vector<SharedGQNode> matched;
-			selector->MatchAll(*it, matched);
-			GQUtil::UnionNodes(ret, matched);
-		}
-
-		return GQSelection(ret);
-	}
-
 	const size_t GQSelection::GetNodeCount() const
 	{
 		return m_nodes.size();

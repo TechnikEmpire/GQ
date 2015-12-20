@@ -46,7 +46,7 @@
     <ClInclude Include="..\..\..\..\src\GQSpecialTraits.hpp" />
     <ClInclude Include="..\..\..\..\src\GQTextSelector.hpp" />
     <ClInclude Include="..\..\..\..\src\GQTreeMap.hpp" />
-    <ClInclude Include="..\..\..\..\src\GQUnarySelectory.hpp" />
+    <ClInclude Include="..\..\..\..\src\GQUnarySelector.hpp" />
     <ClInclude Include="..\..\..\..\src\GQUtil.hpp" />
     <ClInclude Include="..\..\..\..\src\GQStrRefHash.hpp" />
   </ItemGroup>
@@ -62,7 +62,7 @@
     <ClCompile Include="..\..\..\..\src\GQSpecialTraits.cpp" />
     <ClCompile Include="..\..\..\..\src\GQTextSelector.cpp" />
     <ClCompile Include="..\..\..\..\src\GQTreeMap.cpp" />
-    <ClCompile Include="..\..\..\..\src\GQUnarySelectory.cpp" />
+    <ClCompile Include="..\..\..\..\src\GQUnarySelector.cpp" />
     <ClCompile Include="..\..\..\..\src\GQUtil.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

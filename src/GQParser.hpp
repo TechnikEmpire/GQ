@@ -29,10 +29,7 @@
 
 #pragma once
 
-#include "GQAttributeSelector.hpp"
-#include "GQBinarySelector.hpp"
-#include "GQTextSelector.hpp"
-#include "GQUnarySelectory.hpp"
+#include "GQSelector.hpp"
 #include <unordered_map>
 #include "GQStrRefHash.hpp"
 #include <stdexcept>

@@ -112,13 +112,16 @@ namespace gq
 	{
 	}
 
-	const bool GQAttributeSelector::Match(const GQNode* node) const
+	const GQSelector::GQMatchResult GQAttributeSelector::Match(const GQNode* node) const
 	{		
 		switch (m_operator)
 		{
 			case SelectorOperator::Exists:
 			{						
-				return node->HasAttribute(m_attributeNameRef);
+				if (node->HasAttribute(m_attributeNameRef))
+				{
+					return GQMatchResult(node);
+				}
 			}
 			break;
 
@@ -135,7 +138,10 @@ namespace gq
 				auto searchResult = attributeValue.find(m_attributeValueRef);
 
 				// Simply return whether or not we got any matches.
-				return searchResult != boost::string_ref::npos;
+				if (searchResult != boost::string_ref::npos)
+				{
+					return GQMatchResult(node);
+				}
 			}
 			break;
 
@@ -158,13 +164,21 @@ namespace gq
 						(attributeValue[oneSize - 1] == m_attributeValueRef[oneSize - 1]) &&
 						(attributeValue[oneSize - 2] == m_attributeValueRef[oneSize - 2]))
 					{
-						return std::memcmp(attributeValue.begin(), m_attributeValueRef.begin(), oneSize) == 0;
+						if (std::memcmp(attributeValue.begin(), m_attributeValueRef.begin(), oneSize) == 0)
+						{
+							return GQMatchResult(node);
+						}
 					}
 				}
 				else
 				{
-					return std::memcmp(attributeValue.begin(), m_attributeValueRef.begin(), oneSize) == 0;
+					if (std::memcmp(attributeValue.begin(), m_attributeValueRef.begin(), oneSize) == 0)
+					{
+						return GQMatchResult(node);
+					}
 				}
+
+				return false;
 			}
 			break;
 
@@ -194,7 +208,7 @@ namespace gq
 						{
 							if (std::memcmp(sub.begin(), m_attributeValueRef.begin(), subSize) == 0)
 							{
-								return true;
+								return GQMatchResult(node);
 							}
 						}
 					}
@@ -202,7 +216,7 @@ namespace gq
 					{
 						if (std::memcmp(sub.begin(), m_attributeValueRef.begin(), subSize) == 0)
 						{
-							return true;
+							return GQMatchResult(node);
 						}
 					}
 				}
@@ -239,7 +253,7 @@ namespace gq
 						{
 							if (std::memcmp(sub.begin(), m_attributeValueRef.begin(), subSize) == 0)
 							{
-								return true;
+								return GQMatchResult(node);
 							}
 						}
 					}
@@ -247,7 +261,7 @@ namespace gq
 					{
 						if (std::memcmp(sub.begin(), m_attributeValueRef.begin(), subSize) == 0)
 						{
-							return true;
+							return GQMatchResult(node);
 						}
 					}
 				}
@@ -284,12 +298,18 @@ namespace gq
 							(attributeValue[oneSize - 1] == m_attributeValueRef[oneSize - 1]) &&
 							(attributeValue[oneSize - 2] == m_attributeValueRef[oneSize - 2]))
 						{
-							return std::memcmp(attributeValue.begin(), m_attributeValueRef.begin(), oneSize) == 0;
+							if (std::memcmp(attributeValue.begin(), m_attributeValueRef.begin(), oneSize) == 0)
+							{
+								return GQMatchResult(node);
+							}
 						}
 					}
 					else
 					{
-						return std::memcmp(attributeValue.begin(), m_attributeValueRef.begin(), oneSize) == 0;
+						if (std::memcmp(attributeValue.begin(), m_attributeValueRef.begin(), oneSize) == 0)
+						{
+							return GQMatchResult(node);
+						}
 					}
 
 					return false;
@@ -325,7 +345,7 @@ namespace gq
 								{
 									if (std::memcmp(sub.begin(), m_attributeValueRef.begin(), subSize) == 0)
 									{
-										return true;
+										return GQMatchResult(node);
 									}
 								}
 							}
@@ -333,7 +353,7 @@ namespace gq
 							{
 								if (std::memcmp(sub.begin(), m_attributeValueRef.begin(), subSize) == 0)
 								{
-									return true;
+									return GQMatchResult(node);
 								}
 							}
 						}						
@@ -375,12 +395,18 @@ namespace gq
 							(attributeValue[oneSize - 1] == m_attributeValueRef[oneSize - 1]) &&
 							(attributeValue[oneSize - 2] == m_attributeValueRef[oneSize - 2]))
 						{
-							return std::memcmp(attributeValue.begin(), m_attributeValueRef.begin(), oneSize) == 0;
+							if (std::memcmp(attributeValue.begin(), m_attributeValueRef.begin(), oneSize) == 0)
+							{
+								return GQMatchResult(node);
+							}
 						}
 					}
 					else
 					{
-						return std::memcmp(attributeValue.begin(), m_attributeValueRef.begin(), oneSize) == 0;
+						if (std::memcmp(attributeValue.begin(), m_attributeValueRef.begin(), oneSize) == 0)
+						{
+							return GQMatchResult(node);
+						}
 					}
 
 					return false;
@@ -421,7 +447,7 @@ namespace gq
 						{
 							if (std::memcmp(sub.begin(), m_attributeValueRef.begin(), subSize) == 0)
 							{
-								return true;
+								return GQMatchResult(node);
 							}
 						}
 					}
@@ -429,7 +455,7 @@ namespace gq
 					{
 						if (std::memcmp(sub.begin(), m_attributeValueRef.begin(), subSize) == 0)
 						{
-							return true;
+							return GQMatchResult(node);
 						}
 					}
 				}		

@@ -34,6 +34,42 @@
 
 namespace gq
 {
+	GQSelector::GQMatchResult::GQMatchResult(const GQNode* result) :m_result(const_cast<GQNode*>(result))
+	{
+
+	}
+
+	GQSelector::GQMatchResult::~GQMatchResult()
+	{
+
+	}
+
+	const std::shared_ptr<GQNode> GQSelector::GQMatchResult::GetResult() const
+	{
+		// Since it's not possible to construct a GQNode except through an interface which
+		// guarantees that the node is created via make_shared, and GQDocument and its
+		// GQTreeMap member holds references too all such constructed nodes, it should be
+		// safe to hold a raw pointer here and call shared_from_this() if and when the user
+		// actually wants a copy of the shared node.
+		if (m_result == nullptr) { return nullptr; }
+		return m_result->shared_from_this();
+	}
+
+	GQSelector::GQMatchResult::operator bool() const
+	{
+		return m_result != nullptr;
+	}
+
+	const bool GQSelector::GQMatchResult::operator==(const bool other) const
+	{
+		return (m_result != nullptr) == other;
+	}
+
+	const bool GQSelector::GQMatchResult::operator!=(const bool other) const
+	{
+		return (m_result != nullptr) != other;
+	}
+
 	GQSelector::GQSelector()
 	{
 		InitDefaults();
@@ -137,20 +173,25 @@ namespace gq
 		return m_matchTraits;
 	}
 
-	const bool GQSelector::Match(const GQNode* node) const
+	const GQSelector::GQMatchResult GQSelector::Match(const GQNode* node) const
 	{
 
 		switch (m_selectorOperator)
 		{
 			case SelectorOperator::Dummy:
 			{				
-				return true;
+				return GQMatchResult(node);
 			}
 			break;
 
 			case SelectorOperator::Empty:
 			{
-				return node->IsEmpty();
+				if (node->IsEmpty())
+				{
+					return GQMatchResult(node);
+				}
+
+				return false;
 			}
 			break;
 
@@ -188,7 +229,12 @@ namespace gq
 					}
 				}
 
-				return count == 1;
+				if (count == 1)
+				{
+					return GQMatchResult(node);
+				}
+
+				return false;
 			}
 			break;
 
@@ -292,19 +338,28 @@ namespace gq
 				// Either the calculated nth index will be an exact match, or during the iterations up till
 				// the found node, we will have generated a collection of valid nths for the specified selector
 				// and we'll find our index in there. If neither of those are true, then we didn't match at all.
-				return nthIndex == actualIndex || (validNths.find(actualIndex) != validNths.end());				
+				if (nthIndex == actualIndex || (validNths.find(actualIndex) != validNths.end()))
+				{
+					return GQMatchResult(node);
+				}
+
+				return false;
 			}
 			break;
 
 			case SelectorOperator::Tag:
 			{				
-				return node->GetTag() == m_tagTypeToMatch;
-			}
-			break;
+				if (node->GetTag() == m_tagTypeToMatch)
+				{
+					return GQMatchResult(node);
+				}
 
-			default:
 				return false;
+			}
+			break;		
 		}
+
+		return false;
 	}
 
 	void GQSelector::MatchAll(const std::shared_ptr<GQNode>& node, std::vector< std::shared_ptr<GQNode> >& results) const

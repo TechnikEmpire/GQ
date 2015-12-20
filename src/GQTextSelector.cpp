@@ -90,7 +90,7 @@ namespace gq
 
 	}
 
-	const bool GQTextSelector::Match(const GQNode* node) const
+	const GQSelector::GQMatchResult GQTextSelector::Match(const GQNode* node) const
 	{		
 		switch (m_operator)
 		{
@@ -100,8 +100,13 @@ namespace gq
 				// than ifind_first.
 				auto text = GQUtil::NodeText(node);
 				boost::string_ref textStrRef(text);
-				auto searchResult = boost::find_first(textStrRef, m_textToMatchStrRef);
-				return searchResult.empty() == false;
+
+				if (textStrRef.find(m_textToMatchStrRef) != boost::string_ref::npos)
+				{
+					return GQMatchResult(node);
+				}
+				
+				return false;
 			}
 			break;
 
@@ -111,22 +116,37 @@ namespace gq
 				// than ifind_first.
 				auto text = GQUtil::NodeOwnText(node);
 				boost::string_ref textStrRef(text);
-				auto searchResult = boost::find_first(textStrRef, m_textToMatchStrRef);
-				return searchResult.empty() == false;
+
+				if (textStrRef.find(m_textToMatchStrRef) != boost::string_ref::npos)
+				{
+					return GQMatchResult(node);
+				}
+
+				return false;
 			}
 			break;
 
 			case SelectorOperator::Matches:
 			{
 				auto text = GQUtil::NodeText(node);
-				return std::regex_search(text, *(m_expression.get()));
+				if (std::regex_search(text, *(m_expression.get())))
+				{
+					return GQMatchResult(node);
+				}
+
+				return false;
 			}
 			break;
 
 			case SelectorOperator::MatchesOwn:
 			{
 				auto text = GQUtil::NodeOwnText(node);
-				return std::regex_search(text, *(m_expression.get()));
+				if (std::regex_search(text, *(m_expression.get())))
+				{
+					return GQMatchResult(node);
+				}
+
+				return false;
 			}
 			break;
 		}
