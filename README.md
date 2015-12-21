@@ -56,6 +56,8 @@ for(auto& ss : compiledSelectors)
 }
 ```
 
+These snippets are just meant to demonstrate the most basic of usage. Thanks to the mutation api, it's possible to have fine grain control over elements matched by selectors. Look at the [mutation sample](https://github.com/TechnikEmpire/GQ/blob/master/ide/msvc/GumboQueryExamples/Mutation/Mutation/Mutation.cpp) for a complete example of using this feature.
+
 The contract placed on the end user is very light. Keep GQDocument alive for as long as you're storing or accessing any GQNode object, directly or indirectly. That's basically it.
 
 ##Speed
