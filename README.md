@@ -1,7 +1,7 @@
 # GQ
-CSS Selector Engine for [Gumbo Parser](https://github.com/google/gumbo-parser)
+CSS Selector Engine for [Gumbo Parser](https://github.com/google/gumbo-parser). Using Gumbo Parser as a backend, GQ can parse input HTML and allow users to select and modify elements in the parsed document with CSS Selectors and the provided simple, but powerful mutation API.
 
-Fork of https://github.com/lazytiger/gumbo-query. I opted to have this be an unofficial fork because I ~~intend on radically altering~~ have radically altered the library in a way that ~~I don't expect the original repository to pull from~~ is irreconcilable with the original source.
+This project is a fork of [gumbo-query](https://github.com/lazytiger/gumbo-query). I opted to have this be an unofficial fork because I intended on performing nearly a complete rewrite, which I did, and as such this source is completely irreconcilable with the original gumbo-query source.
 
 ##Usage
 
