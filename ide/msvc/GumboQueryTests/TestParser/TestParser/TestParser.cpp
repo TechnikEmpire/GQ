@@ -302,8 +302,8 @@ int main()
 	auto mutationBenchEnd = std::chrono::high_resolution_clock::now();
 	std::chrono::duration<double, std::milli> mutationBenchTime = mutationBenchEnd - mutationBenchStart;
 
-	std::cout << "Time taken to run " << (precompiledSelectors.size() * mutateCount) << u8" selectors against the document while serializing with mutations " << mutateCount << u8" times: " << mutationBenchTime.count() << u8" ms." << std::endl;
-
+	std::cout << "Time taken to run " << precompiledSelectors.size() << u8" selectors against the document while serializing with mutations " << mutateCount << u8" times: " << mutationBenchTime.count() << u8" ms." << std::endl;
+	std::cout << "Time per cycle " << (mutationBenchTime.count() / mutateCount) << u8" ms." << std::endl;
 	std::cout << "Processed at a rate of " << (mutationBenchTime.count() / (precompiledSelectors.size() * mutateCount)) << u8" milliseconds per selector or " << ((precompiledSelectors.size() * mutateCount) / mutationBenchTime.count()) << u8" selectors per millisecond." << std::endl;
 
 	return 0;
