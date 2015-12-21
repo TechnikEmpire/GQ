@@ -22,10 +22,10 @@
 @echo off
 
 :: Set BCP_LOCATION to the directory where a compiled version of bcp.exe resides.
-set BCP_LOCATION=C:\dev\projects\Stahp\libstahp\deps\boost\boost_1_59_0
+set BCP_LOCATION=
 
 :: Set BOOST_ROOT_LOCATION to the root directory of the boost version to extract from.
-set BOOST_ROOT_LOCATION=C:\dev\projects\Stahp\libstahp\deps\boost\boost_1_59_0
+set BOOST_ROOT_LOCATION=
 
 :: By passing these two headers to BCP, it should be enough for BCP to discover
 :: and extract all boost libraries that the project includes. Not that if additional
