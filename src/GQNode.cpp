@@ -418,6 +418,92 @@ namespace gq
 		#endif
 	}
 
+	void GQNode::Each(const std::string& selectorString, std::function<void(const GQNode* node)> func) const
+	{
+		GQParser parser;
+
+		auto selector = parser.CreateSelector(selectorString);
+
+		Each(selector, func);
+	}
+
+	void GQNode::Each(const SharedGQSelector& selector, std::function<void(const GQNode* node)> func) const
+	{
+		const auto& traits = selector->GetMatchTraits();
+
+		// The collected map ensure that we don't store duplicate matches. Any time a
+		// match is made, it's pushed to the collected map.
+		FastAttributeMap collected;
+
+		for (auto& traitsIt = traits.begin(); traitsIt != traits.end(); ++traitsIt)
+		{
+
+			#ifndef NDEBUG
+				#ifdef GQ_VERBOSE_DEBUG_NFO
+					std::cout << u8"In GQNode::Each(const SharedGQSelector&, std::function<void(const GQNode* node)>) - Finding potential matches at scope " << GetUniqueId() << u8" by trait: " << traitsIt->first << u8" ::: " << traitsIt->second << std::endl;
+				#endif
+			#endif
+
+			if (traitsIt->first.size() == 0)
+			{
+				#ifndef NDEBUG
+					#ifdef GQ_VERBOSE_DEBUG_NFO
+						std::cout << u8"In GQNode::Each(const SharedGQSelector&, std::function<void(const GQNode* node)>) - Got trait with empty key. Skipping..." << std::endl;
+					#endif
+				#endif
+				continue;
+			}
+
+			const std::vector< std::shared_ptr<GQNode> >* fromTrait = nullptr;
+
+			if (traitsIt->second.size() == 0)
+			{
+				fromTrait = m_rootTreeMap->Get(GetUniqueId(), traitsIt->first);
+			}
+			else
+			{
+				fromTrait = m_rootTreeMap->Get(GetUniqueId(), traitsIt->first, traitsIt->second);
+			}
+
+			#ifndef NDEBUG
+				#ifdef GQ_VERBOSE_DEBUG_NFO
+					if (fromTrait != nullptr)
+					{
+						std::cout << u8"In GQNode::Each(const SharedGQSelector&, std::function<void(const GQNode* node)>) - Got " << fromTrait->size() << u8" candidates from trait." << std::endl;
+					}
+					else
+					{
+						std::cout << u8"In GQNode::Each(const SharedGQSelector&, std::function<void(const GQNode* node)>) - Got zero candidates from trait." << std::endl;
+					}
+				#endif
+			#endif
+
+			if (fromTrait != nullptr)
+			{
+				auto tSize = fromTrait->size();
+
+				for (size_t i = 0; i < tSize; ++i)
+				{
+					// It's actually significantly faster to simply match then search for duplicates, rather than eliminate duplicates
+					// first and then attempt a match.
+					auto& pNode = (*fromTrait)[i];
+
+					auto matchTest = selector->Match(pNode.get());
+					if (matchTest)
+					{
+						auto matchedNode = matchTest.GetResult();
+
+						if (collected.find(matchedNode->GetUniqueId()) == collected.end())
+						{
+							collected.insert({ matchedNode->GetUniqueId(), matchedNode->GetUniqueId() });
+							func(matchedNode.get());
+						}
+					}
+				}
+			}
+		}
+	}
+
 	const boost::string_ref GQNode::GetUniqueId() const
 	{
 		return boost::string_ref(m_nodeUniqueId);
@@ -538,14 +624,14 @@ namespace gq
 
 		#ifndef GQ_FIND_NO_OP
 		// Add the attributes to the tree map
-		m_rootTreeMap->Add(GetUniqueId(), shared_from_this(), treeAttribMap);
+		m_rootTreeMap->AddNodeToMap(GetUniqueId(), shared_from_this(), treeAttribMap);
 
 		// Now we need to recursively append upwards. 
 		for (GQNode* parent = GetParent(); parent != nullptr; parent = parent->GetParent())
 		{
 			auto parentScopeId = parent->GetUniqueId();
 
-			m_rootTreeMap->Add(parentScopeId, shared_from_this(), treeAttribMap);
+			m_rootTreeMap->AddNodeToMap(parentScopeId, shared_from_this(), treeAttribMap);
 		}
 		#endif
 	}

@@ -20,11 +20,12 @@
 
 #include "GQSerializer.hpp"
 #include "GQNode.hpp"
+#include "GQUtil.hpp"
 
 namespace gq
 {
 
-	const std::unordered_set<boost::string_ref, GQSerializer::StringRefHasher> GQSerializer::EmptyTags =
+	const std::unordered_set<boost::string_ref, StringRefHasher> GQSerializer::EmptyTags =
 	{
 		{ u8"area" },
 		{ u8"base" },
@@ -51,7 +52,7 @@ namespace gq
 		{ u8"wbr" }
 	};
 
-	const std::unordered_set<boost::string_ref, GQSerializer::StringRefHasher> GQSerializer::SpecialHandling =
+	const std::unordered_set<boost::string_ref, StringRefHasher> GQSerializer::SpecialHandling =
 	{
 		{ u8"html" },
 		{ u8"body" }
@@ -65,18 +66,18 @@ namespace gq
 	{
 	}
 
-	std::string GQSerializer::Serialize(const GQNode* node)
+	std::string GQSerializer::Serialize(const GQNode* node, const GQNodeMutationCollection* mutationCollection)
 	{
-		return Serialize(node->m_node);
+		return Serialize(node->m_node, mutationCollection);
 	}
 
-	std::string GQSerializer::Serialize(const GumboNode* node)
-	{
+	std::string GQSerializer::Serialize(const GumboNode* node, const GQNodeMutationCollection* mutationCollection)
+	{		
 		// special case the document node
 		if (node->type == GUMBO_NODE_DOCUMENT)
 		{
 			std::string docResults = BuildDocType(node);
-			docResults.append(SerializeContent(node));
+			docResults.append(SerializeContent(node, false, mutationCollection));
 
 			return docResults;
 		}
@@ -84,46 +85,128 @@ namespace gq
 		std::string close;
 		std::string closeTag;
 		std::string atts;
-		std::string tagname = GetTagName(node);
+		std::string tagname;
+
+		std::string tagOpeningText;
+
+		// Check to see if the supplied collection is valid and if the current node can be found
+		// in it.
+		bool foundNodeInUserCollection = false;
+
+		if (mutationCollection && mutationCollection->Contains(node))
+		{
+			foundNodeInUserCollection = true;
+		}
+
+		if (foundNodeInUserCollection && mutationCollection->m_onTagStart)
+		{
+			auto result = mutationCollection->m_onTagStart(node->v.element.tag);
+
+			// If the user opted to not start building the tag, then the user doesn't want it.
+			// Return the empty string.
+			if (result == false)
+			{
+				return tagOpeningText;
+			}
+		}
+
+		tagname = GetTagName(node);
+		tagOpeningText.append(u8"<" + tagname);
 
 		boost::string_ref tagNameStrRef(tagname);
 
 		bool needSpecialHandling = (SpecialHandling.find(tagNameStrRef) != SpecialHandling.end());
 		bool isEmptyTag = (EmptyTags.find(tagNameStrRef) != EmptyTags.end());
 
-		// build attr string  
-		const GumboVector* attribs = &node->v.element.attributes;
+		// build attributes into a single string  
+		const GumboVector* attribs = &node->v.element.attributes;		
+		
 		for (size_t i = 0; i < attribs->length; ++i)
 		{
-			GumboAttribute* at = static_cast<GumboAttribute*>(attribs->data[i]);
-			atts.append(BuildAttributes(at));
+			GumboAttribute* attribute = static_cast<GumboAttribute*>(attribs->data[i]);
+			
+			if (foundNodeInUserCollection && mutationCollection->m_onTagAttribute)
+			{
+				boost::string_ref attribName;
+				boost::string_ref attribValue;
+
+				if (attribute->original_name.length > 0)
+				{
+					attribName = boost::string_ref(attribute->original_name.data, attribute->original_name.length);
+				}
+
+				if (attribute->original_value.length > 0)
+				{
+					attribValue = boost::string_ref(attribute->original_value.data, attribute->original_value.length);
+					GQUtil::TrimEnclosingQuotes(attribValue);
+				}				
+
+				if (attribName.size() > 0)
+				{
+					mutationCollection->m_onTagAttribute(node->v.element.tag, atts, attribName, attribValue);
+				}
+
+				continue;
+			}
+			
+			atts.append(BuildAttributes(attribute));
 		}
 
 		// determine closing tag type
 		if (isEmptyTag) {
-			close = "/";
+			close = u8"/";
 		}
 		else
 		{
-			closeTag = "</" + tagname + ">";
+			closeTag = u8"</" + tagname + u8">";
 		}
 
 		// serialize your contents
-		std::string contents = SerializeContent(node);
+		std::string contents;
+		
+		if (foundNodeInUserCollection && mutationCollection->m_onTagContent)
+		{
+			auto result = mutationCollection->m_onTagContent(node->v.element.tag, contents);
+
+			if (contents.size() > 0)
+			{
+				if (result == true)
+				{
+					// The supplied user content should replace text nodes in the content, if any. Everything
+					// else should be appended normally.
+
+					contents.append(SerializeContent(node, true, mutationCollection));
+				}
+				else if (result == false)
+				{
+					// Only the user data is to be appended as the contents of this node. That means
+					// we don't need to call SerializeContent at all.
+				}
+			}
+			else 
+			{
+				// The user returned nothing, so as promised, serialize normally.
+				contents = SerializeContent(node, false, mutationCollection);
+			}					
+		}
+		else
+		{
+			contents = SerializeContent(node, false, mutationCollection);
+		}		
 
 		if (needSpecialHandling) {
 			boost::trim(contents);
-			contents.append("\n");
+			contents.append(u8"\n");
 		}
 
 		// build results
 		std::string results;
 
-		results.append("<" + tagname + atts + close + ">");
+		results.append(tagOpeningText + atts + close + u8">");
 
 		if (needSpecialHandling)
 		{
-			results.append("\n");
+			results.append(u8"\n");
 		}
 
 		results.append(contents);
@@ -131,18 +214,18 @@ namespace gq
 
 		if (needSpecialHandling)
 		{
-			results.append("\n");
+			results.append(u8"\n");
 		}
 
 		return results;
 	}
 
-	std::string GQSerializer::SerializeContent(const GQNode* node)
+	std::string GQSerializer::SerializeContent(const GQNode* node, const bool omitText, const GQNodeMutationCollection* mutationCollection)
 	{
-		return SerializeContent(node->m_node);
+		return SerializeContent(node->m_node, omitText, mutationCollection);
 	}
 
-	std::string GQSerializer::SerializeContent(const GumboNode* node)
+	std::string GQSerializer::SerializeContent(const GumboNode* node, const bool omitText, const GQNodeMutationCollection* mutationCollection)
 	{
 		std::string tagNameStr = GetTagName(node);
 		boost::string_ref tagNameStrRef(tagNameStr);
@@ -157,32 +240,35 @@ namespace gq
 
 			switch (child->type)
 			{
-			case GUMBO_NODE_TEXT:
-			{
-				contents.append(std::string(child->v.text.original_text.data, child->v.text.original_text.length));
-			}
-			break;
+				case GUMBO_NODE_TEXT:
+				{
+					if (!omitText) 
+					{
+						contents.append(std::string(child->v.text.original_text.data, child->v.text.original_text.length));
+					}					
+				}
+				break;
 
-			case GUMBO_NODE_ELEMENT:
-			case GUMBO_NODE_TEMPLATE:
-			{
-				contents.append(Serialize(child));
-			}
-			break;
+				case GUMBO_NODE_ELEMENT:
+				case GUMBO_NODE_TEMPLATE:
+				{
+					contents.append(Serialize(child, mutationCollection));
+				}
+				break;
 
-			case GUMBO_NODE_WHITESPACE:
-			{
-				// keep all whitespace to keep as close to original as possible
-				contents.append(std::string(child->v.text.text));
-			}
-			break;
+				case GUMBO_NODE_WHITESPACE:
+				{
+					// keep all whitespace to keep as close to original as possible
+					contents.append(std::string(child->v.text.text));
+				}
+				break;
 
-			case GUMBO_NODE_COMMENT:
-			case GUMBO_NODE_CDATA:
-			{
-				contents.append(std::string(child->v.text.original_text.data, child->v.text.original_text.length));
-			}
-			break;
+				case GUMBO_NODE_COMMENT:
+				case GUMBO_NODE_CDATA:
+				{
+					contents.append(std::string(child->v.text.original_text.data, child->v.text.original_text.length));
+				}
+				break;
 			}
 		}
 
@@ -208,7 +294,7 @@ namespace gq
 		break;
 		}
 
-		// Handle unknown tag right here rather than delegating needlessly
+		// Handle unknown tag right here.
 		if (tagName.empty())
 		{
 			// If string length is zero, then the string is null
@@ -270,13 +356,13 @@ namespace gq
 		std::string atts(u8" ");
 		atts.append(at->original_name.data, at->original_name.length);
 
-		boost::string_ref attValue(at->original_value.data, at->original_value.length);
+		boost::string_ref attValue(at->original_value.data, at->original_value.length);		
 
 		if (!attValue.empty())
 		{
 			atts.append(u8"=");
 
-			atts.append(at->original_value.data, at->original_value.length);
+			atts.append(attValue.to_string());
 		}
 
 		return atts;

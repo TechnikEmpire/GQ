@@ -37,12 +37,12 @@ namespace gq
 
 	}	
 
-	void GQTreeMap::Add(boost::string_ref scope, std::shared_ptr<GQNode> node, const AttributeMap& nodeAttributeMap)
+	void GQTreeMap::AddNodeToMap(boost::string_ref scope, std::shared_ptr<GQNode> node, const AttributeMap& nodeAttributeMap)
 	{
 		#ifndef NDEBUG
-		assert(scope.size() > 0 && u8"In QTreeMap::Add(boost::string_ref, std::shared_ptr<GQNode>, const AttributeMap&) - The supplied scope is empty. This error is impossible unless a user is directly and incorrectly calling this method, or if this class and its required mechanisms are fundamentally broken.");
+		assert(scope.size() > 0 && u8"In QTreeMap::AddNodeToMap(boost::string_ref, std::shared_ptr<GQNode>, const AttributeMap&) - The supplied scope is empty. This error is impossible unless a user is directly and incorrectly calling this method, or if this class and its required mechanisms are fundamentally broken.");
 		#else
-		if (scope.size() == 0) { throw new std::runtime_error(u8"In QTreeMap::Add(boost::string_ref, std::shared_ptr<GQNode>, const AttributeMap&) - The supplied scope is empty. This error is impossible unless a user is directly and incorrectly calling this method, or if this class and its required mechanisms are fundamentally broken."); }
+		if (scope.size() == 0) { throw new std::runtime_error(u8"In QTreeMap::AddNodeToMap(boost::string_ref, std::shared_ptr<GQNode>, const AttributeMap&) - The supplied scope is empty. This error is impossible unless a user is directly and incorrectly calling this method, or if this class and its required mechanisms are fundamentally broken."); }
 		#endif
 		
 		#ifndef NDEBUG

@@ -20,11 +20,10 @@
 
 #pragma once
 
-#include <boost/utility/string_ref.hpp>
-#include <boost/algorithm/string.hpp>
-#include <boost/functional/hash.hpp>
 #include <unordered_set>
 #include <gumbo.h>
+#include "GQStrRefHash.hpp"
+#include "GQNodeMutationCollection.hpp"
 
 namespace gq
 {
@@ -49,10 +48,14 @@ namespace gq
 		/// <param name="node">
 		/// The node to serialize along with all of its contents. 
 		/// </param>
+		/// <param name="mutationCollection">
+		/// User defined collection of nodes that the user has requested to have control of the
+		/// serialization process for.
+		/// </param>
 		/// <returns>
 		/// The HTML string built from the node and all of its contents. 
 		/// </returns>
-		static std::string Serialize(const GQNode* node);
+		static std::string Serialize(const GQNode* node, const GQNodeMutationCollection* mutationCollection = nullptr);
 
 		/// <summary>
 		/// Converts the supplied node and all of its contents back into an HTML string. This can be
@@ -64,7 +67,24 @@ namespace gq
 		/// <returns>
 		/// The HTML string built from the node and all of its contents. 
 		/// </returns>
-		static std::string Serialize(const GumboNode* node);
+		static std::string Serialize(const GumboNode* node, const GQNodeMutationCollection* mutationCollection = nullptr);
+
+		/// <summary>
+		/// Converts the supplied node contents back into an HTML string, without including the HTML
+		/// of the supplied node. Only its contents are serialized. This can be used behind the
+		/// scenes to give the behavior of the jquery method .InnerHtml().
+		/// </summary>
+		/// <param name="node">
+		/// The node containing the contents to serialize.
+		/// </param>
+		/// <param name="mutationCollection">
+		/// User defined collection of nodes that the user has requested to have control of the
+		/// serialization process for.
+		/// </param>
+		/// <returns>
+		/// The HTML string built from the node contents.
+		/// </returns>
+		static std::string SerializeContent(const GQNode* node, const bool omitText = false, const GQNodeMutationCollection* mutationCollection = nullptr);
 
 		/// <summary>
 		/// Converts the supplied node contents back into an HTML string, without including the HTML
@@ -77,36 +97,12 @@ namespace gq
 		/// <returns>
 		/// The HTML string built from the node contents.
 		/// </returns>
-		static std::string SerializeContent(const GQNode* node);
-
-		/// <summary>
-		/// Converts the supplied node contents back into an HTML string, without including the HTML
-		/// of the supplied node. Only its contents are serialized. This can be used behind the
-		/// scenes to give the behavior of the jquery method .InnerHtml().
-		/// </summary>
-		/// <param name="node">
-		/// The node containing the contents to serialize.
-		/// </param>
-		/// <returns>
-		/// The HTML string built from the node contents.
-		/// </returns>
-		static std::string SerializeContent(const GumboNode* node);
+		static std::string SerializeContent(const GumboNode* node, const bool omitText = false, const GQNodeMutationCollection* mutationCollection = nullptr);
 
 	private:
 
 		GQSerializer();
 		~GQSerializer();
-
-		/// <summary>
-		/// For using boost::string_ref in std/boost::unordered_map
-		/// </summary>
-		struct StringRefHasher
-		{
-			size_t operator()(const boost::string_ref& strRef) const
-			{
-				return boost::hash_range(strRef.begin(), strRef.end());
-			}
-		};
 
 		/// <summary>
 		/// List of tags that do not require a named closing tag.
@@ -153,7 +149,7 @@ namespace gq
 		/// <returns>
 		/// A string containing all of the attribute names and values. 
 		/// </returns>
-		static std::string BuildAttributes(const GumboAttribute* at);//, const bool noEntities);
+		static std::string BuildAttributes(const GumboAttribute* at);
 	};
 
 } /* namespace gq */

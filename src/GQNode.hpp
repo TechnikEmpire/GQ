@@ -30,7 +30,7 @@
 #pragma once
 
 #include <memory>
-#include <map>
+#include <functional>
 #include <boost/utility/string_ref.hpp>
 #include <boost/algorithm/string.hpp>
 #include "GQSelector.hpp"
@@ -64,31 +64,34 @@ namespace gq
 		
 
 		/// <summary>
-		/// So, I don't really like the idea of this friend business and having to forward declare
-		/// types to resolve circular dependencies, to me that means there's probably a better way.
-		/// Unfortunately, I'm trying to work within design that I started out with.
-		/// <para>&#160;</para>
 		/// In the original library, the CNode (GQNode now) was completely separate from everything
 		/// else, but local instances were generated and copied all over the place whenever the user
-		/// needed to search against a non-document node, or access a specific child. I didn't like
-		/// this, so I opted to change this, making them shared.
+		/// needed to search against a non-document node, or access a specific child. Also, these
+		/// objects implemented a custom-rolled type of shared pointer. I didn't like this, so I
+		/// opted to change this, making them proper shared_ptrs.
 		/// <para>&#160;</para>
 		/// This then forced the design all the way back down the library into complementary
-		/// selection code which stored matched nodes in collections, vectors. In order to make the
-		/// new design consistent, these all had to be changed to hold shared_ptrs of GQNode, not
-		/// raw GumboNode pointers. Hence, we have forward declarations and friend declarations
-		/// between GQUtil, GQSelection and GQSelector to allow this design. These three friends need
-		/// to be able to access the raw GumboNode pointers privately held in GQNode. This could be
-		/// all solved by making a public accessor to the internal raw GumboNode, but not presently
-		/// convinced this approach is worse.
+		/// selection code which stored matched nodes in collections, vectors etc. In order to make
+		/// the new design consistent, these all had to be changed to hold shared_ptrs of GQNode,
+		/// not raw GumboNode pointers. Also, efforts have been taken to keep raw Gumbo structures
+		/// away from the end user through this library, on account of the shared nature of the core
+		/// components of this library. However, other portions of the library need to access some
+		/// of these objects (such as the private GumboNode* held in GQNode).
+		/// <para>&#160;</para>
+		/// As such, GQNode has a few friends. I'm not entirely sure how I feel about this. At the
+		/// end of the day, the goal of keeping the raw Gumbo objects that these classes manage away
+		/// from the end user is reached, everywhere that these friends access this private member
+		/// is also kept away from the user and const is strictly enforced. There may be a better
+		/// way but IMO the most important goal of keeping the raw underlying structures away from
+		/// the user is most important. If users could access these, they could seriously break the
+		/// functionality of this library and cause lots of issues (doubly managing a single Gumbo
+		/// structure from multiple shared_ptr, as one example).
 		/// </summary>
-		friend class GQSelection;
 		friend class GQUtil;
-		friend class GQSelector;
-		friend class GQTreeIndex;
 		friend class GQSerializer;
+		friend class GQNodeMutationCollection;
 
-	public:		
+	public:	
 
 		/// <summary>
 		/// Default destructor.
@@ -295,6 +298,43 @@ namespace gq
 		/// found, the collection will be empty.
 		/// </returns>
 		const GQSelection Find(const SharedGQSelector& selector) const;
+
+		/// <summary>
+		/// Runs a selector against the node and its descendants, and for each match found, invokes
+		/// the supplied function with the matched node as the sole argument. This allows for the
+		/// possibility of users to both find and perform operations on the matches in one
+		/// iteration, rather then collecting matches and then iterating over them again.
+		/// <para>&#160;</para>
+		/// Note that this method, which accepts a selector as a string, internally calls the
+		/// GQParser::Parse(...) method, which will throw when supplied with invalid selectors. As
+		/// such, be prepared to handle exceptions when using this method.
+		/// <para>&#160;</para>
+		/// Note also that it is recommended to use the GQParser directly to compile selectors
+		/// first, saving the returned GQSharedSelector objects. This is much more efficient if the
+		/// selector is used more than once. Methods that accept raw selector strings will compile
+		/// and discard selectors after use.
+		/// </summary>
+		/// <param name="selectorString">
+		/// The selector string to query against the node and its descendants with. 
+		/// </param>
+		/// <param name="func">
+		/// The callback that positive matches will be supplied to.
+		/// </param>
+		void Each(const std::string& selectorString, std::function<void(const GQNode* node)> func) const;
+
+		/// <summary>
+		/// Runs a selector against the node and its descendants, and for each match found, invokes
+		/// the supplied function with the matched node as the sole argument. This allows for the
+		/// possibility of users to both find and perform operations on the matches in one
+		/// iteration, rather then collecting matches and then iterating over them again.
+		/// </summary>
+		/// <param name="selectorString">
+		/// The precompiled selector object to query against the node and its descendants with. 
+		/// </param>
+		/// <param name="func">
+		/// The callback that positive matches will be supplied to.
+		/// </param>
+		void Each(const SharedGQSelector& selector, std::function<void(const GQNode* node)> func) const;
 
 		/// <summary>
 		/// Gets the unique ID of the node. See nodes on m_nodeUniqueId for more.

@@ -39,6 +39,7 @@
     <ClInclude Include="..\..\..\..\src\GQBinarySelector.hpp" />
     <ClInclude Include="..\..\..\..\src\GQDocument.hpp" />
     <ClInclude Include="..\..\..\..\src\GQNode.hpp" />
+    <ClInclude Include="..\..\..\..\src\GQNodeMutationCollection.hpp" />
     <ClInclude Include="..\..\..\..\src\GQParser.hpp" />
     <ClInclude Include="..\..\..\..\src\GQSelection.hpp" />
     <ClInclude Include="..\..\..\..\src\GQSelector.hpp" />
@@ -55,6 +56,7 @@
     <ClCompile Include="..\..\..\..\src\GQBinarySelector.cpp" />
     <ClCompile Include="..\..\..\..\src\GQDocument.cpp" />
     <ClCompile Include="..\..\..\..\src\GQNode.cpp" />
+    <ClCompile Include="..\..\..\..\src\GQNodeMutationCollection.cpp" />
     <ClCompile Include="..\..\..\..\src\GQParser.cpp" />
     <ClCompile Include="..\..\..\..\src\GQSelection.cpp" />
     <ClCompile Include="..\..\..\..\src\GQSelector.cpp" />

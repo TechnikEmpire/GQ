@@ -107,7 +107,7 @@ namespace gq
 		/// this map, but that the key is randomly generated at runtime. To get the key that is used
 		/// for storing normalized tag names, use the static member ::GetTagAttributeKey().
 		/// </param>
-		void Add(boost::string_ref scope, std::shared_ptr<GQNode> node, const AttributeMap& nodeAttributeMap);
+		void AddNodeToMap(boost::string_ref scope, std::shared_ptr<GQNode> node, const AttributeMap& nodeAttributeMap);
 
 		/// <summary>
 		/// Gets a collection of nodes that have the supplied attribute with the provided scope.
