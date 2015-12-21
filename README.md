@@ -78,7 +78,7 @@ So from these results, a document could be loaded, parsed, and have 27646 precom
 Speed doesn't mean much if the matching code is broken. As such, over 40 tests currently exist that ensure correct functionality of various types of selectors. ~~I have yet to write tests for nested and combined selectors.~~
 
 ##TODO
- - Mutability API.
+ - ~~Mutation API.~~
  - ~~Tests for combined and nested selectors.~~
  - Reduce candidate collections BEFORE attempting to match in the event that the selector is a GQBinarySelector with the
  intersection operator. Can reduce sets by only keeping candidates that match the traits from both the left and right
