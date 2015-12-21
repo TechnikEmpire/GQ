@@ -144,6 +144,10 @@
 									// about it, at worst it'll slip by and destroy the final compiled selector and it will
 									// not function correctly.
 									//testVariableValue = testVariableValue.replace(/(\\([a-fA-F0-9]{1,6}) )/gi, "&#x$2;")
+									//
+									// UPDATE TO THE UPDATE LOLZ - This is true again, we accept numbered character references
+									// without being properly wrapped again. I can't recall my I decided to turn it back on, but
+									// the code was there and was functioning correctly, so it was re-enabled.
 									
 									// In GQ, we can simply accept selectors with character references. In jquery, we can't. The character
 									// references need to be decoded first before we can put them to use.

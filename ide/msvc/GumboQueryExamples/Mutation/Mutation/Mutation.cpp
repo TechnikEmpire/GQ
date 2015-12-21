@@ -88,9 +88,9 @@ int main(int argc, char *argv[])
 		{
 			case GumboTag::GUMBO_TAG_A:
 			{
-				// Let's just return without adding anything, which will omit this "a" tag from the 
-				// final output. Since we do this without any other condition, all "a" tags that we
-				// collected with our selector(s) will be omitted.
+				// Let's just return false, which will omit this "a" tag from the final output.
+				// Since we're saying "false" which means "don't serialize this", all children
+				// of this node will be omitted from output as well.
 				return false;
 			}
 			break;
