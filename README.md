@@ -79,6 +79,9 @@ So from these results, a document could be loaded, parsed, and have 27646 precom
 
 Speed doesn't mean much if the matching code is broken. As such, over 40 tests currently exist that ensure correct functionality of various types of selectors. ~~I have yet to write tests for nested and combined selectors.~~
 
+##Configuration  
+It can be pretty handy to see verbose output from GQ for debugging selectors, engine issues, and just plain seeing what's going on under the hood. If you build GQ in Debug and add `GQ_VERBOSE_DEBUG_NFO` to your preprocessor definitions, GQ will generate ***lots*** of console output, detailing nearly every single significant event at various stages of the program. Be advised that this will be a lot of text, so piping it to a file or something similar is recommended.
+
 ##TODO
  - ~~Mutation API.~~
  - ~~Tests for combined and nested selectors.~~
