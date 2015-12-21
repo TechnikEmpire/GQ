@@ -433,26 +433,6 @@ namespace gq
 		/// </summary>
 		std::vector < std::shared_ptr<GQNode> > m_children;
 
-		struct StringRefComparer : public std::binary_function<std::string,
-			std::string, bool>
-		{
-			bool operator()(const boost::string_ref strOne, const boost::string_ref strTwo) const
-			{
-				auto oneSize = strOne.size();
-				auto twoSize = strTwo.size();
-				
-				if (oneSize == twoSize)
-				{
-					if ((strOne[0] == strTwo[0]) && (strOne[strTwo.length() - 1] == strTwo[strTwo.length() - 1]) && (strOne[strTwo.length() - 2] == strTwo[strTwo.length() - 2]))
-					{
-						return strOne.compare(strTwo) == 0;
-					}
-				}
-
-				return false;
-			}
-		};
-
 		/// <summary>
 		/// This is about 25 percent faster than using an unordered_map or map. Too great of a performance
 		/// increase to pass up.
@@ -536,13 +516,11 @@ namespace gq
 							(str.first[oneSize - 2] == key[oneSize - 2]))
 						{
 							return std::memcmp(str.first.begin(), key.begin(), oneSize) == 0;
-							//return str.first.compare(key) == 0;
 						}
 					}
 					else
 					{
 						return std::memcmp(str.first.begin(), key.begin(), oneSize) == 0;
-						//return str.first.compare(key) == 0;
 					}
 
 					return false;
