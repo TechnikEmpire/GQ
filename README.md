@@ -82,6 +82,9 @@ Speed doesn't mean much if the matching code is broken. As such, over 40 tests c
 ##Configuration  
 It can be pretty handy to see verbose output from GQ for debugging selectors, engine issues, and just plain seeing what's going on under the hood. If you build GQ in Debug and add `GQ_VERBOSE_DEBUG_NFO` to your preprocessor definitions, GQ will generate ***lots*** of console output, detailing nearly every single significant event at various stages of the program. Be advised that this will be a lot of text, so piping it to a file or something similar is recommended.
 
+##Limitations  
+`shared_ptr` is used at the score of the library, including the mapping system. Since `GQDocument` holds the mapping system, it cannot add itself (the root node of the document) to the map, otherwise a circular reference would be made and nothing would ever clean itself up. As such, the root node of any parsed document is not added, so it's not possible to select against the `<html>` tag itself, only all of its descendants. I will consider other solutions in the future. Switching over the `weak_ptr` isn't possible, since I already tried it. The overhead of the imposed `::lock()` member destroys performance, so for now I've opted to simply omit the `<html>` tag itself from the map.
+
 ##TODO
  - ~~Mutation API.~~
  - ~~Tests for combined and nested selectors.~~
@@ -89,6 +92,7 @@ It can be pretty handy to see verbose output from GQ for debugging selectors, en
  intersection operator. Can reduce sets by only keeping candidates that match the traits from both the left and right
  hand sides of the GQBinarySelector, which would drastically reduce candidates and thus drastically increase matching speed.
  - ~~Modify `GQSelector::Match()` and related methods to return the final matched node. Required for child selectors and such.~~
+ - Work around for including root node without having to switch to the abysmal `weak_ptr` in `GQTreeMap`.
 
 ##Original Goals  
  - Renaming objects and files and nesting them inside directories to avoid existing conflicts with Gumbo Parser during compilation and inclusion.
