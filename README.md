@@ -75,7 +75,9 @@ Time taken to run 2764600 selectors against the document: 9756.02 ms producing 4
 Processed at a rate of 0.00352891 milliseconds per selector or 283.374 selectors per millisecond.
 ```
 
-So from these results, a document could be loaded, parsed, and have 27646 precompiled selectors run on it in about **250.5412** milliseconds, or about a quarter of a second. Add another 50 msec or so tops to say remove matched nodes and reserialize the document with changes, it's about **300.5412** msec from raw input to filtered to user. That's almost stretching the "user doesn't notice" goal, but thankfully nowhere near 30K selectors would ever actually need to be run at once. In a more realistic use case of the EasyList, less than half that number of selectors would run on any given html input.
+So from these results, a document could be loaded, parsed, and have 27646 precompiled selectors run on it in about **250.5412** milliseconds, or about a quarter of a second. Based on the latest benchmarks (that actually included mutation during serialization) it's about ***268.019*** msec to load, parse the document, run 27646 selectors and serialize the output with modifications back to a modified html string.
+  
+That's almost stretching the "user doesn't notice" goal, but thankfully nowhere near 30K selectors would ever actually need to be run at once. In a more realistic use case of the EasyList, less than half that number of selectors would run on any given html input.
 
 Speed doesn't mean much if the matching code is broken. As such, over 40 tests currently exist that ensure correct functionality of various types of selectors. ~~I have yet to write tests for nested and combined selectors.~~
 
