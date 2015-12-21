@@ -174,7 +174,6 @@ namespace gq
 		/// </summary>
 		typedef std::unordered_map<boost::string_ref, std::unique_ptr<ValueToNodesMap>, StringRefHasher> CollectedAttributesMap;
 
-
 		/// <summary>
 		/// In order to enable quickly searching within a scope, we store shared pointers to built
 		/// attribute maps within vectors and push those to a scope map. The key to this map is the
@@ -208,9 +207,6 @@ namespace gq
 		/// Index used for EXISTS lookups of attibutes.
 		/// </summary>
 		boost::string_ref m_anyMatch = u8"*";
-
-		
-
 	};
 
 	typedef std::shared_ptr<GQTreeMap> SharedGQTreeMap;

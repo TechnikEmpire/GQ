@@ -56,6 +56,18 @@ namespace gq
 			#endif
 		#endif
 
+		auto id = node->GetUniqueId();
+		if (id.size() == 1 && id.compare(u8"0") == 0)
+		{
+			// We don't keep the root node. If we do, we'll create a circular reference and we'll forever
+			// be branded as dumb dumbs. This is a current limitation imposed by the fack that weak_ptr sucks
+			// majorly, and forces use of ::lock(), which is abhorrently slow. It's so slow, that I'd be 
+			// ashamed of this library if I used it (I tried it). So our loss is that we can write selectors
+			// to capture the html tag. Big whoop.
+			// XXX TODO Look into a fix.
+			return;
+		}
+
 		auto& it = m_scopedAttributes.find(scope);
 
 		CollectedAttributesMap* col;

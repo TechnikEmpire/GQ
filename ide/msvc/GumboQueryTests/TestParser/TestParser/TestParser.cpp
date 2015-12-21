@@ -23,12 +23,13 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <chrono>
+#include <cmath>
 #include <GQDocument.hpp>
 #include <GQNode.hpp>
 #include <GQParser.hpp>
-#include <chrono>
-#include <cmath>
-
+#include <GQNodeMutationCollection.hpp>
+#include <GQSerializer.hpp>
 
 /// <summary>
 /// The purpose of this test is threefold. One, load the "parsingtest.data" list of selectors and
@@ -186,14 +187,27 @@ int main()
 
 	std::cout << u8"Benchmarking document parsing." << std::endl;
 
+	size_t documentParseCount = 100;
+
 	auto documentBuildStart = std::chrono::high_resolution_clock::now();
-	auto testDocument = gq::GQDocument::Create();
-	testDocument->Parse(testHtmlContents);
+
+	for (size_t i = 0; i < documentParseCount; ++i)
+	{
+		auto doc = gq::GQDocument::Create();
+		doc->Parse(testHtmlContents);
+	}	
+
 	auto documentBuildEnd = std::chrono::high_resolution_clock::now();
 	std::chrono::duration<double, std::milli> documentBuildTime = documentBuildEnd - documentBuildStart;
-	std::cout << u8"Time to build document: " << documentBuildTime.count() << " milliseconds." << std::endl;
+	
+	std::cout << "Time taken to parse " << documentParseCount << u8" documents: " << documentBuildTime.count() << u8" ms." << std::endl;
+
+	std::cout << "Processed at a rate of " << (documentBuildTime.count() / documentParseCount) << u8" milliseconds per document." << std::endl;
 
 	std::cout << u8"Benchmarking selection speed." << std::endl;	
+
+	auto testDocument = gq::GQDocument::Create();
+	testDocument->Parse(testHtmlContents);
 
 	size_t selectCount = 100;
 
@@ -222,6 +236,76 @@ int main()
 	std::cout << "Time taken to run " << (precompiledSelectors.size() * selectCount) << u8" selectors against the document: " << selectionBenchTime.count() << u8" ms producing " << totalMatches << u8" total matches." << std::endl;
 
 	std::cout << "Processed at a rate of " << (selectionBenchTime.count() / (precompiledSelectors.size() * selectCount)) << u8" milliseconds per selector or " << ((precompiledSelectors.size() * selectCount) / selectionBenchTime.count()) << u8" selectors per millisecond." << std::endl;	
-    return 0;
+    
+	// _______________________________________________________________________________________________ //
+	// _______________________________________________________________________________________________ //
+
+	std::cout << u8"Benchmarking mutation." << std::endl;
+
+	size_t mutateCount = 100;
+
+	auto mutationBenchStart = std::chrono::high_resolution_clock::now();
+
+	size_t totalBytesSerialized = 0;
+
+	for (size_t si = 0; si < mutateCount; ++si)
+	{
+		gq::GQNodeMutationCollection collection;
+
+		// OnTagStart allows us to choose whether or not allow a certain tag type matched by our
+		// selector(s) to be serialized at all.
+		collection.SetOnTagStart(
+			[](const GumboTag tag)->bool
+		{
+			switch (tag)
+			{
+			case GumboTag::GUMBO_TAG_A:
+			{
+				// Let's just return without adding anything, which will omit this "a" tag from the 
+				// final output. Since we do this without any other condition, all "a" tags that we
+				// collected with our selector(s) will be omitted.
+				return false;
+			}
+			break;
+
+			case GumboTag::GUMBO_TAG_SCRIPT:
+			{
+				// Same deal as "a" tags.
+				return false;
+			}
+			break;
+
+			default:
+			{
+				// Let's keep everything else we selected.
+				return true;
+			}
+			break;
+			}
+		});
+
+		for (size_t i = 0; i < precompiledSelectors.size(); ++i)
+		{
+			testDocument->Each(precompiledSelectors[i],
+				[&collection](const gq::GQNode* node)->void
+			{
+				collection.Add(node);
+			});			
+		}
+
+		// Give our mutation collection to the serialize method and get the serialization result.
+		auto serialized = gq::GQSerializer::Serialize(testDocument.get(), &collection);
+
+		totalBytesSerialized += serialized.size();
+	}
+
+	auto mutationBenchEnd = std::chrono::high_resolution_clock::now();
+	std::chrono::duration<double, std::milli> mutationBenchTime = mutationBenchEnd - mutationBenchStart;
+
+	std::cout << "Time taken to run " << (precompiledSelectors.size() * mutateCount) << u8" selectors against the document while serializing with mutations " << mutateCount << u8" times: " << mutationBenchTime.count() << u8" ms." << std::endl;
+
+	std::cout << "Processed at a rate of " << (mutationBenchTime.count() / (precompiledSelectors.size() * mutateCount)) << u8" milliseconds per selector or " << ((precompiledSelectors.size() * mutateCount) / mutationBenchTime.count()) << u8" selectors per millisecond." << std::endl;
+
+	return 0;
 }
 
