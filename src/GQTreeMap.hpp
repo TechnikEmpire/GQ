@@ -88,10 +88,7 @@ namespace gq
 		
 		typedef std::multimap<boost::string_ref, boost::string_ref> AttributeMap;
 
-		GQTreeMap();		
-
-		GQTreeMap(const GQTreeMap&) = delete;
-		GQTreeMap& operator=(const GQTreeMap&) = delete;
+		GQTreeMap();
 
 		/// <summary>
 		/// Adds an attribute map for the supplied node. The unique ID of the supplied node is
@@ -167,7 +164,7 @@ namespace gq
 		/// whitespace separated list into multiple individual entries, pushing them to a map like
 		/// this.
 		/// </summary>
-		typedef std::unordered_map<boost::string_ref, std::vector< const GQNode* >, StringRefHasher> ValueToNodesMap;
+		typedef std::unordered_map<boost::string_ref, std::vector< const GQNode* >, StringRefHash> ValueToNodesMap;
 
 		/// <summary>
 		/// Attribute maps take an attribute name as a key, and return a map which takes attribute
@@ -177,7 +174,7 @@ namespace gq
 		/// attribute exists, passing "*" as the key to the value map will yield all nodes in which
 		/// the attribute exists.
 		/// </summary>
-		typedef std::unordered_map<boost::string_ref, ValueToNodesMap, StringRefHasher> CollectedAttributesMap;
+		typedef std::unordered_map<boost::string_ref, ValueToNodesMap, StringRefHash> CollectedAttributesMap;
 
 		/// <summary>
 		/// In order to enable quickly searching within a scope, we store shared pointers to built
@@ -197,7 +194,7 @@ namespace gq
 		/// search within a collection, we certainly don't want to bother looking for attributes
 		/// that don't exist within the scope we're searching.
 		/// </summary>
-		typedef std::unordered_map<boost::string_ref, CollectedAttributesMap, StringRefHasher> ScopedAttributeMap;
+		typedef std::unordered_map<boost::string_ref, CollectedAttributesMap, StringRefHash> ScopedAttributeMap;
 
 		/// <summary>
 		/// Scoped attributes which map nodes based on attributes existing and also their values.

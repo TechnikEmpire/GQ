@@ -37,12 +37,12 @@ namespace gq
 		m_operator(op), m_leftHandSide(std::move(left)), m_rightHandSide(std::move(right))
 	{
 		#ifndef NDEBUG
-		assert(m_leftHandSide != nullptr && m_rightHandSide != nullptr && u8"In GQBinarySelector::GQBinarySelector(SelectorOperator, SharedGQSelector, SharedGQSelector) - Left or right hand selector is nullptr.");
+			assert(m_leftHandSide != nullptr && m_rightHandSide != nullptr && u8"In GQBinarySelector::GQBinarySelector(SelectorOperator, SharedGQSelector, SharedGQSelector) - Left or right hand selector is nullptr.");
 		#else
-		if (m_leftHandSide == nullptr || m_rightHandSide == nullptr)
-		{
-			throw std::runtime_error(u8"In GQBinarySelector::GQBinarySelector(SelectorOperator, SharedGQSelector, SharedGQSelector) - Left or right hand selector is nullptr.");
-		}
+			if (m_leftHandSide == nullptr || m_rightHandSide == nullptr)
+			{
+				throw std::runtime_error(u8"In GQBinarySelector::GQBinarySelector(SelectorOperator, SharedGQSelector, SharedGQSelector) - Left or right hand selector is nullptr.");
+			}
 		#endif
 
 		auto leftHandTagType = m_leftHandSide->GetTagTypeToMatch();
@@ -93,8 +93,8 @@ namespace gq
 			case SelectorOperator::Union:
 			case SelectorOperator::Intersection:
 			{
-				// Both traits need to match the same object, so we'll take on both traits.
-				// In the case of union, either can match, so again, take on both.
+				// Both traits need to match the same object, so we'll take on both traits. In the
+				// case of union, either can match, so again, take on both.
 				auto& lhst = m_leftHandSide->GetMatchTraits();
 				auto& rhst = m_rightHandSide->GetMatchTraits();
 				

@@ -55,7 +55,7 @@ namespace gq
 
 		#ifndef NDEBUG
 			#ifdef GQ_VERBOSE_DEBUG_NFO
-			std::cout << "Built GQTextSelector with operator " << static_cast<size_t>(m_operator) << " with text to match " << m_textToMatch << u8"." << std::endl;
+				std::cout << "Built GQTextSelector with operator " << static_cast<size_t>(m_operator) << " with text to match " << m_textToMatch << u8"." << std::endl;
 			#endif
 		#endif
 	}
@@ -80,7 +80,7 @@ namespace gq
 
 		#ifndef NDEBUG
 			#ifdef GQ_VERBOSE_DEBUG_NFO
-			std::cout << "Built GQTextSelector with operator " << static_cast<size_t>(m_operator) << " with text to match " << m_textToMatch << u8"." << std::endl;
+				std::cout << "Built GQTextSelector with operator " << static_cast<size_t>(m_operator) << " with text to match " << m_textToMatch << u8"." << std::endl;
 			#endif
 		#endif
 	}
@@ -96,8 +96,8 @@ namespace gq
 		{
 			case SelectorOperator::Contains:
 			{
-				// In jQuery, contains is case sensitive. As such, we use boost::find_first, rather
-				// than ifind_first.
+				// In jQuery, contains is case sensitive. As such, we use find, rather than
+				// ifind_first.
 				auto text = GQUtil::NodeText(node);
 				boost::string_ref textStrRef(text);
 
@@ -112,8 +112,8 @@ namespace gq
 
 			case SelectorOperator::ContainsOwn:
 			{
-				// In jQuery, contains is case sensitive. As such, we use boost::find_first, rather
-				// than ifind_first.
+				// In jQuery, contains is case sensitive. As such, we use find, rather than
+				// ifind_first.
 				auto text = GQUtil::NodeOwnText(node);
 				boost::string_ref textStrRef(text);
 

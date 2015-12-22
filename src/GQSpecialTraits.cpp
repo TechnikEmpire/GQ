@@ -46,8 +46,8 @@ namespace gq
 
 	const boost::string_ref GQSpecialTraits::GetAnyValue()
 	{
-		// For values, we're actually safe to return static non-random values, because
-		// they are sheltered by the uniqueness of the key.
+		// For values, we're actually safe to return static non-random values, because they are
+		// sheltered by the uniqueness of the key.
 		return boost::string_ref(u8"*");
 	}
 

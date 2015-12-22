@@ -36,7 +36,7 @@
 namespace gq
 {
 
-	const std::unordered_map<boost::string_ref, GQParser::PseudoOp, StringRefHasher> GQParser::PseudoOps =
+	const std::unordered_map<boost::string_ref, GQParser::PseudoOp, StringRefHash> GQParser::PseudoOps =
 	{ 
 		{ u8"not", PseudoOp::Not },
 		{ u8"has", PseudoOp::Has },
@@ -77,10 +77,11 @@ namespace gq
 
 			if (input.size() != 0) 
 			{ 
-				// There's no assert on debug here, because it's expected that user input may contain invalid data. Passing a poorly
-				// formatted selector string isn't a matter of a developer user using the library improperly, so no assert. The idea
-				// is that any user should expect this method to throw and hence be ready to handle it, and that a detailed message
-				// of the issue be returned in the error.
+				// There's no assert on debug here, because it's expected that user input may
+				// contain invalid data. Passing a poorly formatted selector string isn't a matter
+				// of a developer user using the library improperly, so no assert. The idea is that
+				// any user should expect this method to throw and hence be ready to handle it, and
+				// that a detailed message of the issue be returned in the error.
 				throw std::runtime_error(u8"In GQParser::CreateSelector(std::string, const bool) - Improperly formatted selector string."); 
 			}
 
@@ -102,19 +103,18 @@ namespace gq
 
 	SharedGQSelector GQParser::ParseSelectorGroup(boost::string_ref& selectorStr) const
 	{
-		// Parse the first selector object from the input supplied.
+		// Parse the first selector object from the input supplied. 
 		SharedGQSelector ret = ParseSelector(selectorStr);
 
-		// ParseSelector() will stop if it encounters a character in the selector 
-		// string that indicates that the supplied input is a selector group. That 
-		// is, if "," is encountered while ParseSelector() is consuming input, it 
-		// will break and return the most recently constructed GQSelector. This also
-		// applies if it finds a closing parenthesis, an indication that the internals
-		// of a pseudo selector are finished being built.
-		//
-		// So, after we get an initial return, we'll continue to recursively build 
-		// selectors and combine them until no more "," group indicators are found 
-		// and/or the end of the input has been reached. 
+		// ParseSelector() will stop if it encounters a character in the selector string that
+		// indicates that the supplied input is a selector group. That is, if "," is encountered
+		// while ParseSelector() is consuming input, it will break and return the most recently
+		// constructed GQSelector. This also applies if it finds a closing parenthesis, an
+		// indication that the internals of a pseudo selector are finished being built.
+		// 
+		// So, after we get an initial return, we'll continue to recursively build selectors and
+		// combine them until no more "," group indicators are found and/or the end of the input has
+		// been reached.
 		while (selectorStr.size() > 0 && selectorStr[0] == ',')
 		{
 			selectorStr = selectorStr.substr(1);
@@ -178,12 +178,6 @@ namespace gq
 					return ret;
 				}
 				break;
-
-				//default:
-				//{
-				//	notDone = false;
-				//}
-				//break;
 			}
 
 			if (combinator == 0)
@@ -221,8 +215,9 @@ namespace gq
 				break;
 
 				default:
-					// This should never happen, since we've correctly only accepted valid combinators.
-					// However, if somehow this happens, we should explode the universe.				
+					// This should never happen, since we've correctly only accepted valid
+					// combinators. However, if somehow this happens, we should explode the
+					// universe.
 					throw std::runtime_error(u8"In GQParser::ParseSelector(boost::string_ref&) - Invalid combinator supplied.");
 			}
 
@@ -258,16 +253,16 @@ namespace gq
 			case '[':
 			case ':':
 			{
-				// If it's an ID, class, attribute, or pseudo class selector, just move on,
-				// this will be handled a little later.
+				// If it's an ID, class, attribute, or pseudo class selector, just move on, this
+				// will be handled a little later.
 				break;
 			}
 			break;
 
 			default:
 			{
-				// Assume it's a type selector. If it is valid, will return a valid object. If not, it will
-				// be nullptr. We'll handle either situation a little later.
+				// Assume it's a type selector. If it is valid, will return a valid object. If not,
+				// it will be nullptr. We'll handle either situation a little later.
 				ret = ParseTypeSelector(selectorStr);
 			}
 			break;
@@ -314,17 +309,20 @@ namespace gq
 
 					if (ret == nullptr)
 					{
-						// This means that we've encountered a pseudo class selector that has no previous qualifiers
-						// such as a specific tag or other attribute to bind to, such as div:last-child. As such,
-						// in order to properly handle this when using the map based approach to candidate searching,
-						// a dummy selector needs to be combined with this pseudo class selector. A dummy selector
-						// will generate appropriate search attributes in the event that this pseudo class selector
-						// makes up the primary function of the selector. If we didn't do this, there would be
-						// no reliable attributes by which to discover candidates.
+						// This means that we've encountered a pseudo class selector that has no
+						// previous qualifiers such as a specific tag or other attribute to bind to,
+						// such as div:last-child. As such, in order to properly handle this when
+						// using the map based approach to candidate searching, a dummy selector
+						// needs to be combined with this pseudo class selector. A dummy selector
+						// will generate appropriate search attributes in the event that this pseudo
+						// class selector makes up the primary function of the selector. If we
+						// didn't do this, there would be no reliable attributes by which to
+						// discover candidates.
 						// 
-						// Consider the pseudo class selector ":not(p)". Without this little trick, the only attributes
-						// we'd get from such a selector are { NORMALIZED_TAG_NAME_KEY, p }, which would only find
-						// candidates which actually cannot possibly ever match this selector.
+						// Consider the pseudo class selector ":not(p)". Without this little trick,
+						// the only attributes we'd get from such a selector are {
+						// NORMALIZED_TAG_NAME_KEY, p }, which would only find candidates which
+						// actually cannot possibly ever match this selector.
 						selector = std::make_shared<GQBinarySelector>(GQBinarySelector::SelectorOperator::Intersection, std::make_shared<GQSelector>(GQSelector::SelectorOperator::Dummy), selector);
 					}
 				}
@@ -366,7 +364,7 @@ namespace gq
 
 		boost::string_ref name = ParseIdentifier(selectorStr);
 
-		// Unfortunately, we need to copy out to a new string so we can force it to lower case
+		// Unfortunately, we need to copy out to a new string so we can force it to lower case 
 		std::string nameAsString = name.to_string();
 		boost::to_lower(nameAsString);
 		name = boost::string_ref(nameAsString);
@@ -470,12 +468,6 @@ namespace gq
 
 				bool matchLast = (pseudoOperatorResult->second == PseudoOp::NthLastChild || pseudoOperatorResult->second == PseudoOp::NthLastOfType);
 				bool matchType = (pseudoOperatorResult->second == PseudoOp::NthOfType || pseudoOperatorResult->second == PseudoOp::NthLastOfType);
-
-				// Note that if it's a last-match, we swap the left and right hand sides
-				//if (matchLast)
-				//{
-				//	std::swap(lhs, rhs);
-				//}
 				
 				return std::make_shared<GQSelector>(lhs, rhs, matchLast, matchType);
 			}
@@ -542,9 +534,10 @@ namespace gq
 			throw std::runtime_error(u8"In GQParser::ParseAttributeSelector(boost::string_ref&) - Expected identifier, reached EOF instead.");
 		}
 
-		// This is used for matching attributes not exactly, but by a specific prefix. If this is the case, rather
-		// than matching exactly the supplied key against an attribute entry, the attribute entry will be tested
-		// if whether or not its name key has the prefix specified. So [^some$="end"] will match:
+		// This is used for matching attributes not exactly, but by a specific prefix. If this is
+		// the case, rather than matching exactly the supplied key against an attribute entry, the
+		// attribute entry will be tested if whether or not its name key has the prefix specified.
+		// So [^some$="end"] will match:
 		//		something="theend"
 		//		someone="frontend"
 		//		someplace="theplaceattheend"
@@ -576,8 +569,8 @@ namespace gq
 		case ']':
 		{
 			// This is just an EXISTS attribute selector. So, this will match an element that has
-			// the specified attribute, regardless of value. We need to consume the closing
-			// bracket though as well.
+			// the specified attribute, regardless of value. We need to consume the closing bracket
+			// though as well.
 			selectorStr = selectorStr.substr(1);
 
 			return std::make_shared<GQAttributeSelector>(key);
@@ -586,8 +579,9 @@ namespace gq
 
 		case '|':
 		{
-			// This is a hypen delimited list selector where the first attribute value (left to right) starts with
-			// a specific value followed by a hyphen, or exactly equals the specified selector value.
+			// This is a hypen delimited list selector where the first attribute value (left to
+			// right) starts with a specific value followed by a hyphen, or exactly equals the
+			// specified selector value.
 			if (selectorStr.length() > 3 && selectorStr[1] == '=')
 			{
 				op = GQAttributeSelector::SelectorOperator::ValueIsHyphenSeparatedListStartingWith;
@@ -601,8 +595,8 @@ namespace gq
 
 		case '~':
 		{
-			// This is a whitespace delimited list selector where one of the attribute list items exactly matches
-			// a specific value.
+			// This is a whitespace delimited list selector where one of the attribute list items
+			// exactly matches a specific value.
 			if (selectorStr.length() > 3 && selectorStr[1] == '=')
 			{
 				op = GQAttributeSelector::SelectorOperator::ValueContainsElementInWhitespaceSeparatedList;
@@ -616,8 +610,8 @@ namespace gq
 
 		case '^':
 		{
-			// This is a prefix matching selector where the value of the specified attribute must have a prefix
-			// that exactly matches a specific value.
+			// This is a prefix matching selector where the value of the specified attribute must
+			// have a prefix that exactly matches a specific value.
 			if (selectorStr.length() > 3 && selectorStr[1] == '=')
 			{
 				op = GQAttributeSelector::SelectorOperator::ValueHasPrefix;
@@ -631,8 +625,8 @@ namespace gq
 
 		case '$':
 		{
-			// This is a suffix matching selector where the value of the specified attribute must have a suffix
-			// that exactly matches a specific value.
+			// This is a suffix matching selector where the value of the specified attribute must
+			// have a suffix that exactly matches a specific value.
 			if (selectorStr.length() > 3 && selectorStr[1] == '=')
 			{
 				op = GQAttributeSelector::SelectorOperator::ValueHasSuffix;
@@ -646,8 +640,8 @@ namespace gq
 
 		case '*':
 		{
-			// This is a substring matching selector where the value of the specified attribute must contain the
-			// a specific substring.
+			// This is a substring matching selector where the value of the specified attribute must
+			// contain the a specific substring.
 			if (selectorStr.length() > 3 && selectorStr[1] == '=')
 			{
 				op = GQAttributeSelector::SelectorOperator::ValueContains;
@@ -661,8 +655,8 @@ namespace gq
 
 		case '=':
 		{
-			// This is an exact equality selector, where the value of the specified attribute must exactly match
-			// a specific value.
+			// This is an exact equality selector, where the value of the specified attribute must
+			// exactly match a specific value.
 			if (selectorStr.length() >= 3)
 			{
 				op = GQAttributeSelector::SelectorOperator::ValueEquals;
@@ -679,7 +673,7 @@ namespace gq
 			throw std::runtime_error(u8"In GQParser::ParseAttributeSelector(boost::string_ref&) - Invalid attribute value specifier.");
 		} /* switch (valueMatchFirstChar) */
 
-		  // Trim off the match specifier
+		// Trim off the match specifier
 		selectorStr = selectorStr.substr(trimLength);
 
 		boost::string_ref value;
@@ -874,7 +868,8 @@ namespace gq
 						}						
 					}
 
-					// The right hand side must be just a number, be it positive, negative, doesn't matter. That's all it can be.
+					// The right hand side must be just a number, be it positive, negative, doesn't
+					// matter. That's all it can be.
 					size_t rhsStartPos = 0;
 
 					if (rhss[0] == '-' || rhss[0] == '+')
@@ -1052,8 +1047,8 @@ namespace gq
 	const bool GQParser::TrimLeadingWhitespace(boost::string_ref& str) const
 	{
 		// The original SkipWhitespace method in the gumbo-query CParser class not only skipped over
-		// whitespace, but also skipped over comments like /*....*/. I can't see a reason to implement
-		// this functionality. There should not be comments in supplied selector strings.
+		// whitespace, but also skipped over comments like /*....*/. I can't see a reason to
+		// implement this functionality. There should not be comments in supplied selector strings.
 
 		if (str.size() == 0)
 		{
@@ -1081,11 +1076,11 @@ namespace gq
 	boost::string_ref GQParser::ParseString(boost::string_ref& selectorStr) const
 	{
 		// This method assumes it has been called when the first character in the supplied
-		// string_ref is either a ' or " quote. This function is a complete rewrite over
-		// the original gumbo-query version, as the gumbo-query version was needlessly
-		// complex and took all escape sequences into account, unescaping character code
-		// points. This method simply looks for a valid opening and closing quote and takes
-		// everything in between that and an unescaped closing quote of the same character.
+		// string_ref is either a ' or " quote. This function is a complete rewrite over the
+		// original gumbo-query version, as the gumbo-query version was needlessly complex and took
+		// all escape sequences into account, unescaping character code points. This method simply
+		// looks for a valid opening and closing quote and takes everything in between that and an
+		// unescaped closing quote of the same character.
 
 		if (selectorStr.size() == 0)
 		{
@@ -1181,11 +1176,11 @@ namespace gq
 			{
 				++ind;
 
-				// Since Gumbo Parser directly embeds escaped character sequences directly,
-				// and unmodified, we need to accept them as well. These will always, in a 
-				// properly formatted element, be followed by a space in order to make it
-				// clear that the characters immediately following a '\\' and then followed
-				// by a space are the hex value for a unicode character.
+				// Since Gumbo Parser directly embeds escaped character sequences directly, and
+				// unmodified, we need to accept them as well. These will always, in a properly
+				// formatted element, be followed by a space in order to make it clear that the
+				// characters immediately following a '\\' and then followed by a space are the hex
+				// value for a unicode character.
 				bool foundEscapeSequenceEnd = false;
 				for (ind; ind < static_cast<int>(selectorStr.size()); ++ind)
 				{
@@ -1234,7 +1229,7 @@ namespace gq
 
 	const bool GQParser::IsNameChar(const char& c) const
 	{
-		// We need to be able to support alphabet, 0-9, underscores and & and ; (for numbered and named char refs)
+		// We need to be able to support alphabet, 0-9, underscores
 		return IsNameStart(c) || (c == '-') || (c >= '0' && c <= '9');
 	}
 

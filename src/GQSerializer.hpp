@@ -31,10 +31,10 @@ namespace gq
 	class GQNode;
 
 	/// <summary>
-	/// The GQSerializer can take a single Gumbo Parser node and convert its contents back into an
-	/// HTML string. Two methods are exposed, one will serialize the node and its contents, the
-	/// other will serialze only the contents of the node. This can be used behind the scenes on
-	/// jquery like methods such as .Html() and .InnerHtml().
+	/// The GQSerializer can take a single GumboNode and convert its contents back into an HTML
+	/// string. Two methods are exposed, one will serialize the node and its contents, the other
+	/// will serialze only the contents of the node. This can be used behind the scenes on jquery
+	/// like methods such as .Html() and .InnerHtml().
 	/// </summary>
 	class GQSerializer
 	{
@@ -107,12 +107,12 @@ namespace gq
 		/// <summary>
 		/// List of tags that do not require a named closing tag.
 		/// </summary>
-		static const std::unordered_set<boost::string_ref, StringRefHasher> EmptyTags;
+		static const std::unordered_set<boost::string_ref, StringRefHash> EmptyTags;
 
 		/// <summary>
 		/// Tags that should have newlines appended to.
 		/// </summary>
-		static const std::unordered_set<boost::string_ref, StringRefHasher> SpecialHandling;
+		static const std::unordered_set<boost::string_ref, StringRefHash> SpecialHandling;
 
 		/// <summary>
 		/// Gets a string representation of the tag name for the supplied node. 

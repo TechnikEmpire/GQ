@@ -25,7 +25,7 @@
 namespace gq
 {
 
-	const std::unordered_set<boost::string_ref, StringRefHasher> GQSerializer::EmptyTags =
+	const std::unordered_set<boost::string_ref, StringRefHash> GQSerializer::EmptyTags =
 	{
 		{ u8"area" },
 		{ u8"base" },
@@ -52,7 +52,7 @@ namespace gq
 		{ u8"wbr" }
 	};
 
-	const std::unordered_set<boost::string_ref, StringRefHasher> GQSerializer::SpecialHandling =
+	const std::unordered_set<boost::string_ref, StringRefHash> GQSerializer::SpecialHandling =
 	{
 		{ u8"html" },
 		{ u8"body" }
@@ -89,8 +89,8 @@ namespace gq
 
 		std::string tagOpeningText;
 
-		// Check to see if the supplied collection is valid and if the current node can be found
-		// in it.
+		// Check to see if the supplied collection is valid and if the current node can be found in
+		// it.
 		bool foundNodeInUserCollection = false;
 
 		if (mutationCollection && mutationCollection->Contains(node))
@@ -137,8 +137,7 @@ namespace gq
 
 				if (attribute->original_value.length > 0)
 				{
-					attribValue = boost::string_ref(attribute->original_value.data, attribute->original_value.length);
-					GQUtil::TrimEnclosingQuotes(attribValue);
+					attribValue = GQUtil::TrimEnclosingQuotes(boost::string_ref(attribute->original_value.data, attribute->original_value.length));
 				}				
 
 				if (attribName.size() > 0)
@@ -172,9 +171,8 @@ namespace gq
 			{
 				if (result == true)
 				{
-					// The supplied user content should replace text nodes in the content, if any. Everything
-					// else should be appended normally.
-
+					// The supplied user content should replace text nodes in the content, if any.
+					// Everything else should be appended normally.
 					contents.append(SerializeContent(node, true, mutationCollection));
 				}
 				else if (result == false)

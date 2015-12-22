@@ -41,19 +41,19 @@ namespace gq
 	void GQTreeMap::AddNodeToMap(boost::string_ref scope, const GQNode* node, const AttributeMap& nodeAttributeMap)
 	{
 		#ifndef NDEBUG
-		assert(scope.size() > 0 && u8"In QTreeMap::AddNodeToMap(boost::string_ref, const GQNode*, const AttributeMap&) - The supplied scope is empty. This error is impossible unless a user is directly and incorrectly calling this method, or if this class and its required mechanisms are fundamentally broken.");
+			assert(scope.size() > 0 && u8"In QTreeMap::AddNodeToMap(boost::string_ref, const GQNode*, const AttributeMap&) - The supplied scope is empty. This error is impossible unless a user is directly and incorrectly calling this method, or if this class and its required mechanisms are fundamentally broken.");
 		#else
-		if (scope.size() == 0) { throw new std::runtime_error(u8"In QTreeMap::AddNodeToMap(boost::string_ref, const GQNode*, const AttributeMap&) - The supplied scope is empty. This error is impossible unless a user is directly and incorrectly calling this method, or if this class and its required mechanisms are fundamentally broken."); }
+			if (scope.size() == 0) { throw new std::runtime_error(u8"In QTreeMap::AddNodeToMap(boost::string_ref, const GQNode*, const AttributeMap&) - The supplied scope is empty. This error is impossible unless a user is directly and incorrectly calling this method, or if this class and its required mechanisms are fundamentally broken."); }
 		#endif
 		
 		#ifndef NDEBUG
 			#ifdef GQ_VERBOSE_DEBUG_NFO					
-					std::cout << u8"Adding node " << node->GetUniqueId() << u8" to scope " << scope << u8" with attributes:" << std::endl;
-					for (auto& eachAttr = nodeAttributeMap.begin(); eachAttr != nodeAttributeMap.end(); ++eachAttr)
-					{
-						std::cout << u8"\tName: " << eachAttr->first << u8" ::: Value: " << eachAttr->second << std::endl;
-					}
-					std::cout << std::endl;
+				std::cout << u8"Adding node " << node->GetUniqueId() << u8" to scope " << scope << u8" with attributes:" << std::endl;
+				for (auto& eachAttr = nodeAttributeMap.begin(); eachAttr != nodeAttributeMap.end(); ++eachAttr)
+				{
+					std::cout << u8"\tName: " << eachAttr->first << u8" ::: Value: " << eachAttr->second << std::endl;
+				}
+				std::cout << std::endl;
 			#endif
 		#endif
 
@@ -172,18 +172,19 @@ namespace gq
 		auto& atScope = m_scopedAttributes.find(scope);
 
 		#ifndef NDEBUG
-		assert(atScope != m_scopedAttributes.end() && u8"In GQTreeMap::Get(boost::string_ref, boost::string_ref, boost::string_ref) - The supplied scope does not exist. This error is impossible unless a user is directly and incorrectly calling this method, or if this class and its required mechanisms are fundamentally broken.");
+			assert(atScope != m_scopedAttributes.end() && u8"In GQTreeMap::Get(boost::string_ref, boost::string_ref, boost::string_ref) - The supplied scope does not exist. This error is impossible unless a user is directly and incorrectly calling this method, or if this class and its required mechanisms are fundamentally broken.");
 		#else
-		if (atScope == m_scopedAttributes.end())
-		{
-			// This should not be possible, provided users are messing about and the implementation isn't fundamentally broken.
-			throw new std::runtime_error(u8"In GQTreeMap::Get(boost::string_ref, boost::string_ref, boost::string_ref) - The supplied scope does not exist. This error is impossible unless a user is directly and incorrectly calling this method, or if this class and its required mechanisms are fundamentally broken.");
-		}
+			if (atScope == m_scopedAttributes.end())
+			{
+				// This should not be possible, provided users are messing about and the
+				// implementation isn't fundamentally broken.
+				throw new std::runtime_error(u8"In GQTreeMap::Get(boost::string_ref, boost::string_ref, boost::string_ref) - The supplied scope does not exist. This error is impossible unless a user is directly and incorrectly calling this method, or if this class and its required mechanisms are fundamentally broken.");
+			}
 		#endif		
 
 		#ifndef NDEBUG
 			#ifdef GQ_VERBOSE_DEBUG_NFO
-					std::cout << u8"In GQTreeMap::Get(boost::string_ref, boost::string_ref, boost::string_ref) - Looking up at scope " << scope << u8" with key " << attribute << u8" and value " << attributeValue << u8"." << std::endl;
+				std::cout << u8"In GQTreeMap::Get(boost::string_ref, boost::string_ref, boost::string_ref) - Looking up at scope " << scope << u8" with key " << attribute << u8" and value " << attributeValue << u8"." << std::endl;
 			#endif
 		#endif
 

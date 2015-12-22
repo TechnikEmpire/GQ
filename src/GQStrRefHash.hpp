@@ -32,7 +32,7 @@ namespace gq
 	/// <summary>
 	/// Hash implementation for string_ref.
 	/// </summary>
-	struct StringRefHasher
+	struct StringRefHash
 	{
 		size_t operator()(const boost::string_ref& strRef) const
 		{

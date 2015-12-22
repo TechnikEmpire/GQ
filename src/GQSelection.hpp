@@ -40,7 +40,10 @@ namespace gq
 {
 
 	/// <summary>
-	/// <para>&#160;</para>
+	/// The GQSelection serves as a container for selection results. Presently this doesn't offer
+	/// anything more than a simply vector could. However, in the future, support will probably be
+	/// included to permit additional operations against match collections which would justify this
+	/// container.
 	/// </summary>
 	class GQSelection
 	{

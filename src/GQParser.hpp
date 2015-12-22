@@ -105,7 +105,7 @@ namespace gq
 		/// For quickly validating a parsed pseduo selector and in return getting an enum we can
 		/// switch on rather than having a mess of if/elseif/else.
 		/// </summary>
-		static const std::unordered_map<boost::string_ref, PseudoOp, StringRefHasher> PseudoOps;
+		static const std::unordered_map<boost::string_ref, PseudoOp, StringRefHash> PseudoOps;
 
 		/// <summary>
 		/// For supplying to isalpha, etc.

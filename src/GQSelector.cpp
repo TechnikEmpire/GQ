@@ -143,7 +143,7 @@ namespace gq
 
 		#ifndef NDEBUG
 			#ifdef GQ_VERBOSE_DEBUG_NFO
-			std::cout << "Built GQSelector for matching GumboTag " << gumbo_normalized_tagname(tagTypeToMatch) << u8"." << std::endl;
+				std::cout << "Built GQSelector for matching GumboTag " << gumbo_normalized_tagname(tagTypeToMatch) << u8"." << std::endl;
 			#endif
 		#endif
 	}
@@ -208,9 +208,10 @@ namespace gq
 
 					if (m_matchType && node->GetTag() != child->GetTag())
 					{
-						// When m_matchType is true, we want to ignore all nodes that are not of the same type, because
-						// in this circumstance, we'd be processing an only-of-type selector. So, to not screw up our
-						// count, we ignore any non-element nodes and any nodes not of the same type as what we're trying
+						// When m_matchType is true, we want to ignore all nodes that are not of the
+						// same type, because in this circumstance, we'd be processing an
+						// only-of-type selector. So, to not screw up our count, we ignore any
+						// non-element nodes and any nodes not of the same type as what we're trying
 						// to match.
 						continue;
 					}
@@ -241,23 +242,24 @@ namespace gq
 					return false;
 				}
 
-				// A valid child is a child that is either an element, or a is a node of exactly the same
-				// type as the node we're trying to match. We need to skip everything else because in 
-				// Gumbo Parser, we can have non-element nodes. However, in something like jquery using
-				// selectors, these are not factored in, so to keep our counts equal to what you'd expect
-				// in a real browser environment, we only count children as described.
+				// A valid child is a child that is either an element, or a is a node of exactly the
+				// same type as the node we're trying to match. We need to skip everything else
+				// because in Gumbo Parser, we can have non-element nodes. However, in something
+				// like jquery using selectors, these are not factored in, so to keep our counts
+				// equal to what you'd expect in a real browser environment, we only count children
+				// as described.
 				int validChildCount = 0;				
 
-				// The actual index is "actual" in the sense that it is adjusted according to the process
-				// described in the comments on validChildCount. This will almost certainly differ from
-				// node->position_within_parent, which is why we keep this variable.
+				// The actual index is "actual" in the sense that it is adjusted according to the
+				// process described in the comments on validChildCount. This will almost certainly
+				// differ from node->position_within_parent, which is why we keep this variable.
 				int actualIndex = 0;
 
-				// As we iterate up to our guaranteed match, we'll expand the nth formula and generate a 
-				// collection of all node indices that the nth parameter (expanded) could possible generate
-				// within the range of the parent child count. Then, later, we'll check to see if the final
-				// matched "actualIndex" of our discovered node is found within these expanded values to
-				// tell if we have a match or not.
+				// As we iterate up to our guaranteed match, we'll expand the nth formula and
+				// generate a collection of all node indices that the nth parameter (expanded) could
+				// possible generate within the range of the parent child count. Then, later, we'll
+				// check to see if the final matched "actualIndex" of our discovered node is found
+				// within these expanded values to tell if we have a match or not.
 				std::unordered_set<int> validNths;
 
 				for (size_t j = 0; j < parent->GetNumChildren(); j++)
@@ -265,36 +267,39 @@ namespace gq
 					auto* child = parent->GetChildAt(j);
 					if ((m_matchType && node->GetTag() != child->GetTag()))
 					{
-						// If m_matchType is true, we're not counting any children that are not the same
-						// tag type as valid children. We're pretending that they don't exist. We're doing
-						// this for situations last-of-type and nth-last-of-type. Whenever either of those
-						// selectors are used, we pretend the only elements that exist are of the type
-						// we're looking for, to make counting simple.
+						// If m_matchType is true, we're not counting any children that are not the
+						// same tag type as valid children. We're pretending that they don't exist.
+						// We're doing this for situations last-of-type and nth-last-of-type.
+						// Whenever either of those selectors are used, we pretend the only elements
+						// that exist are of the type we're looking for, to make counting simple.
 						continue;
 					}
 
 					// Expand the nth forumla and get the generated nth index based on the present
-					// plain index. By doing this, we can store a list of all possible indices within
-					// the scope of this node's parent that would classify as valid nth indices, and
-					// thus a final "actualIndex" matching any of these indices is a match to the 
-					// selector. I'm explaining the hell out of this because the original code was
-					// as much of a copy and paste from sizzler as is possible and of course, it didn't
-					// work right, so I had to re-figure this nth thing out from scratch.
-					// XXX TODO - Write more nth selector tests to verify that this code holds.
+					// plain index. By doing this, we can store a list of all possible indices
+					// within the scope of this node's parent that would classify as valid nth
+					// indices, and thus a final "actualIndex" matching any of these indices is a
+					// match to the selector. I'm explaining the hell out of this because the
+					// original code was as much of a copy and paste from sizzler as is possible and
+					// of course, it didn't work right, so I had to re-figure this nth thing out
+					// from scratch. XXX TODO - Write more nth selector tests to verify that this
+					// code holds.
 					validNths.insert(((m_leftHandSideOfNth * validChildCount) + m_rightHandSideOfNth));
 
 					// Once the child is found, we store its "true" index, aka the index after we've
-					// ignored everything we don't want to count as real children for the sake of maths.
+					// ignored everything we don't want to count as real children for the sake of
+					// maths.
 					if (child == node)
 					{						
 						actualIndex = validChildCount;
 
 						if (!m_matchLast)
 						{
-							// If we're not matching last (nth-last, last-of), we can just break here and
-							// check the nodes index for a match. If not, we need to carry on counting
-							// the total number of valid children (children we're not ignoring) so we
-							// can properly convert the index to offset from the the "last" aka end.
+							// If we're not matching last (nth-last, last-of), we can just break
+							// here and check the nodes index for a match. If not, we need to carry
+							// on counting the total number of valid children (children we're not
+							// ignoring) so we can properly convert the index to offset from the the
+							// "last" aka end.
 							++validChildCount;
 							break;
 						}
@@ -305,15 +310,16 @@ namespace gq
 
 				if (m_matchLast)
 				{
-					// If we're matching from "last" we're matching count from the end aka total valid child count.
-					// A valid child depends on if the child is an html element, and when we're matching types 
-					// for selectors like (nth-last-of-type), then valid siblings are further restricted to sibling
-					// with the same tag name.
+					// If we're matching from "last" we're matching count from the end aka total
+					// valid child count. A valid child depends on if the child is an html element,
+					// and when we're matching types for selectors like (nth-last-of-type), then
+					// valid siblings are further restricted to sibling with the same tag name.
 					// 
-					// Got a bit off topic, but when we're matching from the end, we want to convert the index from
-					// a "count from start" to "count from end", so substracting count from start from total count 
-					// gives us this. In the case that we're not matching last, we need to append 1, since these
-					// type of pseudo selectors seem not to use zero based indices.
+					// Got a bit off topic, but when we're matching from the end, we want to convert
+					// the index from a "count from start" to "count from end", so substracting
+					// count from start from total count gives us this. In the case that we're not
+					// matching last, we need to append 1, since these type of pseudo selectors seem
+					// not to use zero based indices.
 					actualIndex = validChildCount - actualIndex;
 				}
 				else 
@@ -322,16 +328,17 @@ namespace gq
 					actualIndex += 1;
 				}				
 
-				// Expand the nth calculation against the actual found index of the node. No matter what the 
-				// composition of the nth parameter is, this will generate a proper index. We then are going
-				// to either exactly match this, or exactly match this to all other valid generated nth values
-				// for the selector, which we created while doing the loop to find the child in the first
-				// place using this exact same formula.
+				// Expand the nth calculation against the actual found index of the node. No matter
+				// what the composition of the nth parameter is, this will generate a proper index.
+				// We then are going to either exactly match this, or exactly match this to all
+				// other valid generated nth values for the selector, which we created while doing
+				// the loop to find the child in the first place using this exact same formula.
 				int nthIndex = ((m_leftHandSideOfNth * actualIndex) + m_rightHandSideOfNth);
 
-				// Either the calculated nth index will be an exact match, or during the iterations up till
-				// the found node, we will have generated a collection of valid nths for the specified selector
-				// and we'll find our index in there. If neither of those are true, then we didn't match at all.
+				// Either the calculated nth index will be an exact match, or during the iterations
+				// up till the found node, we will have generated a collection of valid nths for the
+				// specified selector and we'll find our index in there. If neither of those are
+				// true, then we didn't match at all.
 				if (nthIndex == actualIndex || (validNths.find(actualIndex) != validNths.end()))
 				{
 					return GQMatchResult(node);
@@ -359,9 +366,9 @@ namespace gq
 	void GQSelector::MatchAll(const GQNode* node, std::vector< const GQNode* >& results) const
 	{
 		#ifndef NDEBUG
-		assert(node != nullptr && u8"In GQSelector::MatchAll(const GumboNode*, std::vector< std::shared_ptr<GQNode> >&) - Nullptr node supplied for matching.");
+			assert(node != nullptr && u8"In GQSelector::MatchAll(const GumboNode*, std::vector< std::shared_ptr<GQNode> >&) - Nullptr node supplied for matching.");
 		#else
-		if (node == nullptr) { throw std::runtime_error(u8"In GQSelector::MatchAll(const GumboNode*, std::vector< std::shared_ptr<GQNode> >&) - Nullptr node supplied for matching."); }
+			if (node == nullptr) { throw std::runtime_error(u8"In GQSelector::MatchAll(const GumboNode*, std::vector< std::shared_ptr<GQNode> >&) - Nullptr node supplied for matching."); }
 		#endif
 
 		MatchAllInto(node, results);
@@ -417,9 +424,9 @@ namespace gq
 	void GQSelector::MatchAllInto(const GQNode* node, std::vector< const GQNode* >& nodes) const
 	{
 		#ifndef NDEBUG
-		assert(node != nullptr && u8"In GQSelector::MatchAllInto(const GumboNode*, std::vector<const GumboNode*>&) - Nullptr node supplied for matching.");
+			assert(node != nullptr && u8"In GQSelector::MatchAllInto(const GumboNode*, std::vector<const GumboNode*>&) - Nullptr node supplied for matching.");
 		#else
-		if (node == nullptr) { throw std::runtime_error(u8"In GQSelector::MatchAllInto(const GumboNode*, std::vector<const GumboNode*>&) - Nullptr node supplied for matching."); }
+			if (node == nullptr) { throw std::runtime_error(u8"In GQSelector::MatchAllInto(const GumboNode*, std::vector<const GumboNode*>&) - Nullptr node supplied for matching."); }
 		#endif
 
 		if (Match(node))

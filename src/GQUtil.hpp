@@ -126,7 +126,7 @@ namespace gq
 		/// <param name="str">
 		/// The string to trim enclosing quotation characters from. 
 		/// </param>
-		static void TrimEnclosingQuotes(boost::string_ref& str);
+		static boost::string_ref TrimEnclosingQuotes(boost::string_ref str);
 
 	private:
 

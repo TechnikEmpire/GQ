@@ -43,7 +43,7 @@ namespace gq
 
 		#ifndef NDEBUG
 			#ifdef GQ_VERBOSE_DEBUG_NFO
-			std::cout << "Built GQUnarySelector with operator " << static_cast<size_t>(m_operator) << u8"." << std::endl;
+				std::cout << "Built GQUnarySelector with operator " << static_cast<size_t>(m_operator) << u8"." << std::endl;
 			#endif
 		#endif
 
@@ -89,9 +89,9 @@ namespace gq
 			{
 				if (HasDescendantMatch(node))
 				{
-					// In the event of a :has/:haschild selector, you're interested in selecting
-					// a particular parent that has a particular child, so we'll return the
-					// parent here on a match.
+					// In the event of a :has/:haschild selector, you're interested in selecting a
+					// particular parent that has a particular child, so we'll return the parent
+					// here on a match.
 					return GQMatchResult(node);
 				}
 

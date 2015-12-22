@@ -113,9 +113,9 @@ namespace gq
 		RemoveDuplicates(primaryCollection);		
 	}
 
-	void GQUtil::TrimEnclosingQuotes(boost::string_ref& str)
+	boost::string_ref GQUtil::TrimEnclosingQuotes(boost::string_ref str)
 	{
-		if (str.length() >= 3)
+		if (str.length() >= 2)
 		{
 			switch (str[0])
 			{
@@ -124,7 +124,14 @@ namespace gq
 				{
 					if (str[str.length() - 1] == str[0])
 					{
-						str = str.substr(1, str.length() - 2);
+						size_t end = str.length() - 2;
+						if (end == 0)
+						{
+							// Just so that it's not nullptr internall
+							return boost::string_ref(str.data(), 0);
+						}
+
+						str = str.substr(1, end);
 					}
 				}
 				break;
@@ -133,6 +140,8 @@ namespace gq
 					break;
 			}
 		}
+
+		return str;
 	}
 
 	void GQUtil::WriteNodeText(const GumboNode* node, std::string& stringContainer)

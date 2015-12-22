@@ -70,9 +70,9 @@ namespace gq
 		m_parent(parent)
 	{		
 		#ifndef NDEBUG
-		assert(node != nullptr && u8"In GQNode::GQNode(const GumboNode*) - Cannot construct a GQNode around a nullptr.");		
+			assert(node != nullptr && u8"In GQNode::GQNode(const GumboNode*) - Cannot construct a GQNode around a nullptr.");		
 		#else
-		if (node == nullptr) { throw std::runtime_error(u8"In GQNode::GQNode(const GumboNode*) - Cannot construct a GQNode around a nullptr."); }		
+			if (node == nullptr) { throw std::runtime_error(u8"In GQNode::GQNode(const GumboNode*) - Cannot construct a GQNode around a nullptr."); }		
 		#endif			
 	}	
 
@@ -176,11 +176,11 @@ namespace gq
 			break;
 
 			default:
-				// XXX TODO - I don't like the idea of returning zero since it implies a valid position.
-				// Perhaps change the return values to be int32_t and return -1 for invalid nodes. However,
-				// matching shouldn't work against non element and non text nodes, so there theoretically
-				// could never be a situation where this code is reached. For now this is to shut up the
-				// compiler.
+				// XXX TODO - I don't like the idea of returning zero since it implies a valid
+				// position. Perhaps change the return values to be int32_t and return -1 for
+				// invalid nodes. However, matching shouldn't work against non element and non text
+				// nodes, so there theoretically could never be a situation where this code is
+				// reached. For now this is to shut up the compiler.
 				return 0;
 		}
 	}
@@ -202,11 +202,11 @@ namespace gq
 			break;
 
 			default:
-				// XXX TODO - I don't like the idea of returning zero since it implies a valid position.
-				// Perhaps change the return values to be int32_t and return -1 for invalid nodes. However,
-				// matching shouldn't work against non element and non text nodes, so there theoretically
-				// could never be a situation where this code is reached. For now this is to shut up the
-				// compiler.
+				// XXX TODO - I don't like the idea of returning zero since it implies a valid
+				// position. Perhaps change the return values to be int32_t and return -1 for
+				// invalid nodes. However, matching shouldn't work against non element and non text
+				// nodes, so there theoretically could never be a situation where this code is
+				// reached. For now this is to shut up the compiler.
 				return 0;
 		}
 	}
@@ -228,11 +228,11 @@ namespace gq
 			break;
 
 			default:
-				// XXX TODO - I don't like the idea of returning zero since it implies a valid position.
-				// Perhaps change the return values to be int32_t and return -1 for invalid nodes. However,
-				// matching shouldn't work against non element and non text nodes, so there theoretically
-				// could never be a situation where this code is reached. For now this is to shut up the
-				// compiler.
+				// XXX TODO - I don't like the idea of returning zero since it implies a valid
+				// position. Perhaps change the return values to be int32_t and return -1 for
+				// invalid nodes. However, matching shouldn't work against non element and non text
+				// nodes, so there theoretically could never be a situation where this code is
+				// reached. For now this is to shut up the compiler.
 				return 0;
 		}
 	}
@@ -254,11 +254,11 @@ namespace gq
 			break;
 
 			default:
-				// XXX TODO - I don't like the idea of returning zero since it implies a valid position.
-				// Perhaps change the return values to be int32_t and return -1 for invalid nodes. However,
-				// matching shouldn't work against non element and non text nodes, so there theoretically
-				// could never be a situation where this code is reached. For now this is to shut up the
-				// compiler.
+				// XXX TODO - I don't like the idea of returning zero since it implies a valid
+				// position. Perhaps change the return values to be int32_t and return -1 for
+				// invalid nodes. However, matching shouldn't work against non element and non text
+				// nodes, so there theoretically could never be a situation where this code is
+				// reached. For now this is to shut up the compiler.
 				return 0;
 		}
 	}
@@ -289,32 +289,6 @@ namespace gq
 
 	const GQSelection GQNode::Find(const SharedGQSelector& selector) const
 	{
-		// This NO_OP can be ignored. I've kept it for verifying that the indexed
-		// method returns the same results as full recursive searching. This full
-		// recurise searching is so slow, observing it might actually kill you.
-		// It's so bad that my mother told me she was disappointed in the man I've 
-		// become when I first wrote it. My father hasn't spoken to me since.
-		// Bjarne Stroustrup refunded me on my purchases of his books just so that
-		// he didn't have any association with me. I hear he wakes up in cold sweats
-		// gripped in fear, questioning his life over this code. When he says that
-		// "most people don't use C++ correctly", he's actually just referring to me.
-		// Don't use it. Ever.
-		#ifdef GQ_FIND_NO_OP
-		std::vector<UniqueGQNode> results;
-		selector->MatchAll(shared_from_this(), results);
-
-		#ifdef GQ_VERBOSE_DEBUG_NFO
-		for (auto& start = results.begin(); start != results.end(); ++start)
-		{
-			// Print out the matches.
-			std::cout << GQSerializer::Serialize(start->get()) << std::endl;
-		}
-		#endif
-
-		GQSelection selection(results);
-
-		return selection;
-		#else
 
 		#ifndef NDEBUG
 			#ifdef GQ_VERBOSE_DEBUG_NFO
@@ -326,8 +300,8 @@ namespace gq
 
 		const auto& traits = selector->GetMatchTraits();
 
-		// The collected map ensure that we don't store duplicate matches. Any time a
-		// match is made, it's pushed to the collected map.
+		// The collected map ensure that we don't store duplicate matches. Any time a match is made,
+		// it's pushed to the collected map.
 		FastAttributeMap collected;
 
 		for (auto& traitsIt = traits.begin(); traitsIt != traits.end(); ++traitsIt)
@@ -384,8 +358,8 @@ namespace gq
 
 				for (size_t i = 0; i < tSize; ++i)
 				{
-					// It's actually significantly faster to simply match then search for duplicates, rather than eliminate duplicates
-					// first and then attempt a match.
+					// It's actually significantly faster to simply match then search for
+					// duplicates, rather than eliminate duplicates first and then attempt a match.
 					auto* pNode = (*fromTrait)[i];
 
 					auto matchTest = selector->Match(pNode);
@@ -410,7 +384,6 @@ namespace gq
 		#endif
 
 		return GQSelection(matchResults);
-		#endif
 	}
 
 	void GQNode::Each(const std::string& selectorString, std::function<void(const GQNode* node)> func) const
@@ -426,8 +399,8 @@ namespace gq
 	{
 		const auto& traits = selector->GetMatchTraits();
 
-		// The collected map ensure that we don't store duplicate matches. Any time a
-		// match is made, it's pushed to the collected map.
+		// The collected map ensures that we don't store duplicate matches. Any time a match is
+		// made, it's pushed to the collected map.
 		FastAttributeMap collected;
 
 		for (auto& traitsIt = traits.begin(); traitsIt != traits.end(); ++traitsIt)
@@ -479,8 +452,8 @@ namespace gq
 
 				for (size_t i = 0; i < tSize; ++i)
 				{
-					// It's actually significantly faster to simply match then search for duplicates, rather than eliminate duplicates
-					// first and then attempt a match.
+					// It's actually significantly faster to simply match then search for
+					// duplicates, rather than eliminate duplicates first and then attempt a match.
 					auto* pNode = (*fromTrait)[i];
 
 					auto matchTest = selector->Match(pNode);
@@ -547,10 +520,10 @@ namespace gq
 	void GQNode::BuildAttributes()
 	{
 
-		// Create an attribute map specifically for the GQTreeMap object. This is separate
-		// from the unordered_map that we use for a local attribute map. The GQTreeMap::AttributeMap
-		// object is a multimap, as we split whitespace separated attribute values into duplicate
-		// key entries with different values.
+		// Create an attribute map specifically for the GQTreeMap object. This is separate from the
+		// unordered_map that we use for a local attribute map. The GQTreeMap::AttributeMap object
+		// is a multimap, as we split whitespace separated attribute values into duplicate key
+		// entries with different values.
 		GQTreeMap::AttributeMap treeAttribMap;
 
 		auto nodeTagName = GetTagName();
@@ -578,9 +551,8 @@ namespace gq
 				{
 					attribValue = boost::string_ref(attribute->original_value.data, attribute->original_value.length);
 				}
-
-				GQUtil::TrimEnclosingQuotes(attribName);
-				GQUtil::TrimEnclosingQuotes(attribValue);
+				
+				attribValue = GQUtil::TrimEnclosingQuotes(attribValue);
 
 				if (attribName.size() == 0)
 				{

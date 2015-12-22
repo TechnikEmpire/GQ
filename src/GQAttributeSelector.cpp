@@ -52,7 +52,7 @@ namespace gq
 			#endif
 		#endif
 
-		// Add attribute key as a match trait for EXISTS, specifying any ("*") as the value.
+		// Add attribute key as a match trait for EXISTS, specifying any ("*") as the value. 
 		AddMatchTrait(m_attributeNameRef, GQSpecialTraits::GetAnyValue());
 	}
 
@@ -274,8 +274,8 @@ namespace gq
 			{
 				auto attributeValue = node->GetAttributeValue(m_attributeNameRef);
 
-				// If the attribute value to check is smaller than our value, then we can just return
-				// false right away.
+				// If the attribute value to check is smaller than our value, then we can just
+				// return false right away.
 				if (attributeValue.size() == 0 || attributeValue.size() < m_attributeValueRef.size())
 				{
 					return false;
@@ -283,11 +283,11 @@ namespace gq
 
 				if (attributeValue.size() == m_attributeValueRef.size())
 				{
-					// If the two values match exactly, this is considered a match with this selector
-					// type. If they do not match, the only other possible type of match this operator
-					// can make is the match the selector value PLUS whitespace, in which case this isn't
-					// possible (being the two strings equal length), so letting boost::iequals return
-					// false or true is the right answer either way.
+					// If the two values match exactly, this is considered a match with this
+					// selector type. If they do not match, the only other possible type of match
+					// this operator can make is the match the selector value PLUS whitespace, in
+					// which case this isn't possible (being the two strings equal length), so
+					// letting boost::iequals return false or true is the right answer either way.
 
 					auto oneSize = attributeValue.size();
 
@@ -371,8 +371,8 @@ namespace gq
 			{
 				auto attributeValue = node->GetAttributeValue(m_attributeNameRef);
 
-				// If the attribute value to check is smaller than our value, then we can just return
-				// false right away.
+				// If the attribute value to check is smaller than our value, then we can just
+				// return false right away.
 				if (attributeValue.size() == 0 || attributeValue.size() < m_attributeValueRef.size())
 				{
 					return false;
@@ -380,11 +380,11 @@ namespace gq
 
 				if (attributeValue.size() == m_attributeValueRef.size())
 				{
-					// If the two values match exactly, this is considered a match with this selector
-					// type. If they do not match, the only other possible type of match this operator
-					// can make is the match the selector value PLUS a dash, in which case this isn't
-					// possible (being the two strings equal length), so letting boost::iequals return
-					// false or true is the right answer either way.
+					// If the two values match exactly, this is considered a match with this
+					// selector type. If they do not match, the only other possible type of match
+					// this operator can make is the match the selector value PLUS a dash, in which
+					// case this isn't possible (being the two strings equal length), so letting
+					// boost::iequals return false or true is the right answer either way.
 
 					auto oneSize = attributeValue.size();
 
@@ -412,9 +412,10 @@ namespace gq
 					return false;
 				}
 
-				// If we didn't find an exact match, then the only hope of a match now is finding the selector
-				// value at the start of the attribute value, immediately followed by a hyphen. Therefore, if
-				// we can't find a hypen, then we simply return false right away.
+				// If we didn't find an exact match, then the only hope of a match now is finding
+				// the selector value at the start of the attribute value, immediately followed by a
+				// hyphen. Therefore, if we can't find a hypen, then we simply return false right
+				// away.
 				auto anyHyphen = attributeValue.find('-');
 
 				if (anyHyphen == boost::string_ref::npos)
