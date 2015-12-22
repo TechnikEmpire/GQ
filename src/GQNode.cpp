@@ -34,7 +34,6 @@
 #include "GQTreeMap.hpp"
 #include "GQSpecialTraits.hpp"
 #include "GQSerializer.hpp"
-#include <typeinfo>
 
 namespace gq
 {
@@ -297,7 +296,7 @@ namespace gq
 		#endif
 
 		std::vector<const GQNode*> matchResults;
-
+		
 		const auto& traits = selector->GetMatchTraits();
 
 		// The collected map ensure that we don't store duplicate matches. Any time a match is made,
@@ -360,7 +359,7 @@ namespace gq
 				{
 					// It's actually significantly faster to simply match then search for
 					// duplicates, rather than eliminate duplicates first and then attempt a match.
-					auto* pNode = (*fromTrait)[i];
+					const GQNode* pNode = (*fromTrait)[i];
 
 					auto matchTest = selector->Match(pNode);
 					if (matchTest)
@@ -370,7 +369,7 @@ namespace gq
 						if (collected.find(matchedNode->GetUniqueId()) == collected.end())
 						{							
 							collected.insert({ matchedNode->GetUniqueId(), matchedNode->GetUniqueId() });
-							matchResults.emplace_back(std::move(matchedNode));
+							matchResults.push_back(matchedNode);
 						}
 					}
 				}

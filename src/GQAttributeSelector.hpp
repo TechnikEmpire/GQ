@@ -39,7 +39,7 @@ namespace gq
 	/// The GQAttributeSelector, as the name implies, is designed for matching against nodes using
 	/// attribute selectors.
 	/// </summary>
-	class GQAttributeSelector : public GQSelector
+	class GQAttributeSelector final : public GQSelector
 	{
 
 	public:
@@ -134,7 +134,7 @@ namespace gq
 		/// True if this selector was successfully matched against the supplied node, false
 		/// otherwise.
 		/// </returns>
-		virtual const GQMatchResult Match(const GQNode* node) const;
+		virtual const GQMatchResult Match(const GQNode* node) const;		
 
 	private:
 

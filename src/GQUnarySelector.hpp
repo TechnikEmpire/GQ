@@ -38,7 +38,7 @@ namespace gq
 	/// The UnarySelector class makes selections possible such as negative matching (:not), child
 	/// and descendant matching.
 	/// </summary>
-	class GQUnarySelector : public GQSelector
+	class GQUnarySelector final : public GQSelector
 	{
 
 	public:

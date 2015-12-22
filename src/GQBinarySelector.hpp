@@ -37,7 +37,7 @@ namespace gq
 	/// ways, depending on the specified operator. This selector makes types of selection such as
 	/// descendant and sibling matching possible.
 	/// </summary>
-	class GQBinarySelector : public GQSelector
+	class GQBinarySelector final : public GQSelector
 	{
 
 	public:

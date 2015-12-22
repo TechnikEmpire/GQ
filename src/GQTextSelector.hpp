@@ -55,7 +55,7 @@ namespace gq
 	/// The grammar is specified to be ECMAScript which is supposed to be implemented as defined in
 	/// ECMA-262 section [28.13].
 	/// </summary>
-	class GQTextSelector : public GQSelector
+	class GQTextSelector final : public GQSelector
 	{
 
 	public:
