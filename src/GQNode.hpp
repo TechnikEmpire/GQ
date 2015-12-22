@@ -45,47 +45,27 @@ namespace gq
 	/// <summary>
 	/// The GQNode class serves as a wrapper around a GumboNode raw pointer. It is not possible to
 	/// construct a GQNode around a nullptr GumboNode* object, so if the GQNode is valid, then its
-	/// internal GumboNode* is guaranteed to be valid.
-	/// <para>&#160;</para>
-	/// Note that since GumboNode objects are owned exclusively by the GumboOutput root object, this
-	/// wrapper does not manage the lifetime of the raw pointer it matches. Users still need to
-	/// take care that manually generated GumboOutput is destroyed correctly.
+	/// internal GumboNode* is guaranteed to be valid. Furthermore, it's not possible for a GQNode
+	/// to be created, except by the internals of this library, which again verifies the validity of
+	/// underlying structures.
+	///  <para>&#160;</para>
+	/// There are a lot of raw pointers being provided, but these are managed in a tightly
+	/// controlled fashion. If the user is provided access to a raw pointer, it should be assumed
+	/// that the pointer is valid so long as the original GQDocument unique_ptr is valid. The user
+	/// should also not assume responsibility for the lifetime of a raw pointer received, only
+	/// objects returned in smart pointer containers are given over to the user to manage.
 	/// </summary>
-	class GQNode : public std::enable_shared_from_this<GQNode>
-	{
-
-		// If MSVC, must friend this nonsense so that make_shared can access the private constructor
-		// of our class. If not, just friend the template function.
-		#ifdef _MSC_VER
-		friend std::_Ref_count_obj<GQNode>;
-		#else
-		friend std::shared_ptr<GQNode> std::make_shared<>(const GumboNode*);
-		#endif
-		
+	class GQNode
+	{		
 
 		/// <summary>
 		/// In the original library, the CNode (GQNode now) was completely separate from everything
 		/// else, but local instances were generated and copied all over the place whenever the user
 		/// needed to search against a non-document node, or access a specific child. Also, these
 		/// objects implemented a custom-rolled type of shared pointer. I didn't like this, so I
-		/// opted to change this, making them proper shared_ptrs.
+		/// opted to change this, managing them in standard smart pointers.
 		/// <para>&#160;</para>
-		/// This then forced the design all the way back down the library into complementary
-		/// selection code which stored matched nodes in collections, vectors etc. In order to make
-		/// the new design consistent, these all had to be changed to hold shared_ptrs of GQNode,
-		/// not raw GumboNode pointers. Also, efforts have been taken to keep raw Gumbo structures
-		/// away from the end user through this library, on account of the shared nature of the core
-		/// components of this library. However, other portions of the library need to access some
-		/// of these objects (such as the private GumboNode* held in GQNode).
-		/// <para>&#160;</para>
-		/// As such, GQNode has a few friends. I'm not entirely sure how I feel about this. At the
-		/// end of the day, the goal of keeping the raw Gumbo objects that these classes manage away
-		/// from the end user is reached, everywhere that these friends access this private member
-		/// is also kept away from the user and const is strictly enforced. There may be a better
-		/// way but IMO the most important goal of keeping the raw underlying structures away from
-		/// the user is most important. If users could access these, they could seriously break the
-		/// functionality of this library and cause lots of issues (doubly managing a single Gumbo
-		/// structure from multiple shared_ptr, as one example).
+		/// As a result of this and some other changes, GQNode has a few friends.
 		/// </summary>
 		friend class GQUtil;
 		friend class GQSerializer;
@@ -102,9 +82,8 @@ namespace gq
 		/// Gets the parent of this node. May be nullptr.
 		/// </summary>
 		/// <returns>
-		/// A shared GQNode that wraps the parent of this node, if a valid parent exists. If this
-		/// node does not have a valid parent, a node is returned but its ::IsValid() member will
-		/// report false.
+		/// A pointer to the parent GQNode, if a valid parent exists. If this
+		/// node does not have a valid parent, return is nullptr.
 		/// </returns>
 		GQNode* GetParent() const;
 
@@ -117,7 +96,7 @@ namespace gq
 		/// <returns>
 		/// The index within the parent.
 		/// </returns>
-		const size_t& GetIndexWithinParent() const;
+		const size_t GetIndexWithinParent() const;
 
 		/// <summary>
 		/// Gets the number of children this node has.
@@ -137,9 +116,9 @@ namespace gq
 		/// The index of the child to retrieve. 
 		/// </param>
 		/// <returns>
-		/// A valid and non-nullptr SharedGQNode representing the child at the supplied index. 
+		/// A valid and non-nullptr UniqueGQNode representing the child at the supplied index. 
 		/// </returns>
-		std::shared_ptr<GQNode> GetChildAt(const size_t index) const;
+		const GQNode* GetChildAt(const size_t index) const;
 
 		/// <summary>
 		/// Checks if the attribute by the name given exists for this node. Does not support prefix
@@ -363,19 +342,18 @@ namespace gq
 	protected:
 
 		/// <summary>
-		/// Interface to create a SharedGQNode instance. Since GQNode inherits from
-		/// enabled_shared_from_this and calls shared_from_this internally for some matching
-		/// methods, its necessary to enforce that an object of this type cannot exist but already
-		/// wrapped in a shared_ptr.
+		/// Interface to create a UniqueGQNode instance. In order to ensure the validity of
+		/// structures and to maintain a proper, clear ownership model, new instances of GQNode can
+		/// only be created through this interface by the library internals.
 		/// </summary>
 		/// <param name="node">
 		/// The GumboNode* object that the GQNode is to wrap. This must be a valid pointer, or this
 		/// method will throw.
 		/// </param>
 		/// <returns>
-		/// A SharedGQNode instance. 
+		/// A UniqueGQNode instance. 
 		/// </returns>
-		static std::shared_ptr<GQNode> Create(const GumboNode* node, GQTreeMap* map, const std::string& parentId, const size_t indexWithinParent = 0, GQNode* parent = nullptr);
+		static std::unique_ptr<GQNode> Create(const GumboNode* node, GQTreeMap* map, const std::string& parentId, const size_t indexWithinParent = 0, GQNode* parent = nullptr);
 
 		/// <summary>
 		/// Empty constructor to satisfy GQDocument.
@@ -431,7 +409,7 @@ namespace gq
 		/// <summary>
 		/// Container holding all valid html elements that are children of this html element.
 		/// </summary>
-		std::vector < std::shared_ptr<GQNode> > m_children;
+		std::vector < std::unique_ptr<GQNode> > m_children;
 
 		/// <summary>
 		/// This is about 25 percent faster than using an unordered_map or map. Too great of a performance
@@ -478,13 +456,11 @@ namespace gq
 								(str.first[oneSize - 2] == value.first[oneSize - 2]))
 							{
 								return std::memcmp(str.first.begin(), value.second.begin(), oneSize) == 0;
-								//return str.first.compare(value.second) == 0;
 							}
 						}
 						else
 						{
 							return std::memcmp(str.first.begin(), value.second.begin(), oneSize) == 0;
-							//return str.first.compare(value.second) == 0;
 						}
 
 						return false;
@@ -547,17 +523,6 @@ namespace gq
 		FastAttributeMap m_attributes;
 
 		/// <summary>
-		/// Since we have all of this crazyness with SharedGQNode sprinkled everywhere, and due to
-		/// the nature of the GQTreeMap and how we must work with it, an Init() member is required
-		/// which must be called post-object construction. The GQTreeMap holds shared_ptr's to nodes
-		/// for quick lookup based on attributes. When a GQNode is constructed, it needs to build
-		/// its attributes and give it to the GQTreeMap. We simply cannot called shared_from_this()
-		/// within the constructor, because the shared_ptr is not yet fully constructed at that
-		/// point. As such, we need this.
-		/// </summary>
-		virtual void Init();
-
-		/// <summary>
 		/// Populate the m_children element. Since this is invoked in the constructor, this will
 		/// recursively build out all descendants of this node in the same way. We must ensure
 		/// that nodes are only created from the GQDocument, so that duplicate trees like this
@@ -573,25 +538,27 @@ namespace gq
 		void BuildAttributes();
 
 		/// <summary>
-		/// Object composition is getting pretty ugly at this point. GQDocument holds the single
-		/// GQTreeMap in a unique_ptr as a private member. GQNode can't hold a shared_ptr to such an
-		/// object because the GQTreeMap holds shared_ptr's to nodes that use it. This would create
-		/// a circular reference, leading to memory leaks. Same reason that m_parent must be a raw
-		/// pointer. GQDocument is also a subclass of of GQNode, so we can't just hold a pointer to
-		/// the document root and access it that way. As such, when GQDocument creates all of the
-		/// GQNode objects for the document, it supplies the GQTreeMap* raw pointer, so we'll save
-		/// the pointer to the tree map in a private member. Nodes need to reference the map when
-		/// performing searches.
+		/// Object composition is getting a little ugly at this point. GQDocument holds the single
+		/// GQTreeMap in a unique_ptr as a private member, but GQDocument was changed to inherit
+		/// from GQNode. As such, when GQDocument creates all of the GQNode objects for the
+		/// document, it supplies the GQTreeMap* raw pointer, so we'll save the pointer to the tree
+		/// map in a private member. Nodes need to reference the map when performing searches. This
+		/// is a little ugly because GQDocument is holding two pointers to the same thing, one
+		/// itself and one inherited. Oh well.
 		/// <para>&#160;</para>
-		/// As ugly (confusing) as this is getting internally, the user still only needs to keep
-		/// GQDocument alive, which is a very simple and reasonable requirement (to keep the
-		/// document alive for so long as you're using it). In the event that the user honors this
-		/// contract, m_rootTreeMap should never end up being null, so this should be reliable.
+		/// I'm not very fond of this, but the the user still only needs to keep GQDocument alive,
+		/// which is a very simple and reasonable requirement (to keep the document alive for so
+		/// long as you're using it).
 		/// </summary>
 		GQTreeMap* m_rootTreeMap = nullptr;
 
+	private:
+
+			GQNode(const GQNode&) = delete;
+			GQNode& operator=(const GQNode&) = delete;
+
 	};
 
-	typedef std::shared_ptr<GQNode> SharedGQNode;
+	typedef std::unique_ptr<GQNode> UniqueGQNode;
 
 } /* namespace gq */

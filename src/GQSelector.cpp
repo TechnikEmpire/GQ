@@ -34,7 +34,7 @@
 
 namespace gq
 {
-	GQSelector::GQMatchResult::GQMatchResult(const GQNode* result) :m_result(const_cast<GQNode*>(result))
+	GQSelector::GQMatchResult::GQMatchResult(const GQNode* result) :m_result(result)
 	{
 
 	}
@@ -44,15 +44,9 @@ namespace gq
 
 	}
 
-	const std::shared_ptr<GQNode> GQSelector::GQMatchResult::GetResult() const
-	{
-		// Since it's not possible to construct a GQNode except through an interface which
-		// guarantees that the node is created via make_shared, and GQDocument and its
-		// GQTreeMap member holds references too all such constructed nodes, it should be
-		// safe to hold a raw pointer here and call shared_from_this() if and when the user
-		// actually wants a copy of the shared node.
-		if (m_result == nullptr) { return std::shared_ptr<GQNode>(nullptr); }
-		return m_result->shared_from_this();
+	const GQNode* GQSelector::GQMatchResult::GetResult() const
+	{		
+		return m_result;
 	}
 
 	GQSelector::GQMatchResult::operator bool() const
@@ -268,7 +262,7 @@ namespace gq
 
 				for (size_t j = 0; j < parent->GetNumChildren(); j++)
 				{					
-					auto child = parent->GetChildAt(j);
+					auto* child = parent->GetChildAt(j);
 					if ((m_matchType && node->GetTag() != child->GetTag()))
 					{
 						// If m_matchType is true, we're not counting any children that are not the same
@@ -291,7 +285,7 @@ namespace gq
 
 					// Once the child is found, we store its "true" index, aka the index after we've
 					// ignored everything we don't want to count as real children for the sake of maths.
-					if (child.get() == node)
+					if (child == node)
 					{						
 						actualIndex = validChildCount;
 
@@ -362,7 +356,7 @@ namespace gq
 		return false;
 	}
 
-	void GQSelector::MatchAll(const std::shared_ptr<GQNode>& node, std::vector< std::shared_ptr<GQNode> >& results) const
+	void GQSelector::MatchAll(const GQNode* node, std::vector< const GQNode* >& results) const
 	{
 		#ifndef NDEBUG
 		assert(node != nullptr && u8"In GQSelector::MatchAll(const GumboNode*, std::vector< std::shared_ptr<GQNode> >&) - Nullptr node supplied for matching.");
@@ -373,12 +367,12 @@ namespace gq
 		MatchAllInto(node, results);
 	}
 
-	void GQSelector::Filter(std::vector< std::shared_ptr<GQNode> >& nodes) const
+	void GQSelector::Filter(std::vector< const GQNode* >& nodes) const
 	{
 		nodes.erase(std::remove_if(nodes.begin(), nodes.end(), 
-			[this](const std::shared_ptr<GQNode>& sharedNode)
+			[this](const GQNode* sharedNode)
 			{
-				return !Match(sharedNode.get());
+				return !Match(sharedNode);
 			}
 		), nodes.end());
 	}
@@ -420,7 +414,7 @@ namespace gq
 		m_tagTypeToMatch = GUMBO_TAG_UNKNOWN;
 	}
 
-	void GQSelector::MatchAllInto(const std::shared_ptr<GQNode>& node, std::vector< std::shared_ptr<GQNode> >& nodes) const
+	void GQSelector::MatchAllInto(const GQNode* node, std::vector< const GQNode* >& nodes) const
 	{
 		#ifndef NDEBUG
 		assert(node != nullptr && u8"In GQSelector::MatchAllInto(const GumboNode*, std::vector<const GumboNode*>&) - Nullptr node supplied for matching.");
@@ -428,7 +422,7 @@ namespace gq
 		if (node == nullptr) { throw std::runtime_error(u8"In GQSelector::MatchAllInto(const GumboNode*, std::vector<const GumboNode*>&) - Nullptr node supplied for matching."); }
 		#endif
 
-		if (Match(node.get()))
+		if (Match(node))
 		{
 			nodes.push_back(node);
 		}

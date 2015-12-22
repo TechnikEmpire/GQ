@@ -36,13 +36,13 @@ namespace gq
 
 	/// <summary>
 	/// The purpose of the GQNodeMutationCollection class is to provide a safe way for users to
-	/// modify nodes during the serialization process. This collection does not actually hold copies
-	/// of the shared_ptrs supplied to it, and as such should not be used to preserve lifetime of
-	/// shared pointers to nodes. Individual node lifetime management isn't something the user has
-	/// to concern themselves with anyway, simply keeping GQDocument alive is the only such
-	/// requirement. This collection also does not allow for removal. This collection internally
-	/// uses an unordered_set, and as such sort of has built in duplicate filtering, but that's not
-	/// the intended use and this behavior should not be relied upon.
+	/// modify nodes during the serialization process. Users should not be concerned about validity
+	/// of pointers in the collection or the lifetime of the objects in the collection. Once again,
+	/// the user only must simply keep GQDocument alive and any naked pointers received by the user
+	/// during its lifetime should be safe and valid, as they are managed internally this way. This
+	/// collection also does not allow for removal. This collection internally uses an
+	/// unordered_set, and as such sort of has built in duplicate filtering, but that's not the
+	/// intended use and this behavior should not be relied upon.
 	/// <para>&#160;</para>
 	/// Gumbo Parser does not provide any way to mutate a parsed document. The first thought to
 	/// solve this would be to provide lots of methods to fake the appearance of mutability, such as

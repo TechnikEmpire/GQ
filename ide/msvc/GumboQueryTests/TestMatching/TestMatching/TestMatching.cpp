@@ -155,8 +155,8 @@ int main()
 					++testsFailed;
 					for (size_t ri = 0; ri < result.GetNodeCount(); ++ri)
 					{
-						auto node = result.GetNodeAt(ri);
-						std::cout << gq::GQSerializer::Serialize(node.get()) << std::endl;
+						auto* node = result.GetNodeAt(ri);
+						std::cout << gq::GQSerializer::Serialize(node) << std::endl;
 					}
 					continue;
 				}
@@ -171,14 +171,14 @@ int main()
 						bool foundInvalidData = false;
 						for (size_t ri = 0; ri < result.GetNodeCount(); ++ri)
 						{
-							auto node = result.GetNodeAt(ri);
+							auto* node = result.GetNodeAt(ri);
 							if (node->GetOwnText().compare("FAIL") == 0)
 							{								
 								foundInvalidData = true;
 								break;
 							}
 
-							std::cout << gq::GQSerializer::Serialize(node.get()) << std::endl;
+							std::cout << gq::GQSerializer::Serialize(node) << std::endl;
 						}
 
 						if (foundInvalidData)

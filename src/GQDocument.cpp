@@ -35,11 +35,11 @@
 
 namespace gq
 {
-	std::shared_ptr<GQDocument> GQDocument::Create(GumboOutput* gumboOutput)
+	std::unique_ptr<GQDocument> GQDocument::Create(GumboOutput* gumboOutput)
 	{
 		if (gumboOutput != nullptr)
 		{
-			auto doc = std::make_shared<GQDocument>(gumboOutput);
+			auto doc = std::unique_ptr<GQDocument>{ new GQDocument(gumboOutput) };
 			
 			// Must call init to build out and index shared_ptr children.
 			doc->Init();
@@ -48,7 +48,7 @@ namespace gq
 		}
 		else
 		{
-			return std::make_shared<GQDocument>();
+			return std::unique_ptr<GQDocument>{ new GQDocument() };
 		}
 	}
 
@@ -117,7 +117,7 @@ namespace gq
 		if (m_treeMap == nullptr) { throw std::runtime_error(u8"In GQDocument::Parse(GumboOutput*) - Failed to allocate m_treeMap. GQTreeMap* member m_treeMap is nullptr."); }
 		#endif	
 
-		// Must call init to build out and index shared_ptr children.
+		// Must call init to build out and index and children children.
 		Init();
 	}
 

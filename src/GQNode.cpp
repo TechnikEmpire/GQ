@@ -39,20 +39,21 @@
 namespace gq
 {
 
-	std::shared_ptr<GQNode> GQNode::Create(const GumboNode* node, GQTreeMap* map, const std::string& parentId, const size_t indexWithinParent, GQNode* parent)
+	std::unique_ptr<GQNode> GQNode::Create(const GumboNode* node, GQTreeMap* map, const std::string& parentId, const size_t indexWithinParent, GQNode* parent)
 	{
 		std::string newNodeId = parentId + std::string(u8"A") + std::to_string(indexWithinParent);
-		auto newNode = std::make_shared<GQNode>(node, newNodeId, indexWithinParent, parent);
+		auto newNode = std::unique_ptr<GQNode>{ new GQNode(node, newNodeId, indexWithinParent, parent) };
 
 		#ifndef NDEBUG		
-		assert(map != nullptr && u8"In GQNode::Create(const GumboNode*, GQTreeMap*, const std::string&, const size_t, GQNode*) - Cannot initialize a GQNode without a valid GQTreeMap* pointer. GQTreeMap* is nullptr.");
+			assert(map != nullptr && u8"In GQNode::Create(const GumboNode*, GQTreeMap*, const std::string&, const size_t, GQNode*) - Cannot initialize a GQNode without a valid GQTreeMap* pointer. GQTreeMap* is nullptr.");
 		#else		
-		if (map == nullptr) { throw std::runtime_error(u8"In GQNode::Create(const GumboNode*, GQTreeMap*, const std::string&, const size_t, GQNode*) - Cannot initialize a GQNode without a valid GQTreeMap* pointer. GQTreeMap* is nullptr."); }
+			if (map == nullptr) { throw std::runtime_error(u8"In GQNode::Create(const GumboNode*, GQTreeMap*, const std::string&, const size_t, GQNode*) - Cannot initialize a GQNode without a valid GQTreeMap* pointer. GQTreeMap* is nullptr."); }
 		#endif	
 
 		newNode->m_rootTreeMap = map;
 
-		newNode->Init();
+		newNode->BuildAttributes();
+		newNode->BuildChildren();
 
 		return newNode;
 	}
@@ -75,12 +76,6 @@ namespace gq
 		#endif			
 	}	
 
-	void GQNode::Init()
-	{
-		BuildAttributes();
-		BuildChildren();
-	}
-
 	GQNode::~GQNode()
 	{
 
@@ -91,7 +86,7 @@ namespace gq
 		return m_parent;
 	}
 
-	const size_t& GQNode::GetIndexWithinParent() const
+	const size_t GQNode::GetIndexWithinParent() const
 	{
 		return m_indexWithinParent;
 	}
@@ -101,14 +96,14 @@ namespace gq
 		return m_children.size();
 	}
 
-	SharedGQNode GQNode::GetChildAt(const size_t index) const
+	const GQNode* GQNode::GetChildAt(const size_t index) const
 	{
 		if (index >= m_children.size())
 		{
 			throw std::runtime_error(u8"In GQNode::GetChildAt(const size_t) - Supplied index is out of bounds.");
 		}
 
-		return m_children[index];
+		return m_children[index].get();
 	}
 
 	const bool GQNode::HasAttribute(const std::string& attributeName) const
@@ -305,7 +300,7 @@ namespace gq
 		// "most people don't use C++ correctly", he's actually just referring to me.
 		// Don't use it. Ever.
 		#ifdef GQ_FIND_NO_OP
-		std::vector<SharedGQNode> results;
+		std::vector<UniqueGQNode> results;
 		selector->MatchAll(shared_from_this(), results);
 
 		#ifdef GQ_VERBOSE_DEBUG_NFO
@@ -327,7 +322,7 @@ namespace gq
 			#endif
 		#endif
 
-		std::vector<SharedGQNode> matchResults;
+		std::vector<const GQNode*> matchResults;
 
 		const auto& traits = selector->GetMatchTraits();
 
@@ -354,7 +349,7 @@ namespace gq
 				continue;
 			}
 
-			const std::vector< std::shared_ptr<GQNode> >* fromTrait = nullptr;
+			const std::vector< const GQNode* >* fromTrait = nullptr;
 
 			if (traitsIt->second.size() == 0)
 			{
@@ -391,12 +386,12 @@ namespace gq
 				{
 					// It's actually significantly faster to simply match then search for duplicates, rather than eliminate duplicates
 					// first and then attempt a match.
-					auto& pNode = (*fromTrait)[i];
+					auto* pNode = (*fromTrait)[i];
 
-					auto matchTest = selector->Match(pNode.get());
+					auto matchTest = selector->Match(pNode);
 					if (matchTest)
 					{
-						auto matchedNode = matchTest.GetResult();
+						auto* matchedNode = matchTest.GetResult();
 
 						if (collected.find(matchedNode->GetUniqueId()) == collected.end())
 						{							
@@ -454,7 +449,7 @@ namespace gq
 				continue;
 			}
 
-			const std::vector< std::shared_ptr<GQNode> >* fromTrait = nullptr;
+			const std::vector< const GQNode* >* fromTrait = nullptr;
 
 			if (traitsIt->second.size() == 0)
 			{
@@ -486,9 +481,9 @@ namespace gq
 				{
 					// It's actually significantly faster to simply match then search for duplicates, rather than eliminate duplicates
 					// first and then attempt a match.
-					auto& pNode = (*fromTrait)[i];
+					auto* pNode = (*fromTrait)[i];
 
-					auto matchTest = selector->Match(pNode.get());
+					auto matchTest = selector->Match(pNode);
 					if (matchTest)
 					{
 						auto matchedNode = matchTest.GetResult();
@@ -496,7 +491,7 @@ namespace gq
 						if (collected.find(matchedNode->GetUniqueId()) == collected.end())
 						{
 							collected.insert({ matchedNode->GetUniqueId(), matchedNode->GetUniqueId() });
-							func(matchedNode.get());
+							func(matchedNode);
 						}
 					}
 				}
@@ -543,7 +538,7 @@ namespace gq
 			auto sChild = GQNode::Create(child, m_rootTreeMap, m_nodeUniqueId, trueIndex, this);
 			if (sChild != nullptr)
 			{
-				m_children.push_back(sChild);
+				m_children.emplace_back(std::move(sChild));
 				++trueIndex;
 			}			
 		}
@@ -624,14 +619,14 @@ namespace gq
 
 		#ifndef GQ_FIND_NO_OP
 		// Add the attributes to the tree map
-		m_rootTreeMap->AddNodeToMap(GetUniqueId(), shared_from_this(), treeAttribMap);
+		m_rootTreeMap->AddNodeToMap(GetUniqueId(), this, treeAttribMap);
 
 		// Now we need to recursively append upwards. 
 		for (GQNode* parent = GetParent(); parent != nullptr; parent = parent->GetParent())
 		{
 			auto parentScopeId = parent->GetUniqueId();
 
-			m_rootTreeMap->AddNodeToMap(parentScopeId, shared_from_this(), treeAttribMap);
+			m_rootTreeMap->AddNodeToMap(parentScopeId, this, treeAttribMap);
 		}
 		#endif
 	}

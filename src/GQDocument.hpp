@@ -47,15 +47,7 @@ namespace gq
 
 	public:		
 
-		// If MSVC, must friend this nonsense so that make_shared can access the private constructor
-		// of our class. If not, just friend the template function.
-		#ifdef _MSC_VER
-		friend std::_Ref_count_obj<GQDocument>;
-		#else
-		friend std::shared_ptr<GQNode> std::make_shared<>(const GumboNode*);
-		#endif
-
-		static std::shared_ptr<GQDocument> Create(GumboOutput* gumboOutput = nullptr);
+		static std::unique_ptr<GQDocument> Create(GumboOutput* gumboOutput = nullptr);
 
 		/// <summary>
 		/// Default destructor.
@@ -70,16 +62,9 @@ namespace gq
 		/// <param name="source">
 		/// A UTF-8 encoded string of a valid HTML. 
 		/// </param>
-		void Parse(const std::string& source);
+		void Parse(const std::string& source);		
 
-	protected:
-
-		/// <summary>
-		/// Same concept as GQNode::Init(), which this overrides.
-		/// </summary>
-		virtual void Init();
-
-	private:
+	private:		
 
 		/// <summary>
 		/// Constructs an empty GQDocument object.
@@ -106,6 +91,11 @@ namespace gq
 		/// The map for the entire document.
 		/// </summary>
 		std::unique_ptr<GQTreeMap> m_treeMap = nullptr;
+
+		/// <summary>
+		/// Same concept as GQNode::Init(), which this overrides.
+		/// </summary>
+		void Init();
 
 	};
 

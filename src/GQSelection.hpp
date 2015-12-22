@@ -48,13 +48,13 @@ namespace gq
 	public:
 
 		/// <summary>
-		/// Builds a new GQSelection object from a single, valid SharedGQNode. The supplied shared
+		/// Builds a new GQSelection object from a single, valid UniqueGQNode. The supplied shared
 		/// pointer cannot be nullptr and this constructor will throw if it is.
 		/// </summary>
 		/// <param name="node">
-		/// The valid SharedGQNode to build the selection from. 
+		/// The valid UniqueGQNode to build the selection from. 
 		/// </param>
-		GQSelection(const SharedGQNode node);
+		GQSelection(const GQNode* node);
 
 		/// <summary>
 		/// Builds a new GQSelection object from a copy of a collection of nodes.
@@ -62,7 +62,7 @@ namespace gq
 		/// <param name="nodes">
 		/// Existing nodes that make up the selection.
 		/// </param>
-		GQSelection(std::vector<SharedGQNode>& nodes);
+		GQSelection(std::vector<const GQNode*>& nodes);
 
 		/// <summary>
 		/// Default destructor.
@@ -91,14 +91,14 @@ namespace gq
 		/// <returns>
 		/// A copy of the node found at the supplied index.
 		/// </returns>
-		SharedGQNode GetNodeAt(const size_t index) const;
+		const GQNode* GetNodeAt(const size_t index) const;
 
 	private:
 
 		/// <summary>
 		/// The collection of nodes in the selection.
 		/// </summary>
-		std::vector<SharedGQNode> m_nodes;
+		std::vector<const GQNode*> m_nodes;
 
 	};
 

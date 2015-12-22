@@ -147,7 +147,7 @@ namespace gq
 
 				auto rhsResult = m_rightHandSide->Match(node);
 
-				if (rhsResult && m_leftHandSide->Match(prevSibling.get()) == true)
+				if (rhsResult && m_leftHandSide->Match(prevSibling) == true)
 				{
 					// We return the right-most match.
 					return rhsResult;
@@ -255,7 +255,7 @@ namespace gq
 
 					auto sibling = parent->GetChildAt(i);
 
-					if (m_leftHandSide->Match(sibling.get()))
+					if (m_leftHandSide->Match(sibling))
 					{
 						return rhsResult;
 					}

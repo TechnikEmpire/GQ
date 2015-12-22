@@ -34,17 +34,17 @@
 namespace gq
 {
 
-	GQSelection::GQSelection(SharedGQNode node)
+	GQSelection::GQSelection(const GQNode* node)
 	{
 		if (node == nullptr)
 		{
-			throw std::runtime_error(u8"In GQSelection::GQSelection(SharedGQNode) - The SharedGQNode is nullptr.");
+			throw std::runtime_error(u8"In GQSelection::GQSelection(UniqueGQNode) - The UniqueGQNode is nullptr.");
 		}
 
-		m_nodes.push_back(std::move(node));
+		m_nodes.push_back(node);
 	}
 
-	GQSelection::GQSelection(std::vector<SharedGQNode>& nodes) :
+	GQSelection::GQSelection(std::vector<const GQNode*>& nodes) :
 		m_nodes(std::move(nodes))
 	{
 
@@ -60,7 +60,7 @@ namespace gq
 		return m_nodes.size();
 	}
 
-	SharedGQNode GQSelection::GetNodeAt(const size_t index) const
+	const GQNode* GQSelection::GetNodeAt(const size_t index) const
 	{
 		if (m_nodes.size() == 0 || index >= m_nodes.size())
 		{

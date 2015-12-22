@@ -20,9 +20,10 @@
 * THE SOFTWARE.
 */
 
+#include <stdexcept>
 #include "GQTreeMap.hpp"
 #include "GQNode.hpp"
-#include <stdexcept>
+#include "GQSpecialTraits.hpp"
 
 namespace gq
 {
@@ -37,12 +38,12 @@ namespace gq
 
 	}	
 
-	void GQTreeMap::AddNodeToMap(boost::string_ref scope, std::shared_ptr<GQNode> node, const AttributeMap& nodeAttributeMap)
+	void GQTreeMap::AddNodeToMap(boost::string_ref scope, const GQNode* node, const AttributeMap& nodeAttributeMap)
 	{
 		#ifndef NDEBUG
-		assert(scope.size() > 0 && u8"In QTreeMap::AddNodeToMap(boost::string_ref, std::shared_ptr<GQNode>, const AttributeMap&) - The supplied scope is empty. This error is impossible unless a user is directly and incorrectly calling this method, or if this class and its required mechanisms are fundamentally broken.");
+		assert(scope.size() > 0 && u8"In QTreeMap::AddNodeToMap(boost::string_ref, const GQNode*, const AttributeMap&) - The supplied scope is empty. This error is impossible unless a user is directly and incorrectly calling this method, or if this class and its required mechanisms are fundamentally broken.");
 		#else
-		if (scope.size() == 0) { throw new std::runtime_error(u8"In QTreeMap::AddNodeToMap(boost::string_ref, std::shared_ptr<GQNode>, const AttributeMap&) - The supplied scope is empty. This error is impossible unless a user is directly and incorrectly calling this method, or if this class and its required mechanisms are fundamentally broken."); }
+		if (scope.size() == 0) { throw new std::runtime_error(u8"In QTreeMap::AddNodeToMap(boost::string_ref, const GQNode*, const AttributeMap&) - The supplied scope is empty. This error is impossible unless a user is directly and incorrectly calling this method, or if this class and its required mechanisms are fundamentally broken."); }
 		#endif
 		
 		#ifndef NDEBUG
@@ -56,18 +57,6 @@ namespace gq
 			#endif
 		#endif
 
-		auto id = node->GetUniqueId();
-		if (id.size() == 1 && id.compare(u8"0") == 0)
-		{
-			// We don't keep the root node. If we do, we'll create a circular reference and we'll forever
-			// be branded as dumb dumbs. This is a current limitation imposed by the fack that weak_ptr sucks
-			// majorly, and forces use of ::lock(), which is abhorrently slow. It's so slow, that I'd be 
-			// ashamed of this library if I used it (I tried it). So our loss is that we can write selectors
-			// to capture the html tag. Big whoop.
-			// XXX TODO Look into a fix.
-			return;
-		}
-
 		auto& it = m_scopedAttributes.find(scope);
 
 		CollectedAttributesMap* col;
@@ -75,12 +64,12 @@ namespace gq
 		if (it == m_scopedAttributes.end())
 		{
 			// Insert a new attribute map for the given scope if it doesn't exists already.
-			auto& res = m_scopedAttributes.emplace(std::make_pair(scope, std::make_unique<CollectedAttributesMap>() ));			
-			col = res.first->second.get();
+			auto& res = m_scopedAttributes.emplace(std::make_pair(scope, CollectedAttributesMap{}));
+			col = &res.first->second;
 		}
 		else
 		{
-			col = it->second.get();
+			col = &it->second;
 		}		
 
 		for (auto& nodeAttrMapIt = nodeAttributeMap.begin(); nodeAttrMapIt != nodeAttributeMap.end(); ++nodeAttrMapIt)
@@ -95,16 +84,16 @@ namespace gq
 			{
 				// Add the node with "*" as the value key. This is useful for EXISTS lookups, prefix/suffix/list matching,
 				// etc. The node has the attribute being sought, that's all the user cares about.
-				auto newCont1 = std::make_unique<std::vector< SharedGQNode >>(std::initializer_list<SharedGQNode>({ node }));
-				auto newMap1 = std::make_unique<ValueToNodesMap>();
-				newMap1->emplace(std::make_pair(m_anyMatch, std::move(newCont1)));			
+				auto newCont1 = std::vector< const GQNode* >{ { node } };
+				auto newMap1 = ValueToNodesMap{};
+				newMap1.emplace(std::make_pair(GQSpecialTraits::GetAnyValue(), std::move(newCont1)));			
 				
 				if (nodeAttrMapIt->second.size() > 0)
 				{
-					auto newCont2 = std::make_unique<std::vector< SharedGQNode >>(std::initializer_list<SharedGQNode>({ node }));
+					auto newCont2 = std::vector< const GQNode* >{ { node } };
 
 					// If the attribute is more than EXISTS, and defines a value, push it here as well.
-					newMap1->emplace(std::make_pair(nodeAttrMapIt->second, std::move(newCont2)));
+					newMap1.emplace(std::make_pair(nodeAttrMapIt->second, std::move(newCont2)));
 				}	
 
 				col->emplace(std::make_pair(nodeAttrMapIt->first, std::move(newMap1)));
@@ -114,8 +103,8 @@ namespace gq
 				// There is already an entry for the attribute name, but that just means a map exists. Have to
 				// check if values exists and if so, append, if not, insert/create the key and vector collection.
 
-				auto& anyValueMatch = attr->second->find(m_anyMatch);
-				auto& exactValueMatch = attr->second->find(nodeAttrMapIt->second);
+				auto& anyValueMatch = attr->second.find(GQSpecialTraits::GetAnyValue());
+				auto& exactValueMatch = attr->second.find(nodeAttrMapIt->second);
 
 				// We need to check to make sure that the node doesn't already exist in the collection. This is because
 				// of the way that we split up space and hyphen delimited lists in attribute values. For example, when
@@ -133,25 +122,25 @@ namespace gq
 				// we stop doing that, we don't need to make any changes here. Just in GQNode::BuildAttributes(...).
 				//
 				// Update - no long splitting by "-" character, only whitespace in attributes.
-				if (anyValueMatch != attr->second->end())
+				if (anyValueMatch != attr->second.end())
 				{
-					if (std::find_if(anyValueMatch->second->begin(), anyValueMatch->second->end(),
-						[node](const SharedGQNode& elm)
+					if (std::find_if(anyValueMatch->second.begin(), anyValueMatch->second.end(),
+						[node](const GQNode* elm)
 					{
-						return elm.get() == node.get();
-					}) == anyValueMatch->second->end())
+						return elm == node;
+					}) == anyValueMatch->second.end())
 					{
-						anyValueMatch->second->push_back(node);
+						anyValueMatch->second.push_back(node);
 					}					
 				}
 				else
 				{
 					// No need to search for duplicates, since no entries exist.
-					auto cont = std::make_unique<std::vector< SharedGQNode >>(std::initializer_list<SharedGQNode>({ node }));
-					attr->second->emplace(std::make_pair(m_anyMatch, std::move(cont)));
+					auto cont = std::vector< const GQNode* >{ { node } };
+					attr->second.emplace(std::make_pair(GQSpecialTraits::GetAnyValue(), std::move(cont)));
 				}
 
-				if (exactValueMatch != attr->second->end())
+				if (exactValueMatch != attr->second.end())
 				{
 					// There should be no need to search for duplicates when indexing by exact
 					// attribute name and exact attribute value. There shouldn't be two attributes
@@ -160,24 +149,24 @@ namespace gq
 					// the tree is built from a document recursively in order and is controlled (hidden
 					// from the user), so long as there are no bugs with this, this itself should 
 					// not produce duplicates either.
-					exactValueMatch->second->push_back(node);
+					exactValueMatch->second.push_back(node);
 				}
 				else
 				{
 					// No need to search for duplicates, since no entries exist.
-					auto cont = std::make_unique<std::vector< SharedGQNode >>(std::initializer_list<SharedGQNode>({ node }));
-					attr->second->emplace(std::make_pair(nodeAttrMapIt->second, std::move(cont)));
+					auto cont = std::vector< const GQNode* >{ { node } };
+					attr->second.emplace(std::make_pair(nodeAttrMapIt->second, std::move(cont)));
 				}
 			}
 		}		
 	}
 
-	const std::vector< std::shared_ptr<GQNode> >* GQTreeMap::Get(boost::string_ref scope, boost::string_ref attribute) const
+	const std::vector< const GQNode* >* GQTreeMap::Get(boost::string_ref scope, boost::string_ref attribute) const
 	{
-		return Get(scope, attribute, m_anyMatch);
+		return Get(scope, attribute, GQSpecialTraits::GetAnyValue());
 	}
 
-	const std::vector< std::shared_ptr<GQNode> >* GQTreeMap::Get(boost::string_ref scope, boost::string_ref attribute, boost::string_ref attributeValue) const
+	const std::vector< const GQNode* >* GQTreeMap::Get(boost::string_ref scope, boost::string_ref attribute, boost::string_ref attributeValue) const
 	{
 		// First, jump the the correct scope to begin matching from.
 		auto& atScope = m_scopedAttributes.find(scope);
@@ -199,16 +188,16 @@ namespace gq
 		#endif
 
 		// Search for the attribute name at this scope		
-		auto& byAttrName = atScope->second->find(attribute);
-		if (byAttrName != atScope->second->end())
+		auto& byAttrName = atScope->second.find(attribute);
+		if (byAttrName != atScope->second.end())
 		{
 			// If we found matches to the attribute, search for the exact value
-			auto& byAttrValue = byAttrName->second->find(attributeValue);
+			auto& byAttrValue = byAttrName->second.find(attributeValue);
 						
-			if (byAttrValue != byAttrName->second->end())
+			if (byAttrValue != byAttrName->second.end())
 			{
 				// If we have matched both attribute and value, return the corresponding collection.
-				return byAttrValue->second.get();
+				return &byAttrValue->second;
 			}
 		}
 		

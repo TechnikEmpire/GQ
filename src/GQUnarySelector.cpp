@@ -107,7 +107,7 @@ namespace gq
 				{
 					auto child = node->GetChildAt(i);
 
-					auto childMatch = m_selector->Match(child.get());
+					auto childMatch = m_selector->Match(child);
 
 					if (childMatch)
 					{
@@ -133,13 +133,13 @@ namespace gq
 		{
 			auto child = node->GetChildAt(i);
 
-			auto childMatch = m_selector->Match(child.get());
+			auto childMatch = m_selector->Match(child);
 			if (childMatch)
 			{
 				return GQMatchResult(node);
 			}
 
-			childMatch = HasDescendantMatch(child.get());
+			childMatch = HasDescendantMatch(child);
 
 			if (childMatch)
 			{

@@ -123,7 +123,7 @@ namespace gq
 			/// The node matched by the most right hand side of a single or combined selector. Will
 			/// be nullptr if there was no successful match. Valid otherwise.
 			/// </returns>
-			const std::shared_ptr<GQNode> GetResult() const;			
+			const GQNode* GetResult() const;
 
 			/// <summary>
 			/// Determine if this result contains a valid match or not. 
@@ -142,7 +142,7 @@ namespace gq
 
 			GQMatchResult(const GQNode* result = nullptr);
 
-			GQNode* m_result;
+			const GQNode* m_result;
 
 		};
 
@@ -251,7 +251,7 @@ namespace gq
 		/// <returns>
 		/// A collection of all nodes matched by this selector. 
 		/// </returns>
-		void MatchAll(const std::shared_ptr<GQNode>& node, std::vector< std::shared_ptr<GQNode> >& results) const;
+		void MatchAll(const GQNode* node, std::vector< const GQNode* >& results) const;
 
 		/// <summary>
 		/// Accepts an existing collection of nodes and removes all nodes in the collection that do
@@ -260,7 +260,7 @@ namespace gq
 		/// <param name="nodes">
 		/// A collection of nodes to filter. 
 		/// </param>
-		void Filter(std::vector< std::shared_ptr<GQNode> >& nodes) const;
+		void Filter(std::vector< const GQNode* >& nodes) const;
 
 		/// <summary>
 		/// Fetches the original selector string that the selector was built from. This will only be
@@ -390,7 +390,7 @@ namespace gq
 		/// <param name="nodes">
 		/// The existing collection of matched nodes to append matches to. 
 		/// </param>
-		void MatchAllInto(const std::shared_ptr<GQNode>& node, std::vector< std::shared_ptr<GQNode> >& nodes) const;
+		void MatchAllInto(const GQNode* node, std::vector< const GQNode* >& nodes) const;
 
 	};
 
