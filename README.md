@@ -66,16 +66,21 @@ One of the primary goals with this engine was to maximize speed. For my purposes
 ```
 Processed 27646 selectors. Had handled errors? false
 Benchmarking parsing speed.
-Time taken to parse 2764600 selectors: 2550.37 ms.
-Processed at a rate of 0.00092251 milliseconds per selector or 1084 selectors per millisecond.
+Time taken to parse 2764600 selectors: 2492.68 ms.
+Processed at a rate of 0.00090164 milliseconds per selector or 1109.09 selectors per millisecond.
 Benchmarking document parsing.
-Time to build document: 152.981 milliseconds.
+Time taken to parse 100 documents: 13102.2 ms.
+Processed at a rate of 131.022 milliseconds per document.
 Benchmarking selection speed.
-Time taken to run 2764600 selectors against the document: 9756.02 ms producing 42800 total matches.
-Processed at a rate of 0.00352891 milliseconds per selector or 283.374 selectors per millisecond.
+Time taken to run 2764600 selectors against the document: 8783.99 ms producing 42900 total matches.
+Processed at a rate of 0.00317731 milliseconds per selector or 314.732 selectors per millisecond.
+Benchmarking mutation.
+Time taken to run 27646 selectors against the document while serializing with mutations 100 times: 9169.81 ms.
+Time per cycle 91.6981 ms.
+Processed at a rate of 0.00331687 milliseconds per selector or 301.489 selectors per millisecond.
 ```
 
-So from these results, a document could be loaded, parsed, and have 27646 precompiled selectors run on it in about **250.5412** milliseconds, or about a quarter of a second. Based on the latest benchmarks (that actually included mutation during serialization) it's about ***268.019*** msec to load, parse the document, run 27646 selectors and serialize the output with modifications back to a modified html string.
+So from these results, a document could be loaded, parsed, and have 27646 precompiled selectors run on it in about **218.8619** milliseconds, a little shy of a quarter of a second. Based on the latest benchmarks (that actually included mutation during serialization) it's about ***222.7201*** msec to load, parse the document, run 27646 selectors and serialize the output with modifications based on those selectors back to a html string.
   
 That's almost stretching the "user doesn't notice" goal, but thankfully nowhere near 30K selectors would ever actually need to be run at once. In a more realistic use case of the EasyList, less than half that number of selectors would run on any given html input.
 
