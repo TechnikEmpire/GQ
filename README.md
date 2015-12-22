@@ -92,9 +92,9 @@ It can be pretty handy to see verbose output from GQ for debugging selectors, en
 ##TODO
  - ~~Mutation API.~~
  - ~~Tests for combined and nested selectors.~~
- - Reduce candidate collections BEFORE attempting to match in the event that the selector is a GQBinarySelector with the
+ - ~~Reduce candidate collections BEFORE attempting to match in the event that the selector is a GQBinarySelector with the
  intersection operator. Can reduce sets by only keeping candidates that match the traits from both the left and right
- hand sides of the GQBinarySelector, which would drastically reduce candidates and thus drastically increase matching speed.
+ hand sides of the GQBinarySelector, which would drastically reduce candidates and thus drastically increase matching speed.~~ This was tried and abandoned, it's actually faster to just let it chew through all candidates.
  - ~~Modify `GQSelector::Match()` and related methods to return the final matched node. Required for child selectors and such.~~
  - ~~Work around for including root node without having to switch to the abysmal `weak_ptr` in `GQTreeMap`.~~
 
