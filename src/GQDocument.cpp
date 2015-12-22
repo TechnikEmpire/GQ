@@ -29,7 +29,6 @@
 
 #include "GQDocument.hpp"
 #include "GQParser.hpp"
-#include "GQTreeMap.hpp"
 #include "GQUtil.hpp"
 #include "GQSerializer.hpp"
 
@@ -67,15 +66,7 @@ namespace gq
 		if (gumboOutput == nullptr) { throw std::runtime_error(u8"In GQDocument::GQDocument(GumboOutput*) - Supplied GumboOutput* is nulltr! Use the parameterless constructor."); }
 		#endif
 		
-		m_node = m_gumboOutput->root;		
-
-		m_treeMap.reset(new GQTreeMap());	
-
-		#ifndef NDEBUG		
-		assert(m_treeMap != nullptr && u8"In GQDocument::GQDocument(GumboOutput*) - Failed to allocate m_treeMap. GQTreeMap* member m_treeMap is nullptr.");
-		#else		
-		if (m_treeMap == nullptr) { throw std::runtime_error(u8"In GQDocument::GQDocument(GumboOutput*) - Failed to allocate m_treeMap. GQTreeMap* member m_treeMap is nullptr."); }
-		#endif	
+		m_node = m_gumboOutput->root;
 	}
 
 	GQDocument::~GQDocument()
@@ -109,13 +100,7 @@ namespace gq
 
 		m_node = m_gumboOutput->root;
 
-		m_treeMap.reset(new GQTreeMap());
-
-		#ifndef NDEBUG		
-		assert(m_treeMap != nullptr && u8"In GQDocument::Parse(GumboOutput*) - Failed to allocate m_treeMap. GQTreeMap* member m_treeMap is nullptr.");
-		#else		
-		if (m_treeMap == nullptr) { throw std::runtime_error(u8"In GQDocument::Parse(GumboOutput*) - Failed to allocate m_treeMap. GQTreeMap* member m_treeMap is nullptr."); }
-		#endif	
+		m_treeMap.Clear();
 
 		// Must call init to build out and index and children children.
 		Init();
@@ -130,7 +115,7 @@ namespace gq
 		// Needed so that we don't have to override entire methods just to use a different pointer.
 		// Yeah it's a little gross, this design. This is the product of suddenly drastically changing
 		// the design to having GQDocument subclass GQNode. XXX TODO find a more elegant way to clean this up.
-		m_rootTreeMap = m_treeMap.get();
+		m_rootTreeMap = &m_treeMap;
 
 		BuildAttributes();
 		BuildChildren();

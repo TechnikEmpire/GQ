@@ -204,4 +204,9 @@ namespace gq
 		return nullptr;
 	}
 
+	void GQTreeMap::Clear()
+	{
+		m_scopedAttributes.clear();
+	}
+
 } /* namespace gq */

@@ -153,6 +153,11 @@ namespace gq
 		const std::vector< const GQNode* >* Get(boost::string_ref scope, boost::string_ref attribute, boost::string_ref attributeValue) const;
 
 		/// <summary>
+		/// Empties the map.
+		/// </summary>
+		void Clear();
+
+		/// <summary>
 		/// For readability. This holds a collection of nodes with a certain attribute value. This
 		/// object is the second element in the key/value pair for an unordered_map. The first
 		/// element, the key, is an attribute name. This type of collection as the second parameter

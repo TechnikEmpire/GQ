@@ -32,6 +32,7 @@
 #include <cassert>
 #include <memory>
 #include "GQSelection.hpp"
+#include "GQTreeMap.hpp"
 
 namespace gq
 {
@@ -90,7 +91,8 @@ namespace gq
 		/// <summary>
 		/// The map for the entire document.
 		/// </summary>
-		std::unique_ptr<GQTreeMap> m_treeMap = nullptr;
+		GQTreeMap m_treeMap;
+		//std::unique_ptr<GQTreeMap> m_treeMap = nullptr;
 
 		/// <summary>
 		/// Same concept as GQNode::Init(), which this overrides.
