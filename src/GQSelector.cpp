@@ -366,9 +366,9 @@ namespace gq
 	void GQSelector::MatchAll(const GQNode* node, std::vector< const GQNode* >& results) const
 	{
 		#ifndef NDEBUG
-			assert(node != nullptr && u8"In GQSelector::MatchAll(const GumboNode*, std::vector< std::shared_ptr<GQNode> >&) - Nullptr node supplied for matching.");
+			assert(node != nullptr && u8"In GQSelector::MatchAll(const GumboNode*, std::vector< const GQNode* >&) - Nullptr node supplied for matching.");
 		#else
-			if (node == nullptr) { throw std::runtime_error(u8"In GQSelector::MatchAll(const GumboNode*, std::vector< std::shared_ptr<GQNode> >&) - Nullptr node supplied for matching."); }
+			if (node == nullptr) { throw std::runtime_error(u8"In GQSelector::MatchAll(const GumboNode*, std::vector< const GQNode* >&) - Nullptr node supplied for matching."); }
 		#endif
 
 		MatchAllInto(node, results);

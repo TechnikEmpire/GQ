@@ -72,7 +72,7 @@ namespace gq
 		return text;
 	}
 
-	bool GQUtil::NodeExists(const std::vector< std::shared_ptr<GQNode> >& nodeCollection, const GumboNode* search)
+	bool GQUtil::NodeExists(const std::vector< const GQNode* >& nodeCollection, const GumboNode* search)
 	{
 		if (search == nullptr)
 		{
@@ -80,23 +80,23 @@ namespace gq
 		}
 
 		return std::find_if(nodeCollection.begin(), nodeCollection.end(), 
-			[&search](const std::shared_ptr<GQNode> & item)
+			[search](const GQNode* item)
 			{
 				return item->m_node == search;
 			}) != nodeCollection.end();
 	}
 
-	void GQUtil::RemoveDuplicates(std::vector< std::shared_ptr<GQNode> >& primaryCollection)
+	void GQUtil::RemoveDuplicates(std::vector< const GQNode* >& primaryCollection)
 	{
 		std::sort(primaryCollection.begin(), primaryCollection.end(),
-			[](const std::shared_ptr<GQNode> & lhs, std::shared_ptr<GQNode> & rhs)
+			[](const GQNode* lhs, const GQNode* rhs)
 		{
 			return lhs->m_node < rhs->m_node;
 		}
 		);
 
 		auto last = std::unique(primaryCollection.begin(), primaryCollection.end(),
-			[](const std::shared_ptr<GQNode> & lhs, std::shared_ptr<GQNode> & rhs)
+			[](const GQNode* lhs, const GQNode* rhs)
 		{
 			return lhs->m_node == rhs->m_node;
 		}
@@ -105,7 +105,7 @@ namespace gq
 		primaryCollection.erase(last, primaryCollection.end());
 	}
 
-	void GQUtil::UnionNodes(std::vector< std::shared_ptr<GQNode> >& primaryCollection, const std::vector< std::shared_ptr<GQNode> >& collection)
+	void GQUtil::UnionNodes(std::vector< const GQNode* >& primaryCollection, const std::vector< const GQNode* >& collection)
 	{		
 		primaryCollection.reserve(primaryCollection.size() + collection.size());
 		primaryCollection.insert(primaryCollection.end(), collection.begin(), collection.end());

@@ -86,7 +86,7 @@ namespace gq
 		/// True if the supplied search node was found in the supplied collection of nodes, false
 		/// otherwise.
 		/// </returns>
-		static bool NodeExists(const std::vector< std::shared_ptr<GQNode> >& nodeCollection, const GumboNode* search);
+		static bool NodeExists(const std::vector< const GQNode* >& nodeCollection, const GumboNode* search);
 
 		/// <summary>
 		/// Removes duplicate nodes from the collection.
@@ -94,7 +94,7 @@ namespace gq
 		/// <param name="primaryCollection">
 		/// The collection which may contain duplicate nodes.
 		/// </param>
-		static void RemoveDuplicates(std::vector< std::shared_ptr<GQNode> >& primaryCollection);
+		static void RemoveDuplicates(std::vector< const GQNode* >& primaryCollection);
 
 		/// <summary>
 		/// Takes the supplied primary collection and adds any nodes to it contained in the second
@@ -115,7 +115,7 @@ namespace gq
 		/// </param>
 		/// <returns>
 		/// </returns>
-		static void UnionNodes(std::vector< std::shared_ptr<GQNode> >& primaryCollection, const std::vector< std::shared_ptr<GQNode> >& collection);
+		static void UnionNodes(std::vector< const GQNode* >& primaryCollection, const std::vector< const GQNode* >& collection);
 
 		/// <summary>
 		/// Removes any quote characters at the first and last positions of the supplied string.
