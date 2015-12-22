@@ -91,7 +91,7 @@ It can be pretty handy to see verbose output from GQ for debugging selectors, en
  intersection operator. Can reduce sets by only keeping candidates that match the traits from both the left and right
  hand sides of the GQBinarySelector, which would drastically reduce candidates and thus drastically increase matching speed.
  - ~~Modify `GQSelector::Match()` and related methods to return the final matched node. Required for child selectors and such.~~
- - Work around for including root node without having to switch to the abysmal `weak_ptr` in `GQTreeMap`.
+ - ~~Work around for including root node without having to switch to the abysmal `weak_ptr` in `GQTreeMap`.~~
 
 ##Original Goals  
  - Renaming objects and files and nesting them inside directories to avoid existing conflicts with Gumbo Parser during compilation and inclusion.
