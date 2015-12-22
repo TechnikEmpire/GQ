@@ -87,7 +87,15 @@ namespace gq
 
 			case SelectorOperator::HasDescendant:
 			{
-				return HasDescendantMatch(node);
+				if (HasDescendantMatch(node))
+				{
+					// In the event of a :has/:haschild selector, you're interested in selecting
+					// a particular parent that has a particular child, so we'll return the
+					// parent here on a match.
+					return GQMatchResult(node);
+				}
+
+				return false;
 			}
 			break;
 
@@ -103,7 +111,10 @@ namespace gq
 
 					if (childMatch)
 					{
-						return childMatch;
+						// In the event of a :has/:haschild selector, you're interested in selecting
+						// a particular parent that has a particular child, so we'll return the
+						// parent here on a match.
+						return GQMatchResult(node);
 					}
 				}
 

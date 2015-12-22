@@ -41,8 +41,7 @@
 /// </summary>
 int main()
 {
-	//std::string matchingTestDataFilePath(u8"../../matchingtest.data");
-	std::string matchingTestDataFilePath(u8"C:\\Github\\GumboQuery\\test\\matchingtest.data");
+	std::string matchingTestDataFilePath(u8"../../matchingtest.data");
 
 	std::ifstream in(matchingTestDataFilePath, std::ios::binary | std::ios::in);
 
