@@ -31,11 +31,11 @@ auto testDocument = gq::GQDocument::Create(output);
 
 gq::GQParser parser;
 
-std::vector<std::string> collectionOfRawSelectoStrings {...};
+std::vector<std::string> collectionOfRawSelectorStrings {...};
 std::vector<gq::SharedGQSelector> compiledSelectors();
-compiledSelectors.reserve(collectionOfRawSelectoStrings.size());
+compiledSelectors.reserve(collectionOfRawSelectorStrings.size());
 
-for(auto& s : collectionOfRawSelectoStrings)
+for(auto& s : collectionOfRawSelectorStrings)
 {
     try
     {
