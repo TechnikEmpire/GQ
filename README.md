@@ -5,11 +5,11 @@ This project is a fork of [gumbo-query](https://github.com/lazytiger/gumbo-query
 
 ##Usage
 
-You can either construct a GQDocument around an existing GumboOutput pointer, at which point the GQDocument will assume managing the lifetime of the GumboOutput, or you can supply a raw string of HTML for GQDocument to parse and also maintain.
+You can either construct a Document around an existing GumboOutput pointer, at which point the Document will assume managing the lifetime of the GumboOutput, or you can supply a raw string of HTML for Document to parse and also maintain.
 ```c++
 std::string someHtmlString = "...";
 std::string someSelectorString = "...";
-auto testDocument = gq::GQDocument::Create();
+auto testDocument = gq::Document::Create();
 testDocument->Parse(someHtmlString);
 
 try
@@ -23,16 +23,16 @@ catch(std::runtime_error& e)
 }
 ```
 
-As you can see, you can run raw selector strings into the `::Find(...)` method, but each time, the selector string will be "compiled" into a GQSharedSelector and destroyed. You can alternatively "precompile" and save built selectors, and as such avoid wrapping every `::Find(...)` call in a try/catch.
+As you can see, you can run raw selector strings into the `::Find(...)` method, but each time, the selector string will be "compiled" into a SharedSelector and destroyed. You can alternatively "precompile" and save built selectors, and as such avoid wrapping every `::Find(...)` call in a try/catch.
 
 ```c++
 GumboOutput* output = SOMETHING_NOT_NULL;
-auto testDocument = gq::GQDocument::Create(output);
+auto testDocument = gq::Document::Create(output);
 
-gq::GQParser parser;
+gq::Parser parser;
 
 std::vector<std::string> collectionOfRawSelectorStrings {...};
-std::vector<gq::SharedGQSelector> compiledSelectors();
+std::vector<gq::SharedSelector> compiledSelectors();
 compiledSelectors.reserve(collectionOfRawSelectorStrings.size());
 
 for(auto& s : collectionOfRawSelectorStrings)
@@ -58,7 +58,7 @@ for(auto& ss : compiledSelectors)
 
 These snippets are just meant to demonstrate the most basic of usage. Thanks to the mutation api, it's possible to have fine grain control over elements matched by selectors. Look at the [mutation sample](https://github.com/TechnikEmpire/GQ/blob/master/ide/msvc/GumboQueryExamples/Mutation/Mutation/Mutation.cpp) for a complete example of using this feature.
 
-The contract placed on the end user is very light. Keep GQDocument alive for as long as you're storing or accessing any GQNode object, directly or indirectly. That's basically it.
+The contract placed on the end user is very light. Keep Document alive for as long as you're storing or accessing any Node object, directly or indirectly. That's basically it.
 
 ##Speed
 One of the primary goals with this engine was to maximize speed. For my purposes, I wanted to ensure I could run an insane amount of selectors without any visible delay to the user. Running the TestParser test benchmarks parsing and using every single selector in [EasyList](https://easylist.adblockplus.org/en/) (spare a handful which were removed because they're improperly formatted) against a standard high profile website's landing page HTML. The current results on my [dev laptop](https://www.asus.com/ca-en/ROG-Republic-Of-Gamers/ASUS_ROG_G750JM/) are:
@@ -92,14 +92,13 @@ It can be pretty handy to see verbose output from GQ for debugging selectors, en
 ##TODO
  - ~~Mutation API.~~
  - ~~Tests for combined and nested selectors.~~
- - ~~Reduce candidate collections BEFORE attempting to match in the event that the selector is a GQBinarySelector with the
+ - ~~Reduce candidate collections BEFORE attempting to match in the event that the selector is a BinarySelector with the
  intersection operator. Can reduce sets by only keeping candidates that match the traits from both the left and right
- hand sides of the GQBinarySelector, which would drastically reduce candidates and thus drastically increase matching speed.~~ This was tried and abandoned, it's actually faster to just let it chew through all candidates.
- - ~~Modify `GQSelector::Match()` and related methods to return the final matched node. Required for child selectors and such.~~
- - ~~Work around for including root node without having to switch to the abysmal `weak_ptr` in `GQTreeMap`.~~
+ hand sides of the BinarySelector, which would drastically reduce candidates and thus drastically increase matching speed.~~ This was tried and abandoned, it's actually faster to just let it chew through all candidates.
+ - ~~Modify `Selector::Match()` and related methods to return the final matched node. Required for child selectors and such.~~
+ - ~~Work around for including root node without having to switch to the abysmal `weak_ptr` in `TreeMap`.~~
 
 ##Original Goals  
- - Renaming objects and files and nesting them inside directories to avoid existing conflicts with Gumbo Parser during compilation and inclusion.
  - Wrapping things up in proper namespaces.
  - Remove custom rolled automatic reference counting and replace with standard `shared_ptr` types.  
  - Fix broken parsing that was ported from cascadia, but is invalid for use with Gumbo Parser.
