@@ -21,29 +21,29 @@
 */
 
 #include <stdexcept>
-#include "GQTreeMap.hpp"
-#include "GQNode.hpp"
-#include "GQSpecialTraits.hpp"
+#include "TreeMap.hpp"
+#include "Node.hpp"
+#include "SpecialTraits.hpp"
 
 namespace gq
 {
 
-	GQTreeMap::GQTreeMap()
+	TreeMap::TreeMap()
 	{
 
 	}
 
-	GQTreeMap::~GQTreeMap()
+	TreeMap::~TreeMap()
 	{
 
 	}	
 
-	void GQTreeMap::AddNodeToMap(boost::string_ref scope, const GQNode* node, const AttributeMap& nodeAttributeMap)
+	void TreeMap::AddNodeToMap(boost::string_ref scope, const Node* node, const AttributeMap& nodeAttributeMap)
 	{
 		#ifndef NDEBUG
-			assert(scope.size() > 0 && u8"In QTreeMap::AddNodeToMap(boost::string_ref, const GQNode*, const AttributeMap&) - The supplied scope is empty. This error is impossible unless a user is directly and incorrectly calling this method, or if this class and its required mechanisms are fundamentally broken.");
+			assert(scope.size() > 0 && u8"In QTreeMap::AddNodeToMap(boost::string_ref, const Node*, const AttributeMap&) - The supplied scope is empty. This error is impossible unless a user is directly and incorrectly calling this method, or if this class and its required mechanisms are fundamentally broken.");
 		#else
-			if (scope.size() == 0) { throw new std::runtime_error(u8"In QTreeMap::AddNodeToMap(boost::string_ref, const GQNode*, const AttributeMap&) - The supplied scope is empty. This error is impossible unless a user is directly and incorrectly calling this method, or if this class and its required mechanisms are fundamentally broken."); }
+			if (scope.size() == 0) { throw new std::runtime_error(u8"In QTreeMap::AddNodeToMap(boost::string_ref, const Node*, const AttributeMap&) - The supplied scope is empty. This error is impossible unless a user is directly and incorrectly calling this method, or if this class and its required mechanisms are fundamentally broken."); }
 		#endif
 		
 		#ifndef NDEBUG
@@ -84,13 +84,13 @@ namespace gq
 			{
 				// Add the node with "*" as the value key. This is useful for EXISTS lookups, prefix/suffix/list matching,
 				// etc. The node has the attribute being sought, that's all the user cares about.
-				auto newCont1 = std::vector< const GQNode* >{ { node } };
+				auto newCont1 = std::vector< const Node* >{ { node } };
 				auto newMap1 = ValueToNodesMap{};
-				newMap1.emplace(std::make_pair(GQSpecialTraits::GetAnyValue(), std::move(newCont1)));			
+				newMap1.emplace(std::make_pair(SpecialTraits::GetAnyValue(), std::move(newCont1)));			
 				
 				if (nodeAttrMapIt->second.size() > 0)
 				{
-					auto newCont2 = std::vector< const GQNode* >{ { node } };
+					auto newCont2 = std::vector< const Node* >{ { node } };
 
 					// If the attribute is more than EXISTS, and defines a value, push it here as well.
 					newMap1.emplace(std::make_pair(nodeAttrMapIt->second, std::move(newCont2)));
@@ -103,7 +103,7 @@ namespace gq
 				// There is already an entry for the attribute name, but that just means a map exists. Have to
 				// check if values exists and if so, append, if not, insert/create the key and vector collection.
 
-				auto& anyValueMatch = attr->second.find(GQSpecialTraits::GetAnyValue());
+				auto& anyValueMatch = attr->second.find(SpecialTraits::GetAnyValue());
 				auto& exactValueMatch = attr->second.find(nodeAttrMapIt->second);
 
 				// We need to check to make sure that the node doesn't already exist in the collection. This is because
@@ -116,16 +116,16 @@ namespace gq
 				// We search for equality of the raw node pointer.
 				//
 				// Also XXX TODO - Methinks we shouldn't be splitting up attributes separated by hypen at all. The
-				// original purpose was to optimize the GQAttributeSelector::Match(...) method when doing matching
+				// original purpose was to optimize the AttributeSelector::Match(...) method when doing matching
 				// against hyphen separated lists. However, I think this is invalid and will lead to conflicts,
 				// since the hyphen matching simply functions like a begins-with match. If this is the case and
-				// we stop doing that, we don't need to make any changes here. Just in GQNode::BuildAttributes(...).
+				// we stop doing that, we don't need to make any changes here. Just in Node::BuildAttributes(...).
 				//
-				// Update - no long splitting by "-" character, only whitespace in attributes.
+				// Update - no longer splitting by "-" character, only whitespace in attributes.
 				if (anyValueMatch != attr->second.end())
 				{
 					if (std::find_if(anyValueMatch->second.begin(), anyValueMatch->second.end(),
-						[node](const GQNode* elm)
+						[node](const Node* elm)
 					{
 						return elm == node;
 					}) == anyValueMatch->second.end())
@@ -136,8 +136,8 @@ namespace gq
 				else
 				{
 					// No need to search for duplicates, since no entries exist.
-					auto cont = std::vector< const GQNode* >{ { node } };
-					attr->second.emplace(std::make_pair(GQSpecialTraits::GetAnyValue(), std::move(cont)));
+					auto cont = std::vector< const Node* >{ { node } };
+					attr->second.emplace(std::make_pair(SpecialTraits::GetAnyValue(), std::move(cont)));
 				}
 
 				if (exactValueMatch != attr->second.end())
@@ -154,37 +154,37 @@ namespace gq
 				else
 				{
 					// No need to search for duplicates, since no entries exist.
-					auto cont = std::vector< const GQNode* >{ { node } };
+					auto cont = std::vector< const Node* >{ { node } };
 					attr->second.emplace(std::make_pair(nodeAttrMapIt->second, std::move(cont)));
 				}
 			}
 		}		
 	}
 
-	const std::vector< const GQNode* >* GQTreeMap::Get(boost::string_ref scope, boost::string_ref attribute) const
+	const std::vector< const Node* >* TreeMap::Get(boost::string_ref scope, boost::string_ref attribute) const
 	{
-		return Get(scope, attribute, GQSpecialTraits::GetAnyValue());
+		return Get(scope, attribute, SpecialTraits::GetAnyValue());
 	}
 
-	const std::vector< const GQNode* >* GQTreeMap::Get(boost::string_ref scope, boost::string_ref attribute, boost::string_ref attributeValue) const
+	const std::vector< const Node* >* TreeMap::Get(boost::string_ref scope, boost::string_ref attribute, boost::string_ref attributeValue) const
 	{
 		// First, jump the the correct scope to begin matching from.
 		auto& atScope = m_scopedAttributes.find(scope);
 
 		#ifndef NDEBUG
-			assert(atScope != m_scopedAttributes.end() && u8"In GQTreeMap::Get(boost::string_ref, boost::string_ref, boost::string_ref) - The supplied scope does not exist. This error is impossible unless a user is directly and incorrectly calling this method, or if this class and its required mechanisms are fundamentally broken.");
+			assert(atScope != m_scopedAttributes.end() && u8"In TreeMap::Get(boost::string_ref, boost::string_ref, boost::string_ref) - The supplied scope does not exist. This error is impossible unless a user is directly and incorrectly calling this method, or if this class and its required mechanisms are fundamentally broken.");
 		#else
 			if (atScope == m_scopedAttributes.end())
 			{
 				// This should not be possible, provided users are messing about and the
 				// implementation isn't fundamentally broken.
-				throw new std::runtime_error(u8"In GQTreeMap::Get(boost::string_ref, boost::string_ref, boost::string_ref) - The supplied scope does not exist. This error is impossible unless a user is directly and incorrectly calling this method, or if this class and its required mechanisms are fundamentally broken.");
+				throw new std::runtime_error(u8"In TreeMap::Get(boost::string_ref, boost::string_ref, boost::string_ref) - The supplied scope does not exist. This error is impossible unless a user is directly and incorrectly calling this method, or if this class and its required mechanisms are fundamentally broken.");
 			}
 		#endif		
 
 		#ifndef NDEBUG
 			#ifdef GQ_VERBOSE_DEBUG_NFO
-				std::cout << u8"In GQTreeMap::Get(boost::string_ref, boost::string_ref, boost::string_ref) - Looking up at scope " << scope << u8" with key " << attribute << u8" and value " << attributeValue << u8"." << std::endl;
+				std::cout << u8"In TreeMap::Get(boost::string_ref, boost::string_ref, boost::string_ref) - Looking up at scope " << scope << u8" with key " << attribute << u8" and value " << attributeValue << u8"." << std::endl;
 			#endif
 		#endif
 
@@ -205,7 +205,7 @@ namespace gq
 		return nullptr;
 	}
 
-	void GQTreeMap::Clear()
+	void TreeMap::Clear()
 	{
 		m_scopedAttributes.clear();
 	}

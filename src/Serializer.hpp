@@ -22,21 +22,21 @@
 
 #include <unordered_set>
 #include <gumbo.h>
-#include "GQStrRefHash.hpp"
-#include "GQNodeMutationCollection.hpp"
+#include "StrRefHash.hpp"
+#include "NodeMutationCollection.hpp"
 
 namespace gq
 {
 
-	class GQNode;
+	class Node;
 
 	/// <summary>
-	/// The GQSerializer can take a single GumboNode and convert its contents back into an HTML
+	/// The Serializer can take a single GumboNode and convert its contents back into an HTML
 	/// string. Two methods are exposed, one will serialize the node and its contents, the other
 	/// will serialze only the contents of the node. This can be used behind the scenes on jquery
 	/// like methods such as .Html() and .InnerHtml().
 	/// </summary>
-	class GQSerializer
+	class Serializer
 	{
 
 	public:
@@ -55,7 +55,7 @@ namespace gq
 		/// <returns>
 		/// The HTML string built from the node and all of its contents. 
 		/// </returns>
-		static std::string Serialize(const GQNode* node, const GQNodeMutationCollection* mutationCollection = nullptr);
+		static std::string Serialize(const Node* node, const NodeMutationCollection* mutationCollection = nullptr);
 
 		/// <summary>
 		/// Converts the supplied node and all of its contents back into an HTML string. This can be
@@ -67,7 +67,7 @@ namespace gq
 		/// <returns>
 		/// The HTML string built from the node and all of its contents. 
 		/// </returns>
-		static std::string Serialize(const GumboNode* node, const GQNodeMutationCollection* mutationCollection = nullptr);
+		static std::string Serialize(const GumboNode* node, const NodeMutationCollection* mutationCollection = nullptr);
 
 		/// <summary>
 		/// Converts the supplied node contents back into an HTML string, without including the HTML
@@ -84,7 +84,7 @@ namespace gq
 		/// <returns>
 		/// The HTML string built from the node contents.
 		/// </returns>
-		static std::string SerializeContent(const GQNode* node, const bool omitText = false, const GQNodeMutationCollection* mutationCollection = nullptr);
+		static std::string SerializeContent(const Node* node, const bool omitText = false, const NodeMutationCollection* mutationCollection = nullptr);
 
 		/// <summary>
 		/// Converts the supplied node contents back into an HTML string, without including the HTML
@@ -97,12 +97,12 @@ namespace gq
 		/// <returns>
 		/// The HTML string built from the node contents.
 		/// </returns>
-		static std::string SerializeContent(const GumboNode* node, const bool omitText = false, const GQNodeMutationCollection* mutationCollection = nullptr);
+		static std::string SerializeContent(const GumboNode* node, const bool omitText = false, const NodeMutationCollection* mutationCollection = nullptr);
 
 	private:
 
-		GQSerializer();
-		~GQSerializer();
+		Serializer();
+		~Serializer();
 
 		/// <summary>
 		/// List of tags that do not require a named closing tag.

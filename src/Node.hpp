@@ -33,63 +33,63 @@
 #include <functional>
 #include <boost/utility/string_ref.hpp>
 #include <boost/algorithm/string.hpp>
-#include "GQSelector.hpp"
-#include "GQStrRefHash.hpp"
+#include "Selector.hpp"
+#include "StrRefHash.hpp"
 
 namespace gq
 {
 	
-	class GQSelection;
-	class GQTreeMap;
+	class Selection;
+	class TreeMap;
 
 	/// <summary>
-	/// The GQNode class serves as a wrapper around a GumboNode raw pointer. It is not possible to
-	/// construct a GQNode around a nullptr GumboNode* object, so if the GQNode is valid, then its
-	/// internal GumboNode* is guaranteed to be valid. Furthermore, it's not possible for a GQNode
+	/// The Node class serves as a wrapper around a GumboNode raw pointer. It is not possible to
+	/// construct a Node around a nullptr GumboNode* object, so if the Node is valid, then its
+	/// internal GumboNode* is guaranteed to be valid. Furthermore, it's not possible for a Node
 	/// to be created, except by the internals of this library, which again verifies the validity of
 	/// underlying structures.
 	///  <para>&#160;</para>
 	/// There are a lot of raw pointers being provided, but these are managed in a tightly
 	/// controlled fashion. If the user is provided access to a raw pointer, it should be assumed
-	/// that the pointer is valid so long as the original GQDocument unique_ptr is valid. The user
+	/// that the pointer is valid so long as the original Document unique_ptr is valid. The user
 	/// should also not assume responsibility for the lifetime of a raw pointer received, only
 	/// objects returned in smart pointer containers are given over to the user to manage.
 	/// </summary>
-	class GQNode
+	class Node
 	{		
 
 		/// <summary>
-		/// In the original library, the CNode (GQNode now) was completely separate from everything
+		/// In the original library, the CNode (Node now) was completely separate from everything
 		/// else, but local instances were generated and copied all over the place whenever the user
 		/// needed to search against a non-document node, or access a specific child. Also, these
 		/// objects implemented a custom-rolled type of shared pointer. I didn't like this, so I
 		/// opted to change this, managing them in standard smart pointers.
 		/// <para>&#160;</para>
-		/// As a result of this and some other changes, GQNode has a few friends.
+		/// As a result of this and some other changes, Node has a few friends.
 		/// </summary>
-		friend class GQUtil;
-		friend class GQSerializer;
-		friend class GQNodeMutationCollection;
+		friend class Util;
+		friend class Serializer;
+		friend class NodeMutationCollection;
 
 	public:	
 
 		/// <summary>
 		/// Default destructor.
 		/// </summary>
-		virtual ~GQNode();
+		virtual ~Node();
 
 		/// <summary>
 		/// Gets the parent of this node. May be nullptr.
 		/// </summary>
 		/// <returns>
-		/// A pointer to the parent GQNode, if a valid parent exists. If this
+		/// A pointer to the parent Node, if a valid parent exists. If this
 		/// node does not have a valid parent, return is nullptr.
 		/// </returns>
-		GQNode* GetParent() const;
+		Node* GetParent() const;
 
 		/// <summary>
 		/// Gets the index of this node within its parent. This index differs from the actual index
-		/// of the raw GumboNode->index_within_parent. Since GQNode/Document only stores nodes that
+		/// of the raw GumboNode->index_within_parent. Since Node/Document only stores nodes that
 		/// are of type ELEMENT, returning GumboNode->index_within_parent would give the wrong index
 		/// certainly as far as these containers are concerned.
 		/// </summary>
@@ -116,9 +116,9 @@ namespace gq
 		/// The index of the child to retrieve. 
 		/// </param>
 		/// <returns>
-		/// A valid and non-nullptr UniqueGQNode representing the child at the supplied index. 
+		/// A valid and non-nullptr UniqueNode representing the child at the supplied index. 
 		/// </returns>
-		const GQNode* GetChildAt(const size_t index) const;
+		const Node* GetChildAt(const size_t index) const;
 
 		/// <summary>
 		/// Checks if the attribute by the name given exists for this node. Does not support prefix
@@ -149,7 +149,7 @@ namespace gq
 		/// Check if the node is actually completely empty, or if it contains non-html element
 		/// children. This is necessary for the :empty pseudo class selector because it's sort of a
 		/// special case. For all other purposes, we don't care about non-html entity children. As
-		/// such, we don't push things like gumbo text nodes as GQNodes into the m_children
+		/// such, we don't push things like gumbo text nodes as Nodes into the m_children
 		/// container. But, the :empty pseudo class selector needs to know about these things.
 		/// </summary>
 		/// <returns>
@@ -247,12 +247,12 @@ namespace gq
 		/// <summary>
 		/// Run a selector against the node and its descendants and return any and all nodes that
 		/// were matched by the supplied selector string. Note that this method, which accepts a
-		/// selector as a string, internally calls the GQParser::Parse(...) method, which will throw
+		/// selector as a string, internally calls the Parser::Parse(...) method, which will throw
 		/// when supplied with invalid selectors. As such, be prepared to handle exceptions when
 		/// using this method.
 		/// <para>&#160;</para>
-		/// Note also that it is recommended to use the GQParser directly to compile selectors
-		/// first, saving the returned GQSharedSelector objects. This is much more efficient if the
+		/// Note also that it is recommended to use the Parser directly to compile selectors
+		/// first, saving the returned SharedSelector objects. This is much more efficient if the
 		/// selector is used more than once. Methods that accept raw selector strings will compile
 		/// and discard selectors after use.
 		/// </summary>
@@ -263,7 +263,7 @@ namespace gq
 		/// A collection of nodes that were matched by the supplied selector. If no matches were
 		/// found, the collection will be empty.
 		/// </returns>
-		const GQSelection Find(const std::string& selectorString) const;
+		const Selection Find(const std::string& selectorString) const;
 
 		/// <summary>
 		/// Run a selector against the node and its descendants and return any and all nodes that
@@ -276,7 +276,7 @@ namespace gq
 		/// A collection of nodes that were matched by the supplied selector. If no matches were
 		/// found, the collection will be empty.
 		/// </returns>
-		const GQSelection Find(const SharedGQSelector& selector) const;
+		const Selection Find(const SharedSelector& selector) const;
 
 		/// <summary>
 		/// Runs a selector against the node and its descendants, and for each match found, invokes
@@ -285,11 +285,11 @@ namespace gq
 		/// iteration, rather then collecting matches and then iterating over them again.
 		/// <para>&#160;</para>
 		/// Note that this method, which accepts a selector as a string, internally calls the
-		/// GQParser::Parse(...) method, which will throw when supplied with invalid selectors. As
+		/// Parser::Parse(...) method, which will throw when supplied with invalid selectors. As
 		/// such, be prepared to handle exceptions when using this method.
 		/// <para>&#160;</para>
-		/// Note also that it is recommended to use the GQParser directly to compile selectors
-		/// first, saving the returned GQSharedSelector objects. This is much more efficient if the
+		/// Note also that it is recommended to use the Parser directly to compile selectors
+		/// first, saving the returned SharedSelector objects. This is much more efficient if the
 		/// selector is used more than once. Methods that accept raw selector strings will compile
 		/// and discard selectors after use.
 		/// </summary>
@@ -299,7 +299,7 @@ namespace gq
 		/// <param name="func">
 		/// The callback that positive matches will be supplied to.
 		/// </param>
-		void Each(const std::string& selectorString, std::function<void(const GQNode* node)> func) const;
+		void Each(const std::string& selectorString, std::function<void(const Node* node)> func) const;
 
 		/// <summary>
 		/// Runs a selector against the node and its descendants, and for each match found, invokes
@@ -313,7 +313,7 @@ namespace gq
 		/// <param name="func">
 		/// The callback that positive matches will be supplied to.
 		/// </param>
-		void Each(const SharedGQSelector& selector, std::function<void(const GQNode* node)> func) const;
+		void Each(const SharedSelector& selector, std::function<void(const Node* node)> func) const;
 
 		/// <summary>
 		/// Gets the unique ID of the node. See nodes on m_nodeUniqueId for more.
@@ -342,23 +342,23 @@ namespace gq
 	protected:
 
 		/// <summary>
-		/// Interface to create a UniqueGQNode instance. In order to ensure the validity of
-		/// structures and to maintain a proper, clear ownership model, new instances of GQNode can
+		/// Interface to create a UniqueNode instance. In order to ensure the validity of
+		/// structures and to maintain a proper, clear ownership model, new instances of Node can
 		/// only be created through this interface by the library internals.
 		/// </summary>
 		/// <param name="node">
-		/// The GumboNode* object that the GQNode is to wrap. This must be a valid pointer, or this
+		/// The GumboNode* object that the Node is to wrap. This must be a valid pointer, or this
 		/// method will throw.
 		/// </param>
 		/// <returns>
-		/// A UniqueGQNode instance. 
+		/// A UniqueNode instance. 
 		/// </returns>
-		static std::unique_ptr<GQNode> Create(const GumboNode* node, GQTreeMap* map, const std::string& parentId, const size_t indexWithinParent = 0, GQNode* parent = nullptr);
+		static std::unique_ptr<Node> Create(const GumboNode* node, TreeMap* map, const std::string& parentId, const size_t indexWithinParent = 0, Node* parent = nullptr);
 
 		/// <summary>
-		/// Empty constructor to satisfy GQDocument.
+		/// Empty constructor to satisfy Document.
 		/// </summary>
-		GQNode();
+		Node();
 
 		/// <summary>
 		/// Constructs a new node around a raw GumboNode pointer. 
@@ -373,14 +373,14 @@ namespace gq
 		/// <param name="indexWithinParent">
 		/// The index within the parent. Node that this index is not necessarily equal to
 		/// GumboNode::index_within_parent. This index rather, is the index when only
-		/// GUMBO_NODE_ELEMENT objects are considered children. All GQNode objects are valid
-		/// GUMBO_NODE_ELEMENTs. No other type of Gumbo element should be constructed into a GQNode
+		/// GUMBO_NODE_ELEMENT objects are considered children. All Node objects are valid
+		/// GUMBO_NODE_ELEMENTs. No other type of Gumbo element should be constructed into a Node
 		/// object.
 		/// </param>
 		/// <param name="parent">
 		/// Pointer to the parent GumboNode. Can be nullptr. 
 		/// </param>
-		GQNode(const GumboNode* node, const std::string newUniqueId, const size_t indexWithinParent, GQNode* parent);
+		Node(const GumboNode* node, const std::string newUniqueId, const size_t indexWithinParent, Node* parent);
 
 		/// <summary>
 		/// The raw GumboNode* that this object wraps.
@@ -390,7 +390,7 @@ namespace gq
 		/// <summary>
 		/// A pointer to this node's parent, if any.
 		/// </summary>
-		GQNode* m_parent = nullptr;
+		Node* m_parent = nullptr;
 
 		/// <summary>
 		/// Since we're excluding nodes that are not element nodes, we can't rely on the index value
@@ -409,7 +409,7 @@ namespace gq
 		/// <summary>
 		/// Container holding all valid html elements that are children of this html element.
 		/// </summary>
-		std::vector < std::unique_ptr<GQNode> > m_children;
+		std::vector < std::unique_ptr<Node> > m_children;
 
 		/// <summary>
 		/// This is about 25 percent faster than using an unordered_map or map. Too great of a performance
@@ -525,7 +525,7 @@ namespace gq
 		/// <summary>
 		/// Populate the m_children element. Since this is invoked in the constructor, this will
 		/// recursively build out all descendants of this node in the same way. We must ensure
-		/// that nodes are only created from the GQDocument, so that duplicate trees like this
+		/// that nodes are only created from the Document, so that duplicate trees like this
 		/// are not build, just for the sake of not wastefully duplicating.
 		/// </summary>
 		void BuildChildren();
@@ -538,27 +538,27 @@ namespace gq
 		void BuildAttributes();
 
 		/// <summary>
-		/// Object composition is getting a little ugly at this point. GQDocument holds the single
-		/// GQTreeMap in a unique_ptr as a private member, but GQDocument was changed to inherit
-		/// from GQNode. As such, when GQDocument creates all of the GQNode objects for the
-		/// document, it supplies the GQTreeMap* raw pointer, so we'll save the pointer to the tree
+		/// Object composition is getting a little ugly at this point. Document holds the single
+		/// TreeMap in a unique_ptr as a private member, but Document was changed to inherit
+		/// from Node. As such, when Document creates all of the Node objects for the
+		/// document, it supplies the TreeMap* raw pointer, so we'll save the pointer to the tree
 		/// map in a private member. Nodes need to reference the map when performing searches. This
-		/// is a little ugly because GQDocument is holding two pointers to the same thing, one
+		/// is a little ugly because Document is holding two pointers to the same thing, one
 		/// itself and one inherited. Oh well.
 		/// <para>&#160;</para>
-		/// I'm not very fond of this, but the the user still only needs to keep GQDocument alive,
+		/// I'm not very fond of this, but the the user still only needs to keep Document alive,
 		/// which is a very simple and reasonable requirement (to keep the document alive for so
 		/// long as you're using it).
 		/// </summary>
-		GQTreeMap* m_rootTreeMap = nullptr;
+		TreeMap* m_rootTreeMap = nullptr;
 
 	private:
 
-			GQNode(const GQNode&) = delete;
-			GQNode& operator=(const GQNode&) = delete;
+			Node(const Node&) = delete;
+			Node& operator=(const Node&) = delete;
 
 	};
 
-	typedef std::unique_ptr<GQNode> UniqueGQNode;
+	typedef std::unique_ptr<Node> UniqueNode;
 
 } /* namespace gq */

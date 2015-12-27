@@ -29,17 +29,17 @@
 
 #pragma once
 
-#include "GQSelector.hpp"
+#include "Selector.hpp"
 #include <boost/utility/string_ref.hpp>
 
 namespace gq
 {
 
 	/// <summary>
-	/// The GQAttributeSelector, as the name implies, is designed for matching against nodes using
+	/// The AttributeSelector, as the name implies, is designed for matching against nodes using
 	/// attribute selectors.
 	/// </summary>
-	class GQAttributeSelector final : public GQSelector
+	class AttributeSelector final : public Selector
 	{
 
 	public:
@@ -98,7 +98,7 @@ namespace gq
 		/// <param name="key">
 		/// The attribute name to match if it exists. 
 		/// </param>
-		GQAttributeSelector(boost::string_ref key);
+		AttributeSelector(boost::string_ref key);
 
 		/// <summary>
 		/// Constructs an attribute selector with a supplied attribute name and value to match
@@ -117,12 +117,12 @@ namespace gq
 		/// <param name="value">
 		/// The attribute value to match. 
 		/// </param>
-		GQAttributeSelector(SelectorOperator op, boost::string_ref key, boost::string_ref value);
+		AttributeSelector(SelectorOperator op, boost::string_ref key, boost::string_ref value);
 
 		/// <summary>
 		/// Default destructor.
 		/// </summary>
-		virtual ~GQAttributeSelector();
+		virtual ~AttributeSelector();
 
 		/// <summary>
 		/// Check if this selector is a match against the supplied node. 
@@ -134,7 +134,7 @@ namespace gq
 		/// True if this selector was successfully matched against the supplied node, false
 		/// otherwise.
 		/// </returns>
-		virtual const GQMatchResult Match(const GQNode* node) const;		
+		virtual const MatchResult Match(const Node* node) const;		
 
 	private:
 

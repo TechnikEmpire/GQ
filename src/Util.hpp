@@ -39,13 +39,13 @@
 namespace gq
 {	
 	
-	class GQNode;
+	class Node;
 
 	/// <summary>
-	/// GQUtil is, as the name suggested, a Utility class containing behavior that is commonly
+	/// Util is, as the name suggested, a Utility class containing behavior that is commonly
 	/// beneficial across all classes.
 	/// </summary>
-	class GQUtil
+	class Util
 	{
 
 	public:		
@@ -59,7 +59,7 @@ namespace gq
 		/// <returns>
 		/// All text contained in the supplied node and all of its descendants combined. 
 		/// </returns>
-		static std::string NodeText(const GQNode* node);
+		static std::string NodeText(const Node* node);
 
 		/// <summary>
 		/// Get the text of only the children of the supplied node.
@@ -70,7 +70,7 @@ namespace gq
 		/// <returns>
 		/// All text contained in the direct children of the supplied node combined.
 		/// </returns>
-		static std::string NodeOwnText(const GQNode* node);
+		static std::string NodeOwnText(const Node* node);
 
 		/// <summary>
 		/// Checks if the supplied node to search for already exists inside the supplied collection
@@ -86,7 +86,7 @@ namespace gq
 		/// True if the supplied search node was found in the supplied collection of nodes, false
 		/// otherwise.
 		/// </returns>
-		static bool NodeExists(const std::vector< const GQNode* >& nodeCollection, const GumboNode* search);
+		static bool NodeExists(const std::vector< const Node* >& nodeCollection, const GumboNode* search);
 
 		/// <summary>
 		/// Removes duplicate nodes from the collection.
@@ -94,7 +94,7 @@ namespace gq
 		/// <param name="primaryCollection">
 		/// The collection which may contain duplicate nodes.
 		/// </param>
-		static void RemoveDuplicates(std::vector< const GQNode* >& primaryCollection);
+		static void RemoveDuplicates(std::vector< const Node* >& primaryCollection);
 
 		/// <summary>
 		/// Takes the supplied primary collection and adds any nodes to it contained in the second
@@ -115,7 +115,7 @@ namespace gq
 		/// </param>
 		/// <returns>
 		/// </returns>
-		static void UnionNodes(std::vector< const GQNode* >& primaryCollection, const std::vector< const GQNode* >& collection);
+		static void UnionNodes(std::vector< const Node* >& primaryCollection, const std::vector< const Node* >& collection);
 
 		/// <summary>
 		/// Removes any quote characters at the first and last positions of the supplied string.
@@ -137,8 +137,8 @@ namespace gq
 		/// <param name="stringContainer"></param>
 		static void WriteNodeText(const GumboNode* node, std::string& stringContainer);
 
-		GQUtil();
-		~GQUtil();
+		Util();
+		~Util();
 
 	};
 

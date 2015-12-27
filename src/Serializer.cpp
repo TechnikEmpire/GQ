@@ -18,14 +18,14 @@
 * limitations under the License.
 */
 
-#include "GQSerializer.hpp"
-#include "GQNode.hpp"
-#include "GQUtil.hpp"
+#include "Serializer.hpp"
+#include "Node.hpp"
+#include "Util.hpp"
 
 namespace gq
 {
 
-	const std::unordered_set<boost::string_ref, StringRefHash> GQSerializer::EmptyTags =
+	const std::unordered_set<boost::string_ref, StringRefHash> Serializer::EmptyTags =
 	{
 		{ u8"area" },
 		{ u8"base" },
@@ -52,26 +52,26 @@ namespace gq
 		{ u8"wbr" }
 	};
 
-	const std::unordered_set<boost::string_ref, StringRefHash> GQSerializer::SpecialHandling =
+	const std::unordered_set<boost::string_ref, StringRefHash> Serializer::SpecialHandling =
 	{
 		{ u8"html" },
 		{ u8"body" }
 	};
 
-	GQSerializer::GQSerializer()
+	Serializer::Serializer()
 	{
 	}
 
-	GQSerializer::~GQSerializer()
+	Serializer::~Serializer()
 	{
 	}
 
-	std::string GQSerializer::Serialize(const GQNode* node, const GQNodeMutationCollection* mutationCollection)
+	std::string Serializer::Serialize(const Node* node, const NodeMutationCollection* mutationCollection)
 	{
 		return Serialize(node->m_node, mutationCollection);
 	}
 
-	std::string GQSerializer::Serialize(const GumboNode* node, const GQNodeMutationCollection* mutationCollection)
+	std::string Serializer::Serialize(const GumboNode* node, const NodeMutationCollection* mutationCollection)
 	{		
 		// special case the document node
 		if (node->type == GUMBO_NODE_DOCUMENT)
@@ -137,7 +137,7 @@ namespace gq
 
 				if (attribute->original_value.length > 0)
 				{
-					attribValue = GQUtil::TrimEnclosingQuotes(boost::string_ref(attribute->original_value.data, attribute->original_value.length));
+					attribValue = Util::TrimEnclosingQuotes(boost::string_ref(attribute->original_value.data, attribute->original_value.length));
 				}				
 
 				if (attribName.size() > 0)
@@ -218,12 +218,12 @@ namespace gq
 		return results;
 	}
 
-	std::string GQSerializer::SerializeContent(const GQNode* node, const bool omitText, const GQNodeMutationCollection* mutationCollection)
+	std::string Serializer::SerializeContent(const Node* node, const bool omitText, const NodeMutationCollection* mutationCollection)
 	{
 		return SerializeContent(node->m_node, omitText, mutationCollection);
 	}
 
-	std::string GQSerializer::SerializeContent(const GumboNode* node, const bool omitText, const GQNodeMutationCollection* mutationCollection)
+	std::string Serializer::SerializeContent(const GumboNode* node, const bool omitText, const NodeMutationCollection* mutationCollection)
 	{
 		std::string tagNameStr = GetTagName(node);
 		boost::string_ref tagNameStrRef(tagNameStr);
@@ -273,7 +273,7 @@ namespace gq
 		return contents;
 	}
 
-	std::string GQSerializer::GetTagName(const GumboNode* node)
+	std::string Serializer::GetTagName(const GumboNode* node)
 	{
 		boost::string_ref tagName;
 
@@ -320,7 +320,7 @@ namespace gq
 		return tagName.to_string();
 	}
 
-	std::string GQSerializer::BuildDocType(const GumboNode* node)
+	std::string Serializer::BuildDocType(const GumboNode* node)
 	{
 		std::string results;
 
@@ -349,7 +349,7 @@ namespace gq
 		return results;
 	}
 
-	std::string GQSerializer::BuildAttributes(const GumboAttribute* at)
+	std::string Serializer::BuildAttributes(const GumboAttribute* at)
 	{
 		std::string atts(u8" ");
 		atts.append(at->original_name.data, at->original_name.length);

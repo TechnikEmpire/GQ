@@ -32,13 +32,13 @@
 namespace gq
 {
 
-	class GQNode;
+	class Node;
 
 	/// <summary>
-	/// The purpose of the GQNodeMutationCollection class is to provide a safe way for users to
+	/// The purpose of the NodeMutationCollection class is to provide a safe way for users to
 	/// modify nodes during the serialization process. Users should not be concerned about validity
 	/// of pointers in the collection or the lifetime of the objects in the collection. Once again,
-	/// the user only must simply keep GQDocument alive and any naked pointers received by the user
+	/// the user only must simply keep Document alive and any naked pointers received by the user
 	/// during its lifetime should be safe and valid, as they are managed internally this way. This
 	/// collection also does not allow for removal. This collection internally uses an
 	/// unordered_set, and as such sort of has built in duplicate filtering, but that's not the
@@ -46,7 +46,7 @@ namespace gq
 	/// <para>&#160;</para>
 	/// Gumbo Parser does not provide any way to mutate a parsed document. The first thought to
 	/// solve this would be to provide lots of methods to fake the appearance of mutability, such as
-	/// GQNode::SetText(...), copying data, then on serialization looking up all of these fake
+	/// Node::SetText(...), copying data, then on serialization looking up all of these fake
 	/// changes and attempting to place them correctly in the output. However, this could get
 	/// complex fast, making maintenance a PITA.
 	/// <para>&#160;</para>
@@ -61,28 +61,28 @@ namespace gq
 	/// is because of the extraordinary lengths taken by this library to prevent the end user from
 	/// directly accessing underlying Gumbo structures that are managed by structures in this
 	/// library, such as GumboNode. The second reason is that not every element in the GumboOutput
-	/// is created and stored in a GQNode, because GQNodes are only constructed from
-	/// GUMBO_NODE_ELEMENT nodes. The GQSerializer is agnostic about this design, and is agnostic
-	/// about GQNode in general. We'd like to keep it that way (to keep it simple) and so we pass in
-	/// this collection which is a friend of GQNode, and can, in a blackbox fashion (from the
-	/// GQSerializer's perspective) handle recognizing a GumboNode* that's wrapped in a GQNode, etc
+	/// is created and stored in a Node, because Nodes are only constructed from
+	/// GUMBO_NODE_ELEMENT nodes. The Serializer is agnostic about this design, and is agnostic
+	/// about Node in general. We'd like to keep it that way (to keep it simple) and so we pass in
+	/// this collection which is a friend of Node, and can, in a blackbox fashion (from the
+	/// Serializer's perspective) handle recognizing a GumboNode* that's wrapped in a Node, etc
 	/// etc.
 	/// <para>&#160;</para>
 	/// And just for the sake of explaining it to death, the user doesn't have access to the
-	/// underlying GumboNode* elements. Since GQSerializer is largely agnostic to GQNode* and rather
-	/// deals in raw GumboNode* structures, a gap needs to be bridged between the GQSerializer and
-	/// the end user, who only deals in GQNode elements. But, we also don't want to be iterating
-	/// over every GQNode the user has collected and wants to modify on serialization, comparing
+	/// underlying GumboNode* elements. Since Serializer is largely agnostic to Node* and rather
+	/// deals in raw GumboNode* structures, a gap needs to be bridged between the Serializer and
+	/// the end user, who only deals in Node elements. But, we also don't want to be iterating
+	/// over every Node the user has collected and wants to modify on serialization, comparing
 	/// pointers in a repeating, recursive fashion (to match GumboNode* elements the serializer has
-	/// discovered against GumboNode* elements the user is handling, wrapped up in GQNode*
-	/// structures). So, this container is specialized so that GQSerializer can quickly ask it "is
+	/// discovered against GumboNode* elements the user is handling, wrapped up in Node*
+	/// structures). So, this container is specialized so that Serializer can quickly ask it "is
 	/// this next node I'm going to process something the user wants to modify?", and if that's
-	/// true, GQSerializer will invoke the callback(s) also supplied by the user to ask the user's
+	/// true, Serializer will invoke the callback(s) also supplied by the user to ask the user's
 	/// logic to perform serialization for that node, rather than by itself.
 	/// </summary>
-	class GQNodeMutationCollection
+	class NodeMutationCollection
 	{		
-		friend class GQSerializer;
+		friend class Serializer;
 
 	public:
 
@@ -97,11 +97,11 @@ namespace gq
 		/// <param name="node">
 		/// A node that requires custom serialization. 
 		/// </param>
-		void Add(const GQNode* node);
+		void Add(const Node* node);
 
 		/// <summary>
 		/// Sets the callback to be used at the start of the serialization for a node found in this
-		/// collection. This callback is invoked on each tag in the collection when the GQSerializer
+		/// collection. This callback is invoked on each tag in the collection when the Serializer
 		/// encounters a tag in the document that is also held in this collection. The tag start
 		/// callback provides an enum of the type of tag about to be serialized. The user can return
 		/// true or false to tell the serializer whether to proceed with serializing the tag, or to
@@ -120,7 +120,7 @@ namespace gq
 		/// <summary>
 		/// Sets the callback to be used during serialization of a node found in this collection.
 		/// This callback is invoked for each attribute found in each tag in the collection when the
-		/// GQSerializer encounters a tag in the document that is also held in this collection. The
+		/// Serializer encounters a tag in the document that is also held in this collection. The
 		/// tag attribute callback provides an enum of the type of tag being serialized, a reference
 		/// to the tag string that the user can populate in a custom fashion, as well as the current
 		/// attribute and its value (if any) that is being processed. The attribute and its
@@ -177,8 +177,8 @@ namespace gq
 		const bool Contains(const GumboNode* rawNode) const;
 
 		/// <summary>
-		/// Collection of GumboNode* objects extracted from the GQNode::m_node private member when
-		/// GQNode objects are added to this collection.
+		/// Collection of GumboNode* objects extracted from the Node::m_node private member when
+		/// Node objects are added to this collection.
 		/// </summary>
 		std::unordered_set<const GumboNode*> m_rawNodes;
 

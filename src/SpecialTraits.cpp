@@ -20,48 +20,48 @@
 * THE SOFTWARE.
 */
 
-#include "GQSpecialTraits.hpp"
+#include "SpecialTraits.hpp"
 #include <random>
 
 namespace gq
 {
 
-	GQSpecialTraits::GQSpecialTraits()
+	SpecialTraits::SpecialTraits()
 	{
 	}
 
-	GQSpecialTraits::~GQSpecialTraits()
+	SpecialTraits::~SpecialTraits()
 	{
 	}
 
-	const boost::string_ref GQSpecialTraits::GetTagKey()
+	const boost::string_ref SpecialTraits::GetTagKey()
 	{
 		return TagKey.Get();
 	}
 
-	const boost::string_ref GQSpecialTraits::GetPseudoKey()
+	const boost::string_ref SpecialTraits::GetPseudoKey()
 	{
 		return PseudoKey.Get();
 	}
 
-	const boost::string_ref GQSpecialTraits::GetAnyValue()
+	const boost::string_ref SpecialTraits::GetAnyValue()
 	{
 		// For values, we're actually safe to return static non-random values, because they are
 		// sheltered by the uniqueness of the key.
 		return boost::string_ref(u8"*");
 	}
 
-	const boost::string_ref GQSpecialTraits::GetLastChildValue()
+	const boost::string_ref SpecialTraits::GetLastChildValue()
 	{		
 		return boost::string_ref(u8"last-child");
 	}
 
-	const boost::string_ref GQSpecialTraits::GetLastChildOfTypeValue()
+	const boost::string_ref SpecialTraits::GetLastChildOfTypeValue()
 	{
 		return boost::string_ref(u8"last-of-type");
 	}
 
-	GQSpecialTraits::RandomKey::RandomKey()
+	SpecialTraits::RandomKey::RandomKey()
 	{
 		std::random_device rd;
 		std::mt19937 mt(rd());
@@ -81,15 +81,15 @@ namespace gq
 		m_str[9] = Chars[static_cast<size_t>(dist(mt))];
 	}
 
-	const boost::string_ref GQSpecialTraits::RandomKey::Get() const
+	const boost::string_ref SpecialTraits::RandomKey::Get() const
 	{
 		return boost::string_ref(m_str);
 	}
 
-	const std::string GQSpecialTraits::RandomKey::Chars{ u8"1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ" };
+	const std::string SpecialTraits::RandomKey::Chars{ u8"1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ" };
 
-	const GQSpecialTraits::RandomKey GQSpecialTraits::TagKey{};
+	const SpecialTraits::RandomKey SpecialTraits::TagKey{};
 
-	const GQSpecialTraits::RandomKey GQSpecialTraits::PseudoKey{};
+	const SpecialTraits::RandomKey SpecialTraits::PseudoKey{};
 
 } /* namespace gq */

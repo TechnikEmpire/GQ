@@ -20,13 +20,13 @@
 * THE SOFTWARE.
 */
 
-#include "GQNodeMutationCollection.hpp"
-#include "GQNode.hpp"
+#include "NodeMutationCollection.hpp"
+#include "Node.hpp"
 
 namespace gq
 {
 
-	void GQNodeMutationCollection::Add(const GQNode* node)
+	void NodeMutationCollection::Add(const Node* node)
 	{
 		if (node != nullptr)
 		{
@@ -34,24 +34,24 @@ namespace gq
 		}
 	}
 
-	const bool GQNodeMutationCollection::Contains(const GumboNode* rawNode) const
+	const bool NodeMutationCollection::Contains(const GumboNode* rawNode) const
 	{
 		auto& res = m_rawNodes.find(rawNode);
 
 		return res != m_rawNodes.end();
 	}
 
-	void GQNodeMutationCollection::SetOnTagStart(OnTagCallback callback)
+	void NodeMutationCollection::SetOnTagStart(OnTagCallback callback)
 	{
 		m_onTagStart = callback;
 	}
 
-	void GQNodeMutationCollection::SetOnTagAttribute(OnTagAttributeCallback callback)
+	void NodeMutationCollection::SetOnTagAttribute(OnTagAttributeCallback callback)
 	{
 		m_onTagAttribute = callback;
 	}
 
-	void GQNodeMutationCollection::SetOnTagContent(OnTagContentCallback callback)
+	void NodeMutationCollection::SetOnTagContent(OnTagContentCallback callback)
 	{
 		m_onTagContent = callback;
 	}

@@ -28,35 +28,35 @@
 */
 
 #include <cstring>
-#include "GQAttributeSelector.hpp"
+#include "AttributeSelector.hpp"
 #include <boost/algorithm/string.hpp>
-#include "GQNode.hpp"
-#include "GQUtil.hpp"
-#include "GQSpecialTraits.hpp"
+#include "Node.hpp"
+#include "Util.hpp"
+#include "SpecialTraits.hpp"
 
 namespace gq
 {
-	GQAttributeSelector::GQAttributeSelector(boost::string_ref key) :
+	AttributeSelector::AttributeSelector(boost::string_ref key) :
 		m_operator(SelectorOperator::Exists),
 		m_attributeNameString(key.to_string()),
 		m_attributeNameRef(m_attributeNameString)
 	{
 		if (m_attributeNameRef.size() == 0)
 		{
-			throw std::runtime_error(u8"In GQAttributeSelector::GQAttributeSelector(SelectorOperator, boost::string_ref, const bool) - Supplied attribute identifier has zero length.");
+			throw std::runtime_error(u8"In AttributeSelector::AttributeSelector(SelectorOperator, boost::string_ref, const bool) - Supplied attribute identifier has zero length.");
 		}
 
 		#ifndef NDEBUG
 			#ifdef GQ_VERBOSE_DEBUG_NFO
-				std::cout << "Built Exists GQAttributeSelector with key " << m_attributeNameRef << std::endl;
+				std::cout << "Built Exists AttributeSelector with key " << m_attributeNameRef << std::endl;
 			#endif
 		#endif
 
 		// Add attribute key as a match trait for EXISTS, specifying any ("*") as the value. 
-		AddMatchTrait(m_attributeNameRef, GQSpecialTraits::GetAnyValue());
+		AddMatchTrait(m_attributeNameRef, SpecialTraits::GetAnyValue());
 	}
 
-	GQAttributeSelector::GQAttributeSelector(SelectorOperator op, boost::string_ref key, boost::string_ref value) :
+	AttributeSelector::AttributeSelector(SelectorOperator op, boost::string_ref key, boost::string_ref value) :
 		m_operator(op),
 		m_attributeNameString(key.to_string()),
 		m_attributeNameRef(m_attributeNameString),
@@ -65,25 +65,25 @@ namespace gq
 	{
 		if (m_attributeNameRef.size() == 0)
 		{
-			throw std::runtime_error(u8"In GQAttributeSelector::GQAttributeSelector(SelectorOperator, boost::string_ref, const bool) - Supplied attribute identifier has zero length.");
+			throw std::runtime_error(u8"In AttributeSelector::AttributeSelector(SelectorOperator, boost::string_ref, const bool) - Supplied attribute identifier has zero length.");
 		}
 
 		if (m_attributeValueRef.size() == 0)
 		{
-			throw std::runtime_error(u8"In GQAttributeSelector::GQAttributeSelector(SelectorOperator, boost::string_ref, const bool) - Supplied attribute value has zero length.");
+			throw std::runtime_error(u8"In AttributeSelector::AttributeSelector(SelectorOperator, boost::string_ref, const bool) - Supplied attribute value has zero length.");
 		}
 
 		if (m_operator == SelectorOperator::ValueContainsElementInWhitespaceSeparatedList)
 		{
 			if (m_attributeNameRef.find_first_of(u8"\t\r\n ") != std::string::npos)
 			{
-				throw std::runtime_error(u8"In GQAttributeSelector::GQAttributeSelector(SelectorOperator, boost::string_ref, const bool) - Constructed ValueContainsElementInWhitespaceSeparatedList attribute selector, but spaces exist in the search value. This is not allowed.");
+				throw std::runtime_error(u8"In AttributeSelector::AttributeSelector(SelectorOperator, boost::string_ref, const bool) - Constructed ValueContainsElementInWhitespaceSeparatedList attribute selector, but spaces exist in the search value. This is not allowed.");
 			}
 		}
 
 		#ifndef NDEBUG
 			#ifdef GQ_VERBOSE_DEBUG_NFO
-				std::cout << "Built GQAttributeSelector with operator " << static_cast<size_t>(m_operator) << " with key " << m_attributeNameRef << " looking for value " << m_attributeValueRef << std::endl;
+				std::cout << "Built AttributeSelector with operator " << static_cast<size_t>(m_operator) << " with key " << m_attributeNameRef << " looking for value " << m_attributeValueRef << std::endl;
 			#endif
 		#endif
 
@@ -102,17 +102,17 @@ namespace gq
 			case SelectorOperator::ValueHasSuffix:
 			case SelectorOperator::ValueIsHyphenSeparatedListStartingWith:
 			{
-				AddMatchTrait(m_attributeNameRef, GQSpecialTraits::GetAnyValue());
+				AddMatchTrait(m_attributeNameRef, SpecialTraits::GetAnyValue());
 			}
 			break;
 		}
 	}
 
-	GQAttributeSelector::~GQAttributeSelector()
+	AttributeSelector::~AttributeSelector()
 	{
 	}
 
-	const GQSelector::GQMatchResult GQAttributeSelector::Match(const GQNode* node) const
+	const Selector::MatchResult AttributeSelector::Match(const Node* node) const
 	{		
 		switch (m_operator)
 		{
@@ -120,7 +120,7 @@ namespace gq
 			{						
 				if (node->HasAttribute(m_attributeNameRef))
 				{
-					return GQMatchResult(node);
+					return MatchResult(node);
 				}
 			}
 			break;
@@ -140,7 +140,7 @@ namespace gq
 				// Simply return whether or not we got any matches.
 				if (searchResult != boost::string_ref::npos)
 				{
-					return GQMatchResult(node);
+					return MatchResult(node);
 				}
 			}
 			break;
@@ -166,7 +166,7 @@ namespace gq
 					{
 						if (std::memcmp(attributeValue.begin(), m_attributeValueRef.begin(), oneSize) == 0)
 						{
-							return GQMatchResult(node);
+							return MatchResult(node);
 						}
 					}
 				}
@@ -174,7 +174,7 @@ namespace gq
 				{
 					if (std::memcmp(attributeValue.begin(), m_attributeValueRef.begin(), oneSize) == 0)
 					{
-						return GQMatchResult(node);
+						return MatchResult(node);
 					}
 				}
 
@@ -208,7 +208,7 @@ namespace gq
 						{
 							if (std::memcmp(sub.begin(), m_attributeValueRef.begin(), subSize) == 0)
 							{
-								return GQMatchResult(node);
+								return MatchResult(node);
 							}
 						}
 					}
@@ -216,7 +216,7 @@ namespace gq
 					{
 						if (std::memcmp(sub.begin(), m_attributeValueRef.begin(), subSize) == 0)
 						{
-							return GQMatchResult(node);
+							return MatchResult(node);
 						}
 					}
 				}
@@ -253,7 +253,7 @@ namespace gq
 						{
 							if (std::memcmp(sub.begin(), m_attributeValueRef.begin(), subSize) == 0)
 							{
-								return GQMatchResult(node);
+								return MatchResult(node);
 							}
 						}
 					}
@@ -261,7 +261,7 @@ namespace gq
 					{
 						if (std::memcmp(sub.begin(), m_attributeValueRef.begin(), subSize) == 0)
 						{
-							return GQMatchResult(node);
+							return MatchResult(node);
 						}
 					}
 				}
@@ -300,7 +300,7 @@ namespace gq
 						{
 							if (std::memcmp(attributeValue.begin(), m_attributeValueRef.begin(), oneSize) == 0)
 							{
-								return GQMatchResult(node);
+								return MatchResult(node);
 							}
 						}
 					}
@@ -308,7 +308,7 @@ namespace gq
 					{
 						if (std::memcmp(attributeValue.begin(), m_attributeValueRef.begin(), oneSize) == 0)
 						{
-							return GQMatchResult(node);
+							return MatchResult(node);
 						}
 					}
 
@@ -345,7 +345,7 @@ namespace gq
 								{
 									if (std::memcmp(sub.begin(), m_attributeValueRef.begin(), subSize) == 0)
 									{
-										return GQMatchResult(node);
+										return MatchResult(node);
 									}
 								}
 							}
@@ -353,7 +353,7 @@ namespace gq
 							{
 								if (std::memcmp(sub.begin(), m_attributeValueRef.begin(), subSize) == 0)
 								{
-									return GQMatchResult(node);
+									return MatchResult(node);
 								}
 							}
 						}						
@@ -397,7 +397,7 @@ namespace gq
 						{
 							if (std::memcmp(attributeValue.begin(), m_attributeValueRef.begin(), oneSize) == 0)
 							{
-								return GQMatchResult(node);
+								return MatchResult(node);
 							}
 						}
 					}
@@ -405,7 +405,7 @@ namespace gq
 					{
 						if (std::memcmp(attributeValue.begin(), m_attributeValueRef.begin(), oneSize) == 0)
 						{
-							return GQMatchResult(node);
+							return MatchResult(node);
 						}
 					}
 
@@ -448,7 +448,7 @@ namespace gq
 						{
 							if (std::memcmp(sub.begin(), m_attributeValueRef.begin(), subSize) == 0)
 							{
-								return GQMatchResult(node);
+								return MatchResult(node);
 							}
 						}
 					}
@@ -456,7 +456,7 @@ namespace gq
 					{
 						if (std::memcmp(sub.begin(), m_attributeValueRef.begin(), subSize) == 0)
 						{
-							return GQMatchResult(node);
+							return MatchResult(node);
 						}
 					}
 				}		

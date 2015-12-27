@@ -25,11 +25,11 @@
 #include <sstream>
 #include <chrono>
 #include <cmath>
-#include <GQDocument.hpp>
-#include <GQNode.hpp>
-#include <GQParser.hpp>
-#include <GQNodeMutationCollection.hpp>
-#include <GQSerializer.hpp>
+#include <Document.hpp>
+#include <Node.hpp>
+#include <Parser.hpp>
+#include <NodeMutationCollection.hpp>
+#include <Serializer.hpp>
 
 /// <summary>
 /// The purpose of this test is threefold. One, load the "parsingtest.data" list of selectors and
@@ -64,7 +64,7 @@ int main()
 	in.read(&testContents[0], testContents.size());
 	in.close();
 
-	gq::GQParser selectorParser;
+	gq::Parser selectorParser;
 
 	bool anyHandledException = false;
 	size_t totalSelectorsProcessed = 0;
@@ -175,7 +175,7 @@ int main()
 	htmlFile.read(&testHtmlContents[0], testHtmlContents.size());
 	htmlFile.close();
 
-	std::vector<gq::SharedGQSelector> precompiledSelectors;
+	std::vector<gq::SharedSelector> precompiledSelectors;
 	precompiledSelectors.reserve(selectors.size());
 
 	for (size_t ind = 0; ind < selectors.size(); ++ind)
@@ -193,7 +193,7 @@ int main()
 
 	for (size_t i = 0; i < documentParseCount; ++i)
 	{
-		auto doc = gq::GQDocument::Create();
+		auto doc = gq::Document::Create();
 		doc->Parse(testHtmlContents);
 	}	
 
@@ -206,7 +206,7 @@ int main()
 
 	std::cout << u8"Benchmarking selection speed." << std::endl;	
 
-	auto testDocument = gq::GQDocument::Create();
+	auto testDocument = gq::Document::Create();
 	testDocument->Parse(testHtmlContents);
 
 	size_t selectCount = 100;
@@ -250,7 +250,7 @@ int main()
 
 	for (size_t si = 0; si < mutateCount; ++si)
 	{
-		gq::GQNodeMutationCollection collection;
+		gq::NodeMutationCollection collection;
 
 		// OnTagStart allows us to choose whether or not allow a certain tag type matched by our
 		// selector(s) to be serialized at all.
@@ -287,14 +287,14 @@ int main()
 		for (size_t i = 0; i < precompiledSelectors.size(); ++i)
 		{
 			testDocument->Each(precompiledSelectors[i],
-				[&collection](const gq::GQNode* node)->void
+				[&collection](const gq::Node* node)->void
 			{
 				collection.Add(node);
 			});			
 		}
 
 		// Give our mutation collection to the serialize method and get the serialization result.
-		auto serialized = gq::GQSerializer::Serialize(testDocument.get(), &collection);
+		auto serialized = gq::Serializer::Serialize(testDocument.get(), &collection);
 
 		totalBytesSerialized += serialized.size();
 	}

@@ -27,23 +27,23 @@
 * THE SOFTWARE.
 */
 
-#include "GQUnarySelector.hpp"
-#include "GQNode.hpp"
+#include "UnarySelector.hpp"
+#include "Node.hpp"
 
 namespace gq
 {
 
-	GQUnarySelector::GQUnarySelector(SelectorOperator op, SharedGQSelector selector) :
+	UnarySelector::UnarySelector(SelectorOperator op, SharedSelector selector) :
 		m_operator(op), m_selector(std::move(selector))
 	{
 		if (m_selector == nullptr)
 		{
-			throw std::runtime_error(u8"In GQUnarySelector::GQUnarySelector(SelectorOperator, SharedGQSelector) - Supplied shared selector is nullptr.");
+			throw std::runtime_error(u8"In UnarySelector::UnarySelector(SelectorOperator, SharedSelector) - Supplied shared selector is nullptr.");
 		}
 
 		#ifndef NDEBUG
 			#ifdef GQ_VERBOSE_DEBUG_NFO
-				std::cout << "Built GQUnarySelector with operator " << static_cast<size_t>(m_operator) << u8"." << std::endl;
+				std::cout << "Built UnarySelector with operator " << static_cast<size_t>(m_operator) << u8"." << std::endl;
 			#endif
 		#endif
 
@@ -55,11 +55,11 @@ namespace gq
 		}
 	}
 
-	GQUnarySelector::~GQUnarySelector()
+	UnarySelector::~UnarySelector()
 	{
 	}
 
-	const GQSelector::GQMatchResult GQUnarySelector::GQUnarySelector::Match(const GQNode* node) const
+	const Selector::MatchResult UnarySelector::UnarySelector::Match(const Node* node) const
 	{
 
 		// If it's not a not selector, and there's no children, we can't do a child or descendant match
@@ -76,7 +76,7 @@ namespace gq
 
 				if (result == false)
 				{
-					return GQMatchResult(node);
+					return MatchResult(node);
 				}
 				else
 				{
@@ -92,7 +92,7 @@ namespace gq
 					// In the event of a :has/:haschild selector, you're interested in selecting a
 					// particular parent that has a particular child, so we'll return the parent
 					// here on a match.
-					return GQMatchResult(node);
+					return MatchResult(node);
 				}
 
 				return false;
@@ -114,7 +114,7 @@ namespace gq
 						// In the event of a :has/:haschild selector, you're interested in selecting
 						// a particular parent that has a particular child, so we'll return the
 						// parent here on a match.
-						return GQMatchResult(node);
+						return MatchResult(node);
 					}
 				}
 
@@ -127,7 +127,7 @@ namespace gq
 		return false;
 	}
 
-	const GQSelector::GQMatchResult GQUnarySelector::HasDescendantMatch(const GQNode* node) const
+	const Selector::MatchResult UnarySelector::HasDescendantMatch(const Node* node) const
 	{
 		for (size_t i = 0; i < node->GetNumChildren(); i++)
 		{
@@ -136,14 +136,14 @@ namespace gq
 			auto childMatch = m_selector->Match(child);
 			if (childMatch)
 			{
-				return GQMatchResult(node);
+				return MatchResult(node);
 			}
 
 			childMatch = HasDescendantMatch(child);
 
 			if (childMatch)
 			{
-				return GQMatchResult(node);
+				return MatchResult(node);
 			}
 		}
 

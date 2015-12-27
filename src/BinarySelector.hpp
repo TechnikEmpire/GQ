@@ -28,16 +28,16 @@
 */
 #pragma once
 
-#include "GQSelector.hpp"
+#include "Selector.hpp"
 
 namespace gq
 {
 	/// <summary>
-	/// The GQBinarySelector is designed to match two independent selectors against nodes in various
+	/// The BinarySelector is designed to match two independent selectors against nodes in various
 	/// ways, depending on the specified operator. This selector makes types of selection such as
 	/// descendant and sibling matching possible.
 	/// </summary>
-	class GQBinarySelector final : public GQSelector
+	class BinarySelector final : public Selector
 	{
 
 	public:
@@ -116,12 +116,12 @@ namespace gq
 		/// <param name="right">
 		/// The right hand side of the combined selector. 
 		/// </param>
-		GQBinarySelector(SelectorOperator op, SharedGQSelector left, SharedGQSelector right);
+		BinarySelector(SelectorOperator op, SharedSelector left, SharedSelector right);
 
 		/// <summary>
 		/// Default destructor.
 		/// </summary>
-		virtual ~GQBinarySelector();
+		virtual ~BinarySelector();
 
 		/// <summary>
 		/// Check if this selector is a match against the supplied node. 
@@ -133,19 +133,19 @@ namespace gq
 		/// True if this selector was successfully matched against the supplied node, false
 		/// otherwise.
 		/// </returns>
-		virtual const GQMatchResult Match(const GQNode* node) const;
+		virtual const MatchResult Match(const Node* node) const;
 
 	private:
 
 		/// <summary>
 		/// The left hand side of the binary selector to match against a node. 
 		/// </summary>
-		SharedGQSelector m_leftHandSide;
+		SharedSelector m_leftHandSide;
 
 		/// <summary>
 		/// The right hand side of the binary selector to match against a node.
 		/// </summary>
-		SharedGQSelector m_rightHandSide;
+		SharedSelector m_rightHandSide;
 
 		/// <summary>
 		/// The operator for the binary selector. The value of the operator will change how a true

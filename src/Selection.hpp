@@ -33,44 +33,44 @@
 #include <string>
 #include <stdexcept>
 #include <vector>
-#include "GQNode.hpp"
-#include "GQSelector.hpp"
+#include "Node.hpp"
+#include "Selector.hpp"
 
 namespace gq
 {
 
 	/// <summary>
-	/// The GQSelection serves as a container for selection results. Presently this doesn't offer
+	/// The Selection serves as a container for selection results. Presently this doesn't offer
 	/// anything more than a simply vector could. However, in the future, support will probably be
 	/// included to permit additional operations against match collections which would justify this
 	/// container.
 	/// </summary>
-	class GQSelection
+	class Selection
 	{
 
 	public:
 
 		/// <summary>
-		/// Builds a new GQSelection object from a single, valid UniqueGQNode. The supplied shared
+		/// Builds a new Selection object from a single, valid UniqueNode. The supplied shared
 		/// pointer cannot be nullptr and this constructor will throw if it is.
 		/// </summary>
 		/// <param name="node">
-		/// The valid UniqueGQNode to build the selection from. 
+		/// The valid UniqueNode to build the selection from. 
 		/// </param>
-		GQSelection(const GQNode* node);
+		Selection(const Node* node);
 
 		/// <summary>
-		/// Builds a new GQSelection object from a copy of a collection of nodes.
+		/// Builds a new Selection object from a copy of a collection of nodes.
 		/// </summary>
 		/// <param name="nodes">
 		/// Existing nodes that make up the selection.
 		/// </param>
-		GQSelection(std::vector<const GQNode*>& nodes);
+		Selection(std::vector<const Node*>& nodes);
 
 		/// <summary>
 		/// Default destructor.
 		/// </summary>
-		~GQSelection();
+		~Selection();
 
 		/// <summary>
 		/// Check the total number of nodes held in this selection. This number represents how many
@@ -94,14 +94,14 @@ namespace gq
 		/// <returns>
 		/// A copy of the node found at the supplied index.
 		/// </returns>
-		const GQNode* GetNodeAt(const size_t index) const;
+		const Node* GetNodeAt(const size_t index) const;
 
 	private:
 
 		/// <summary>
 		/// The collection of nodes in the selection.
 		/// </summary>
-		std::vector<const GQNode*> m_nodes;
+		std::vector<const Node*> m_nodes;
 
 	};
 

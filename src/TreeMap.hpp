@@ -26,7 +26,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <map>
-#include "GQStrRefHash.hpp"
+#include "StrRefHash.hpp"
 
 /*
 	Special note for a special snowflake.
@@ -46,17 +46,17 @@
 namespace gq
 {
 
-	class GQNode;	
+	class Node;	
 
 	/// <summary>
-	/// The GQTreeMap class serves the purpose of indexing an HTML document and all of its elements
+	/// The TreeMap class serves the purpose of indexing an HTML document and all of its elements
 	/// in a way that maximizes lookup speed for selectors. Without such a structure, every single
-	/// selector run is doomed to traverse the entire document, node-by-node. The GQTreeMap object
+	/// selector run is doomed to traverse the entire document, node-by-node. The TreeMap object
 	/// stores a list of all element from a certain scope of the document, index by attribute names
 	/// and values.
 	/// <para>&#160;</para>
-	/// The GQTreeMap is created and managed exclusively within the GQDocument object, and is then
-	/// supplied to all child nodes are they are created when the GQDocument object is created or
+	/// The TreeMap is created and managed exclusively within the Document object, and is then
+	/// supplied to all child nodes are they are created when the Document object is created or
 	/// parses some HTML.
 	/// <para>&#160;</para>
 	/// To further clarify "scope" simply corresponds to a specific html element within the
@@ -68,27 +68,27 @@ namespace gq
 	/// document.
 	/// <para>&#160;</para>
 	/// Additionally, it's worth noting that this map treats normalized tag names as attributes as
-	/// well, among other things. For more on that, look at the GQSpecialTraitKeys class.
+	/// well, among other things. For more on that, look at the SpecialTraitKeys class.
 	/// </summary>
-	class GQTreeMap
+	class TreeMap
 	{	
 
 		/// <summary>
-		/// GQNode and its descendants are the only ones who actually need to access this object and
+		/// Node and its descendants are the only ones who actually need to access this object and
 		/// its static members.
 		/// </summary>
-		friend class GQNode;
-		friend class GQDocument;
+		friend class Node;
+		friend class Document;
 
 	public:
 
-		~GQTreeMap();
+		~TreeMap();
 
 	private:
 		
 		typedef std::multimap<boost::string_ref, boost::string_ref> AttributeMap;
 
-		GQTreeMap();
+		TreeMap();
 
 		/// <summary>
 		/// Adds an attribute map for the supplied node. The unique ID of the supplied node is
@@ -104,7 +104,7 @@ namespace gq
 		/// this map, but that the key is randomly generated at runtime. To get the key that is used
 		/// for storing normalized tag names, use the static member ::GetTagAttributeKey().
 		/// </param>
-		void AddNodeToMap(boost::string_ref scope, const GQNode* node, const AttributeMap& nodeAttributeMap);
+		void AddNodeToMap(boost::string_ref scope, const Node* node, const AttributeMap& nodeAttributeMap);
 
 		/// <summary>
 		/// Gets a collection of nodes that have the supplied attribute with the provided scope.
@@ -115,7 +115,7 @@ namespace gq
 		/// parameter. Use the overload that takes the exact value for such lookups.
 		/// </summary>
 		/// <param name="scope">
-		/// The scope to search within. The scope is the value of GQNode::GetUniqueId(). 
+		/// The scope to search within. The scope is the value of Node::GetUniqueId(). 
 		/// </param>
 		/// <param name="attribute">
 		/// The attribute which must exist. 
@@ -124,7 +124,7 @@ namespace gq
 		/// A collection of nodes which may contain zero or more elements, depending on how many
 		/// elements matched the supplied parameters within the supplied scope.
 		/// </returns>
-		const std::vector< const GQNode* >* Get(boost::string_ref scope, boost::string_ref attribute) const;
+		const std::vector< const Node* >* Get(boost::string_ref scope, boost::string_ref attribute) const;
 
 		/// <summary>
 		/// Gets a collection of nodes that have the supplied attribute with the exact value
@@ -135,7 +135,7 @@ namespace gq
 		/// value.
 		/// </summary>
 		/// <param name="scope">
-		/// The scope to search within. The scope is the value of GQNode::GetUniqueId(). 
+		/// The scope to search within. The scope is the value of Node::GetUniqueId(). 
 		/// </param>
 		/// <param name="attribute">
 		/// The attribute which must exist. 
@@ -147,7 +147,7 @@ namespace gq
 		/// A collection of nodes which may contain zero or more elements, depending on how many
 		/// elements matched the supplied parameters within the supplied scope.
 		/// </returns>
-		const std::vector< const GQNode* >* Get(boost::string_ref scope, boost::string_ref attribute, boost::string_ref attributeValue) const;
+		const std::vector< const Node* >* Get(boost::string_ref scope, boost::string_ref attribute, boost::string_ref attributeValue) const;
 
 		/// <summary>
 		/// Empties the map.
@@ -164,7 +164,7 @@ namespace gq
 		/// whitespace separated list into multiple individual entries, pushing them to a map like
 		/// this.
 		/// </summary>
-		typedef std::unordered_map<boost::string_ref, std::vector< const GQNode* >, StringRefHash> ValueToNodesMap;
+		typedef std::unordered_map<boost::string_ref, std::vector< const Node* >, StringRefHash> ValueToNodesMap;
 
 		/// <summary>
 		/// Attribute maps take an attribute name as a key, and return a map which takes attribute
@@ -179,10 +179,10 @@ namespace gq
 		/// <summary>
 		/// In order to enable quickly searching within a scope, we store shared pointers to built
 		/// attribute maps within vectors and push those to a scope map. The key to this map is the
-		/// GQNode::m_nodeUniqueIndexId private property. This property is generated when documents
+		/// Node::m_nodeUniqueIndexId private property. This property is generated when documents
 		/// are parsed recursively, and gives an accurate, unique ID for each node.
 		/// <para>&#160;</para>
-		/// The GQNode::m_nodeUniqueIndexId property is built by concatenating its own index within
+		/// The Node::m_nodeUniqueIndexId property is built by concatenating its own index within
 		/// parent as a string on to the same property of its parent. For example, given the tree
 		/// A-A-C, C would have an m_nodeUniqueIndexId property of "002" while A-B-A would have an
 		/// m_nodeUniqueIndexId property of "010". As such, dropping the index within parent off of
@@ -207,6 +207,6 @@ namespace gq
 
 	};
 
-	typedef std::unique_ptr<GQTreeMap> UniqueGQTreeMap;
+	typedef std::unique_ptr<TreeMap> UniqueTreeMap;
 
 } /* namespace gq */

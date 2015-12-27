@@ -27,21 +27,21 @@
 * THE SOFTWARE.
 */
 
-#include "GQBinarySelector.hpp"
-#include "GQNode.hpp"
+#include "BinarySelector.hpp"
+#include "Node.hpp"
 
 namespace gq
 {
 
-	GQBinarySelector::GQBinarySelector(SelectorOperator op, SharedGQSelector left, SharedGQSelector right) :
+	BinarySelector::BinarySelector(SelectorOperator op, SharedSelector left, SharedSelector right) :
 		m_operator(op), m_leftHandSide(std::move(left)), m_rightHandSide(std::move(right))
 	{
 		#ifndef NDEBUG
-			assert(m_leftHandSide != nullptr && m_rightHandSide != nullptr && u8"In GQBinarySelector::GQBinarySelector(SelectorOperator, SharedGQSelector, SharedGQSelector) - Left or right hand selector is nullptr.");
+			assert(m_leftHandSide != nullptr && m_rightHandSide != nullptr && u8"In BinarySelector::BinarySelector(SelectorOperator, SharedSelector, SharedSelector) - Left or right hand selector is nullptr.");
 		#else
 			if (m_leftHandSide == nullptr || m_rightHandSide == nullptr)
 			{
-				throw std::runtime_error(u8"In GQBinarySelector::GQBinarySelector(SelectorOperator, SharedGQSelector, SharedGQSelector) - Left or right hand selector is nullptr.");
+				throw std::runtime_error(u8"In BinarySelector::BinarySelector(SelectorOperator, SharedSelector, SharedSelector) - Left or right hand selector is nullptr.");
 			}
 		#endif
 
@@ -51,7 +51,7 @@ namespace gq
 		#ifndef NDEBUG
 			#ifdef GQ_VERBOSE_DEBUG_NFO
 			std::cout 
-				<< u8"Built GQBinarySelector with operator " 
+				<< u8"Built BinarySelector with operator " 
 				<< static_cast<size_t>(m_operator) 
 				<< u8" with left hand tag "
 				<< static_cast<size_t>(leftHandTagType)
@@ -112,19 +112,19 @@ namespace gq
 		}
 	}
 
-	GQBinarySelector::~GQBinarySelector()
+	BinarySelector::~BinarySelector()
 	{
 
 	}
 
-	const GQSelector::GQMatchResult GQBinarySelector::Match(const GQNode* node) const
+	const Selector::MatchResult BinarySelector::Match(const Node* node) const
 	{
 
 		switch (m_operator)
 		{
 			case SelectorOperator::Adjacent:
 			{
-				const GQNode* parent = node->GetParent();
+				const Node* parent = node->GetParent();
 				if (parent == nullptr)
 				{					
 					return false;
@@ -157,7 +157,7 @@ namespace gq
 
 			case SelectorOperator::Child:
 			{
-				const GQNode* parent = node->GetParent();
+				const Node* parent = node->GetParent();
 
 				// Can't be a child without a parent. Boo hoo );
 				if (parent == nullptr)
@@ -176,7 +176,7 @@ namespace gq
 
 			case SelectorOperator::Descendant:
 			{
-				const GQNode* parent = node->GetParent();
+				const Node* parent = node->GetParent();
 
 				// Can't be a descendant of the void, unless you're Xel'naga.
 				if (parent == nullptr)
@@ -218,7 +218,7 @@ namespace gq
 
 			case SelectorOperator::Sibling:
 			{
-				const GQNode* parent = node->GetParent();
+				const Node* parent = node->GetParent();
 				if (parent == nullptr)
 				{
 					return false;

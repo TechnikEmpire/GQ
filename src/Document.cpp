@@ -27,18 +27,18 @@
 * THE SOFTWARE.
 */
 
-#include "GQDocument.hpp"
-#include "GQParser.hpp"
-#include "GQUtil.hpp"
-#include "GQSerializer.hpp"
+#include "Document.hpp"
+#include "Parser.hpp"
+#include "Util.hpp"
+#include "Serializer.hpp"
 
 namespace gq
 {
-	std::unique_ptr<GQDocument> GQDocument::Create(GumboOutput* gumboOutput)
+	std::unique_ptr<Document> Document::Create(GumboOutput* gumboOutput)
 	{
 		if (gumboOutput != nullptr)
 		{
-			auto doc = std::unique_ptr<GQDocument>{ new GQDocument(gumboOutput) };
+			auto doc = std::unique_ptr<Document>{ new Document(gumboOutput) };
 			
 			// Must call init to build out and index shared_ptr children.
 			doc->Init();
@@ -46,28 +46,28 @@ namespace gq
 			return doc;
 		}
 
-		return std::unique_ptr<GQDocument>{ new GQDocument() };
+		return std::unique_ptr<Document>{ new Document() };
 	}
 
-	GQDocument::GQDocument()
+	Document::Document()
 	{
 		m_parent = nullptr;
 	}
 
-	GQDocument::GQDocument(GumboOutput* gumboOutput) :
+	Document::Document(GumboOutput* gumboOutput) :
 		m_gumboOutput(gumboOutput)
 	{
 		// No attempting to construct explicitly supplying a pointer, when its null. 
 		#ifndef NDEBUG
-			assert(gumboOutput != nullptr && u8"In GQDocument::GQDocument(GumboOutput*) - Supplied GumboOutput* is nulltr! Use the parameterless constructor.");
+			assert(gumboOutput != nullptr && u8"In Document::Document(GumboOutput*) - Supplied GumboOutput* is nulltr! Use the parameterless constructor.");
 		#else
-			if (gumboOutput == nullptr) { throw std::runtime_error(u8"In GQDocument::GQDocument(GumboOutput*) - Supplied GumboOutput* is nulltr! Use the parameterless constructor."); }
+			if (gumboOutput == nullptr) { throw std::runtime_error(u8"In Document::Document(GumboOutput*) - Supplied GumboOutput* is nulltr! Use the parameterless constructor."); }
 		#endif
 		
 		m_node = m_gumboOutput->root;
 	}
 
-	GQDocument::~GQDocument()
+	Document::~Document()
 	{
 		if (m_gumboOutput != nullptr)
 		{
@@ -75,13 +75,13 @@ namespace gq
 		}
 	}
 
-	void GQDocument::Parse(const std::string& source)
+	void Document::Parse(const std::string& source)
 	{
 		// No attempting to parse empty strings.
 		#ifndef NDEBUG
-			assert(source.length() > 0 && (source.find_first_not_of(u8" \t\r\n") != std::string::npos) && u8"In GQDocument::Parse(const std::string&) - Empty or whitespace string supplied.");
+			assert(source.length() > 0 && (source.find_first_not_of(u8" \t\r\n") != std::string::npos) && u8"In Document::Parse(const std::string&) - Empty or whitespace string supplied.");
 		#else
-			if (source.length() == 0 || (source.find_first_not_of(u8" \t\r\n\f") == std::string::npos)) { throw std::runtime_error(u8"In GQDocument::Parse(const std::string&) - Empty or whitespace string supplied."); }
+			if (source.length() == 0 || (source.find_first_not_of(u8" \t\r\n\f") == std::string::npos)) { throw std::runtime_error(u8"In Document::Parse(const std::string&) - Empty or whitespace string supplied."); }
 		#endif
 
 		if (m_gumboOutput != nullptr)
@@ -93,7 +93,7 @@ namespace gq
 
 		if (m_gumboOutput == nullptr)
 		{
-			throw std::runtime_error(u8"In GQDocument::Parse(const std::string&) - Failed to parse and or allocate GumboOutput.");
+			throw std::runtime_error(u8"In Document::Parse(const std::string&) - Failed to parse and or allocate GumboOutput.");
 		}
 
 		m_node = m_gumboOutput->root;
@@ -104,7 +104,7 @@ namespace gq
 		Init();
 	}
 
-	void GQDocument::Init()
+	void Document::Init()
 	{
 		m_nodeUniqueId = "0";
 		m_indexWithinParent = 0;
@@ -112,7 +112,7 @@ namespace gq
 
 		// Needed so that we don't have to override entire methods just to use a different pointer.
 		// Yeah it's a little gross, this design. This is the product of suddenly drastically
-		// changing the design to having GQDocument subclass GQNode. XXX TODO find a more elegant
+		// changing the design to having Document subclass Node. XXX TODO find a more elegant
 		// way to clean this up.
 		m_rootTreeMap = &m_treeMap;
 

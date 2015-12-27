@@ -27,30 +27,30 @@
 * THE SOFTWARE.
 */
 
-#include "GQUtil.hpp"
-#include "GQNode.hpp"
+#include "Util.hpp"
+#include "Node.hpp"
 
 namespace gq
 {
 
-	GQUtil::GQUtil()
+	Util::Util()
 	{
 
 	}
 
-	GQUtil::~GQUtil()
+	Util::~Util()
 	{
 
 	}
 
-	std::string GQUtil::NodeText(const GQNode* node)
+	std::string Util::NodeText(const Node* node)
 	{
 		std::string text;
 		WriteNodeText(node->m_node, text);
 		return text;
 	}
 
-	std::string GQUtil::NodeOwnText(const GQNode* node)
+	std::string Util::NodeOwnText(const Node* node)
 	{
 		std::string text;
 
@@ -72,7 +72,7 @@ namespace gq
 		return text;
 	}
 
-	bool GQUtil::NodeExists(const std::vector< const GQNode* >& nodeCollection, const GumboNode* search)
+	bool Util::NodeExists(const std::vector< const Node* >& nodeCollection, const GumboNode* search)
 	{
 		if (search == nullptr)
 		{
@@ -80,23 +80,23 @@ namespace gq
 		}
 
 		return std::find_if(nodeCollection.begin(), nodeCollection.end(), 
-			[search](const GQNode* item)
+			[search](const Node* item)
 			{
 				return item->m_node == search;
 			}) != nodeCollection.end();
 	}
 
-	void GQUtil::RemoveDuplicates(std::vector< const GQNode* >& primaryCollection)
+	void Util::RemoveDuplicates(std::vector< const Node* >& primaryCollection)
 	{
 		std::sort(primaryCollection.begin(), primaryCollection.end(),
-			[](const GQNode* lhs, const GQNode* rhs)
+			[](const Node* lhs, const Node* rhs)
 		{
 			return lhs->m_node < rhs->m_node;
 		}
 		);
 
 		auto last = std::unique(primaryCollection.begin(), primaryCollection.end(),
-			[](const GQNode* lhs, const GQNode* rhs)
+			[](const Node* lhs, const Node* rhs)
 		{
 			return lhs->m_node == rhs->m_node;
 		}
@@ -105,7 +105,7 @@ namespace gq
 		primaryCollection.erase(last, primaryCollection.end());
 	}
 
-	void GQUtil::UnionNodes(std::vector< const GQNode* >& primaryCollection, const std::vector< const GQNode* >& collection)
+	void Util::UnionNodes(std::vector< const Node* >& primaryCollection, const std::vector< const Node* >& collection)
 	{		
 		primaryCollection.reserve(primaryCollection.size() + collection.size());
 		primaryCollection.insert(primaryCollection.end(), collection.begin(), collection.end());
@@ -113,7 +113,7 @@ namespace gq
 		RemoveDuplicates(primaryCollection);		
 	}
 
-	boost::string_ref GQUtil::TrimEnclosingQuotes(boost::string_ref str)
+	boost::string_ref Util::TrimEnclosingQuotes(boost::string_ref str)
 	{
 		if (str.length() >= 2)
 		{
@@ -144,7 +144,7 @@ namespace gq
 		return str;
 	}
 
-	void GQUtil::WriteNodeText(const GumboNode* node, std::string& stringContainer)
+	void Util::WriteNodeText(const GumboNode* node, std::string& stringContainer)
 	{
 		if (node == nullptr)
 		{

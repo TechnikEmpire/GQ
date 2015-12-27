@@ -29,7 +29,7 @@
 
 #pragma once
 
-#include "GQSelector.hpp"
+#include "Selector.hpp"
 #include <boost/utility/string_ref.hpp>
 #include <regex>
 
@@ -37,8 +37,8 @@ namespace gq
 {
 
 	/// <summary>
-	/// The GQTextSelector is designed to match specifically against text elements. There are four
-	/// types of operations supported by the GQTextSelector.
+	/// The TextSelector is designed to match specifically against text elements. There are four
+	/// types of operations supported by the TextSelector.
 	/// <para>&#160;</para>
 	/// Match against a node where itself or any of its descendants contains a specific string.
 	/// Match against a node where itself or any of its direct children contain a specific string.
@@ -55,7 +55,7 @@ namespace gq
 	/// The grammar is specified to be ECMAScript which is supposed to be implemented as defined in
 	/// ECMA-262 section [28.13].
 	/// </summary>
-	class GQTextSelector final : public GQSelector
+	class TextSelector final : public Selector
 	{
 
 	public:
@@ -89,7 +89,7 @@ namespace gq
 		};
 
 		/// <summary>
-		/// Constructs a new GQTextSelector with the supplied operator and text to match. The
+		/// Constructs a new TextSelector with the supplied operator and text to match. The
 		/// supplied text must have a length greater than zero. If it does not, this constructor
 		/// will throw. It is not logical and therefore not possible to construct a selector with no
 		/// parameter to function on.
@@ -101,10 +101,10 @@ namespace gq
 		/// <param name="value">
 		/// The text to be matched. Must have a length greater than zero.
 		/// </param>
-		GQTextSelector(const SelectorOperator op, const boost::string_ref value);
+		TextSelector(const SelectorOperator op, const boost::string_ref value);
 
 		/// <summary>
-		/// Constructs a new GQTextSelector with the supplied operator and text to match. The
+		/// Constructs a new TextSelector with the supplied operator and text to match. The
 		/// supplied text must have a length greater than zero. If it does not, this constructor
 		/// will throw. It is not logical and therefore not possible to construct a selector with no
 		/// parameter to function on.
@@ -116,12 +116,12 @@ namespace gq
 		/// <param name="value">
 		/// The text to be matched. Must have a length greater than zero.
 		/// </param>
-		GQTextSelector(const SelectorOperator op, std::string value);
+		TextSelector(const SelectorOperator op, std::string value);
 
 		/// <summary>
 		/// Default destructor.
 		/// </summary>
-		virtual ~GQTextSelector();
+		virtual ~TextSelector();
 
 		/// <summary>
 		/// Check if this selector is a match against the supplied node. 
@@ -133,7 +133,7 @@ namespace gq
 		/// True if this selector was successfully matched against the supplied node, false
 		/// otherwise.
 		/// </returns>
-		virtual const GQMatchResult Match(const GQNode* node) const;
+		virtual const MatchResult Match(const Node* node) const;
 
 	private:
 

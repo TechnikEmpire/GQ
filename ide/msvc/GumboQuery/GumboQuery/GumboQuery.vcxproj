@@ -35,37 +35,37 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\src\GQAttributeSelector.hpp" />
-    <ClInclude Include="..\..\..\..\src\GQBinarySelector.hpp" />
-    <ClInclude Include="..\..\..\..\src\GQDocument.hpp" />
-    <ClInclude Include="..\..\..\..\src\GQNode.hpp" />
-    <ClInclude Include="..\..\..\..\src\GQNodeMutationCollection.hpp" />
-    <ClInclude Include="..\..\..\..\src\GQParser.hpp" />
-    <ClInclude Include="..\..\..\..\src\GQSelection.hpp" />
-    <ClInclude Include="..\..\..\..\src\GQSelector.hpp" />
-    <ClInclude Include="..\..\..\..\src\GQSerializer.hpp" />
-    <ClInclude Include="..\..\..\..\src\GQSpecialTraits.hpp" />
-    <ClInclude Include="..\..\..\..\src\GQTextSelector.hpp" />
-    <ClInclude Include="..\..\..\..\src\GQTreeMap.hpp" />
-    <ClInclude Include="..\..\..\..\src\GQUnarySelector.hpp" />
-    <ClInclude Include="..\..\..\..\src\GQUtil.hpp" />
-    <ClInclude Include="..\..\..\..\src\GQStrRefHash.hpp" />
+    <ClInclude Include="..\..\..\..\src\AttributeSelector.hpp" />
+    <ClInclude Include="..\..\..\..\src\BinarySelector.hpp" />
+    <ClInclude Include="..\..\..\..\src\Document.hpp" />
+    <ClInclude Include="..\..\..\..\src\Node.hpp" />
+    <ClInclude Include="..\..\..\..\src\NodeMutationCollection.hpp" />
+    <ClInclude Include="..\..\..\..\src\Parser.hpp" />
+    <ClInclude Include="..\..\..\..\src\Selection.hpp" />
+    <ClInclude Include="..\..\..\..\src\Selector.hpp" />
+    <ClInclude Include="..\..\..\..\src\Serializer.hpp" />
+    <ClInclude Include="..\..\..\..\src\SpecialTraits.hpp" />
+    <ClInclude Include="..\..\..\..\src\TextSelector.hpp" />
+    <ClInclude Include="..\..\..\..\src\TreeMap.hpp" />
+    <ClInclude Include="..\..\..\..\src\UnarySelector.hpp" />
+    <ClInclude Include="..\..\..\..\src\Util.hpp" />
+    <ClInclude Include="..\..\..\..\src\StrRefHash.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\src\GQAttributeSelector.cpp" />
-    <ClCompile Include="..\..\..\..\src\GQBinarySelector.cpp" />
-    <ClCompile Include="..\..\..\..\src\GQDocument.cpp" />
-    <ClCompile Include="..\..\..\..\src\GQNode.cpp" />
-    <ClCompile Include="..\..\..\..\src\GQNodeMutationCollection.cpp" />
-    <ClCompile Include="..\..\..\..\src\GQParser.cpp" />
-    <ClCompile Include="..\..\..\..\src\GQSelection.cpp" />
-    <ClCompile Include="..\..\..\..\src\GQSelector.cpp" />
-    <ClCompile Include="..\..\..\..\src\GQSerializer.cpp" />
-    <ClCompile Include="..\..\..\..\src\GQSpecialTraits.cpp" />
-    <ClCompile Include="..\..\..\..\src\GQTextSelector.cpp" />
-    <ClCompile Include="..\..\..\..\src\GQTreeMap.cpp" />
-    <ClCompile Include="..\..\..\..\src\GQUnarySelector.cpp" />
-    <ClCompile Include="..\..\..\..\src\GQUtil.cpp" />
+    <ClCompile Include="..\..\..\..\src\AttributeSelector.cpp" />
+    <ClCompile Include="..\..\..\..\src\BinarySelector.cpp" />
+    <ClCompile Include="..\..\..\..\src\Document.cpp" />
+    <ClCompile Include="..\..\..\..\src\Node.cpp" />
+    <ClCompile Include="..\..\..\..\src\NodeMutationCollection.cpp" />
+    <ClCompile Include="..\..\..\..\src\Parser.cpp" />
+    <ClCompile Include="..\..\..\..\src\Selection.cpp" />
+    <ClCompile Include="..\..\..\..\src\Selector.cpp" />
+    <ClCompile Include="..\..\..\..\src\Serializer.cpp" />
+    <ClCompile Include="..\..\..\..\src\SpecialTraits.cpp" />
+    <ClCompile Include="..\..\..\..\src\TextSelector.cpp" />
+    <ClCompile Include="..\..\..\..\src\TreeMap.cpp" />
+    <ClCompile Include="..\..\..\..\src\UnarySelector.cpp" />
+    <ClCompile Include="..\..\..\..\src\Util.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{CE29AD88-4255-450F-9FA1-22252959CE94}</ProjectGuid>

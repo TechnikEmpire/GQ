@@ -23,10 +23,10 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
-#include <GQDocument.hpp>
-#include <GQNode.hpp>
-#include <GQParser.hpp>
-#include <GQSerializer.hpp>
+#include <Document.hpp>
+#include <Node.hpp>
+#include <Parser.hpp>
+#include <Serializer.hpp>
 #include <chrono>
 #include <cmath>
 
@@ -74,10 +74,10 @@ int main(int argc, char *argv[])
 	htmlFile.read(&testHtmlContents[0], testHtmlContents.size());
 	htmlFile.close();
 
-	auto testDocument = gq::GQDocument::Create();
+	auto testDocument = gq::Document::Create();
 	testDocument->Parse(testHtmlContents);
 
-	gq::GQNodeMutationCollection collection;	
+	gq::NodeMutationCollection collection;	
 
 	// OnTagStart allows us to choose whether or not allow a certain tag type matched by our
 	// selector(s) to be serialized at all.
@@ -206,13 +206,13 @@ int main(int argc, char *argv[])
 	});
 	
 	// Create a parser to build a selector from a string/
-	gq::GQParser selectorParser;
+	gq::Parser selectorParser;
 
 	// Create our selector string, in this case a combined selector that will
 	// match all div, p, a, and iframe elements in the html.
 	std::string selectorString(u8"div, p, a, iframe");
 
-	gq::SharedGQSelector selector = nullptr;
+	gq::SharedSelector selector = nullptr;
 
 	try
 	{
@@ -237,13 +237,13 @@ int main(int argc, char *argv[])
 	// There may or may not be duplicates given to us. We don't really care too much
 	// about that here.
 	testDocument->Each(selector,
-		[&collection](const gq::GQNode* node)->void
+		[&collection](const gq::Node* node)->void
 	{
 		collection.Add(node);
 	});
 
 	// Give our mutation collection to the serialize method and get the serialization result.
-	auto serialized = gq::GQSerializer::Serialize(testDocument.get(), &collection);
+	auto serialized = gq::Serializer::Serialize(testDocument.get(), &collection);
 
 	std::string outputFileName = htmlTestDataFilePath;
 	outputFileName.append(u8".filtered.html");

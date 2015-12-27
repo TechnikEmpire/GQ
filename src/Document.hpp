@@ -31,29 +31,29 @@
 
 #include <cassert>
 #include <memory>
-#include "GQSelection.hpp"
-#include "GQTreeMap.hpp"
+#include "Selection.hpp"
+#include "TreeMap.hpp"
 
 namespace gq
 {
 
-	class GQTreeMap;
+	class TreeMap;
 
 	/// <summary>
-	/// The GQDocument serves as a lightweight wrapper around a GumboOutput* object, providing
+	/// The Document serves as a lightweight wrapper around a GumboOutput* object, providing
 	/// methods for querying the parsed HTML with selectors.
 	/// </summary>
-	class GQDocument : public GQNode
+	class Document : public Node
 	{
 
 	public:		
 
-		static std::unique_ptr<GQDocument> Create(GumboOutput* gumboOutput = nullptr);
+		static std::unique_ptr<Document> Create(GumboOutput* gumboOutput = nullptr);
 
 		/// <summary>
 		/// Default destructor.
 		/// </summary>
-		virtual ~GQDocument();
+		virtual ~Document();
 
 		/// <summary>
 		/// Use Gumbo Parser internally to parse the supplied HTML string into GumboOutput. It is
@@ -68,19 +68,19 @@ namespace gq
 	private:		
 
 		/// <summary>
-		/// Constructs an empty GQDocument object.
+		/// Constructs an empty Document object.
 		/// </summary>
-		GQDocument();
+		Document();
 
 		/// <summary>
-		/// Constructs a GQDocument from existing GumboOuput. This object will assume ownership of
+		/// Constructs a Document from existing GumboOuput. This object will assume ownership of
 		/// the supplied of the GumboOutput pointer.
 		/// </summary>
 		/// <param name="gumboOutput">
 		/// Existing output generated from Gumbo Parser. This object will assume control over the
 		/// lifetime of the supplied GumboOutput.
 		/// </param>
-		GQDocument(GumboOutput* gumboOutput);
+		Document(GumboOutput* gumboOutput);
 
 		/// <summary>
 		/// A pointer to the GumboOutput generated when parsing HTML. This object exclusively holds
@@ -91,11 +91,11 @@ namespace gq
 		/// <summary>
 		/// The map for the entire document.
 		/// </summary>
-		GQTreeMap m_treeMap;
-		//std::unique_ptr<GQTreeMap> m_treeMap = nullptr;
+		TreeMap m_treeMap;
+		//std::unique_ptr<TreeMap> m_treeMap = nullptr;
 
 		/// <summary>
-		/// Same concept as GQNode::Init(), which this overrides.
+		/// Same concept as Node::Init(), which this overrides.
 		/// </summary>
 		void Init();
 

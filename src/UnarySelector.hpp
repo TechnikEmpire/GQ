@@ -29,7 +29,7 @@
 
 #pragma once
 
-#include "GQSelector.hpp"
+#include "Selector.hpp"
 
 namespace gq
 {
@@ -38,7 +38,7 @@ namespace gq
 	/// The UnarySelector class makes selections possible such as negative matching (:not), child
 	/// and descendant matching.
 	/// </summary>
-	class GQUnarySelector final : public GQSelector
+	class UnarySelector final : public Selector
 	{
 
 	public:
@@ -81,12 +81,12 @@ namespace gq
 		/// <param name="selector">
 		/// The base selector to be used to perform actual condition/compositional matching. 
 		/// </param>
-		GQUnarySelector(SelectorOperator op, SharedGQSelector selector);
+		UnarySelector(SelectorOperator op, SharedSelector selector);
 
 		/// <summary>
 		/// Default destructor.
 		/// </summary>
-		virtual ~GQUnarySelector();
+		virtual ~UnarySelector();
 
 		/// <summary>
 		/// Check if this selector is a match against the supplied node. 
@@ -98,7 +98,7 @@ namespace gq
 		/// True if this selector was successfully matched against the supplied node, false
 		/// otherwise.
 		/// </returns>
-		virtual const GQMatchResult Match(const GQNode* node) const;
+		virtual const MatchResult Match(const Node* node) const;
 
 	private:
 
@@ -114,7 +114,7 @@ namespace gq
 		/// true kind of selector is not known nor does it matter. Whatever it is, its shares the
 		/// same ::Match(...) override.
 		/// </summary>
-		SharedGQSelector m_selector;
+		SharedSelector m_selector;
 
 		/// <summary>
 		/// Proper descendant matching is recursive, so the descendant matching is separeted into
@@ -126,7 +126,7 @@ namespace gq
 		/// <returns>
 		/// True if any of the supplied nodes descendants was a match, false otherwise. 
 		/// </returns>
-		const GQMatchResult HasDescendantMatch(const GQNode* node) const;
+		const MatchResult HasDescendantMatch(const Node* node) const;
 
 	};
 

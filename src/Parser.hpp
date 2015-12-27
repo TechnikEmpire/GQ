@@ -29,9 +29,9 @@
 
 #pragma once
 
-#include "GQSelector.hpp"
+#include "Selector.hpp"
 #include <unordered_map>
-#include "GQStrRefHash.hpp"
+#include "StrRefHash.hpp"
 #include <stdexcept>
 #include <locale>
 
@@ -39,23 +39,23 @@ namespace gq
 {
 
 	/// <summary>
-	/// The GQParser class takes a selector string as input and will "compile" it into a finalized
-	/// CSS selector for use against GQDocument and GQNode objects.
+	/// The Parser class takes a selector string as input and will "compile" it into a finalized
+	/// CSS selector for use against Document and Node objects.
 	/// </summary>
-	class GQParser
+	class Parser
 	{
 
 	public:
 
 		/// <summary>
-		/// Construcst a new GQParser.
+		/// Construcst a new Parser.
 		/// </summary>
-		GQParser();
+		Parser();
 
 		/// <summary>
 		/// Default destructor.
 		/// </summary>
-		~GQParser();
+		~Parser();
 
 		/// <summary>
 		/// Create a selector instance from the supplied raw selector string. There are several
@@ -72,7 +72,7 @@ namespace gq
 		/// <returns>
 		/// The compiled selector object. 
 		/// </returns>
-		SharedGQSelector CreateSelector(std::string selectorString, const bool retainOriginalString = false) const;
+		SharedSelector CreateSelector(std::string selectorString, const bool retainOriginalString = false) const;
 
 	private:		
 
@@ -115,8 +115,8 @@ namespace gq
 		/// <summary>
 		/// Attempts to extract one selector, or two or more combined selectors, and returns the
 		/// final result. Will either return the single selector, or combine multiple selectors
-		/// separated by a "," into a chain of GQBinarySelector objects using the Union operator,
-		/// which are also represented by a single GQSelector which is the topmost element in the
+		/// separated by a "," into a chain of BinarySelector objects using the Union operator,
+		/// which are also represented by a single Selector which is the topmost element in the
 		/// chain.
 		/// <para>&#160;</para>
 		/// As with all other parsing members, this function will consume characters from the front
@@ -131,13 +131,13 @@ namespace gq
 		/// <returns>
 		/// The compiled selector. 
 		/// </returns>
-		SharedGQSelector ParseSelectorGroup(boost::string_ref& selectorStr) const;
+		SharedSelector ParseSelectorGroup(boost::string_ref& selectorStr) const;
 
 		/// <summary>
 		/// Attempts top build one or more selector from the supplied string. Will handle all matter
 		/// of combinators except for grouping (","). On encountering grouping or EOF, a single
 		/// selector object is returned. However, this may be an individual selector, a chain of
-		/// selectors where the returned GQSelector is the topmost element in the chain. This
+		/// selectors where the returned Selector is the topmost element in the chain. This
 		/// function delegates parsing individual selectors to methods such as
 		/// ::ParseSimpleSelectorSequence(...) and then handles the combining, if any, internally.
 		/// <para>&#160;</para>
@@ -153,7 +153,7 @@ namespace gq
 		/// <returns>
 		/// The compiled selector. 
 		/// </returns>
-		SharedGQSelector ParseSelector(boost::string_ref& selectorStr) const;
+		SharedSelector ParseSelector(boost::string_ref& selectorStr) const;
 
 		/// <summary>
 		/// Attempts to parse a single selector from the supplied string. This object exists on
@@ -174,7 +174,7 @@ namespace gq
 		/// <returns>
 		/// The compiled selector. 
 		/// </returns>
-		SharedGQSelector ParseSimpleSelectorSequence(boost::string_ref& selectorStr) const;
+		SharedSelector ParseSimpleSelectorSequence(boost::string_ref& selectorStr) const;
 
 		/// <summary>
 		/// Parses a single pseudo class selector from the supplied string. Returns a single,
@@ -193,7 +193,7 @@ namespace gq
 		/// <returns>
 		/// The compiled selector. 
 		/// </returns>
-		SharedGQSelector ParsePseudoclassSelector(boost::string_ref& selectorStr) const;
+		SharedSelector ParsePseudoclassSelector(boost::string_ref& selectorStr) const;
 
 		/// <summary>
 		/// Parses a single attribute selector from the supplied string. Returns a single,
@@ -212,7 +212,7 @@ namespace gq
 		/// <returns>
 		/// The compiled selector. 
 		/// </returns>
-		SharedGQSelector ParseAttributeSelector(boost::string_ref& selectorStr) const;
+		SharedSelector ParseAttributeSelector(boost::string_ref& selectorStr) const;
 
 		/// <summary>
 		/// Parses a single class selector from the supplied string. Returns a single,
@@ -231,7 +231,7 @@ namespace gq
 		/// <returns>
 		/// The compiled selector. 
 		/// </returns>
-		SharedGQSelector ParseClassSelector(boost::string_ref& selectorStr) const;
+		SharedSelector ParseClassSelector(boost::string_ref& selectorStr) const;
 
 		/// <summary>
 		/// Parses a ID selector from the supplied string. Returns a single, non-chained selector
@@ -250,10 +250,10 @@ namespace gq
 		/// <returns>
 		/// The compiled selector. 
 		/// </returns>
-		SharedGQSelector ParseIDSelector(boost::string_ref& selectorStr) const;
+		SharedSelector ParseIDSelector(boost::string_ref& selectorStr) const;
 
 		/// <summary>
-		/// Parses a GQSelector that matches against a specific HTML element by its tag type from
+		/// Parses a Selector that matches against a specific HTML element by its tag type from
 		/// the supplied string. Returns a single, non-chained selector which may or may not be
 		/// combined into a selector chain object. That is left up to invoking methods such as
 		/// ::ParseSelector(...).
@@ -270,7 +270,7 @@ namespace gq
 		/// <returns>
 		/// The compiled selector. 
 		/// </returns>
-		SharedGQSelector ParseTypeSelector(boost::string_ref& selectorStr) const;
+		SharedSelector ParseTypeSelector(boost::string_ref& selectorStr) const;
 
 		/// <summary>
 		/// Attempts to parse the left hand and right hand side of the supplied nth parameter

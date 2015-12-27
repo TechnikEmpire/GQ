@@ -23,10 +23,10 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
-#include <GQDocument.hpp>
-#include <GQNode.hpp>
-#include <GQParser.hpp>
-#include <GQSerializer.hpp>
+#include <Document.hpp>
+#include <Node.hpp>
+#include <Parser.hpp>
+#include <Serializer.hpp>
 
 /// <summary>
 /// The purpose of this test is to load the "matchingtest.data" data file and run the tests laid out
@@ -113,7 +113,7 @@ int main()
 	size_t testsPassed = 0;
 	size_t testsFailed = 0;
 
-	gq::GQParser parser;
+	gq::Parser parser;
 
 	if (testNumbers.size() == testSelectors.size() && testExpectedMatches.size() == testNumbers.size() && testHtmlSamples.size() == testExpectedMatches.size())
 	{
@@ -131,7 +131,7 @@ int main()
 			}
 			std::cout << std::endl << std::endl;
 
-			auto document = gq::GQDocument::Create();
+			auto document = gq::Document::Create();
 
 			std::cout << u8"Input HTML:" << std::endl;
 			std::cout << testHtmlSamples[i] << std::endl << std::endl;
@@ -156,7 +156,7 @@ int main()
 					for (size_t ri = 0; ri < result.GetNodeCount(); ++ri)
 					{
 						auto* node = result.GetNodeAt(ri);
-						std::cout << gq::GQSerializer::Serialize(node) << std::endl;
+						std::cout << gq::Serializer::Serialize(node) << std::endl;
 					}
 					continue;
 				}
@@ -178,7 +178,7 @@ int main()
 								break;
 							}
 
-							std::cout << gq::GQSerializer::Serialize(node) << std::endl;
+							std::cout << gq::Serializer::Serialize(node) << std::endl;
 						}
 
 						if (foundInvalidData)

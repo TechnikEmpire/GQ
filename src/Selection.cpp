@@ -27,44 +27,44 @@
 * THE SOFTWARE.
 */
 
-#include "GQSelection.hpp"
-#include "GQParser.hpp"
-#include "GQUtil.hpp"
+#include "Selection.hpp"
+#include "Parser.hpp"
+#include "Util.hpp"
 
 namespace gq
 {
 
-	GQSelection::GQSelection(const GQNode* node)
+	Selection::Selection(const Node* node)
 	{
 		if (node == nullptr)
 		{
-			throw std::runtime_error(u8"In GQSelection::GQSelection(UniqueGQNode) - The UniqueGQNode is nullptr.");
+			throw std::runtime_error(u8"In Selection::Selection(UniqueNode) - The UniqueNode is nullptr.");
 		}
 
 		m_nodes.push_back(node);
 	}
 
-	GQSelection::GQSelection(std::vector<const GQNode*>& nodes) :
+	Selection::Selection(std::vector<const Node*>& nodes) :
 		m_nodes(std::move(nodes))
 	{
 
 	}
 
-	GQSelection::~GQSelection()
+	Selection::~Selection()
 	{
 
 	}
 
-	const size_t GQSelection::GetNodeCount() const
+	const size_t Selection::GetNodeCount() const
 	{
 		return m_nodes.size();
 	}
 
-	const GQNode* GQSelection::GetNodeAt(const size_t index) const
+	const Node* Selection::GetNodeAt(const size_t index) const
 	{
 		if (m_nodes.size() == 0 || index >= m_nodes.size())
 		{
-			throw std::runtime_error(u8"In GQSelection::GetNodeAt(const size_t) - The supplied index is out of bounds.");
+			throw std::runtime_error(u8"In Selection::GetNodeAt(const size_t) - The supplied index is out of bounds.");
 		}
 
 		return m_nodes[index];

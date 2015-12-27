@@ -44,19 +44,19 @@
 namespace gq
 {
 
-	class GQNode;
+	class Node;
 
 	/// <summary>
-	/// The GQSelector is the base class for all selectors in GQ. It handles simple and generic
+	/// The Selector is the base class for all selectors in GQ. It handles simple and generic
 	/// aspects of matching, such handling nth parameters in pseudo selectors and matching against
 	/// specific html tags.
 	/// </summary>
-	class GQSelector
+	class Selector
 	{
 
-		// So that the GQParser can copy/set the original source selector string at
+		// So that the Parser can copy/set the original source selector string at
 		// the request of the user.
-		friend class GQParser;
+		friend class Parser;
 
 	public:
 
@@ -95,25 +95,25 @@ namespace gq
 		/// interface is not sufficient to give users an accurate collection of matched nodes.
 		/// 
 		/// To meet this requirement, it's necessary to return a structure, rather than a simple
-		/// bool yes or no that the supplied GQNode is a match, since while a match may have been
-		/// found, the match may be in actuality a descendant of the supplied GQNode.
+		/// bool yes or no that the supplied Node is a match, since while a match may have been
+		/// found, the match may be in actuality a descendant of the supplied Node.
 		/// </summary>
-		struct GQMatchResult
+		struct MatchResult
 		{
 
-			// Only GQSelector and subclasses should be able to construct these.
-			friend class GQSelector;
-			friend class GQBinarySelector;
-			friend class GQAttributeSelector;
-			friend class GQUnarySelector;
-			friend class GQTextSelector;
+			// Only Selector and subclasses should be able to construct these.
+			friend class Selector;
+			friend class BinarySelector;
+			friend class AttributeSelector;
+			friend class UnarySelector;
+			friend class TextSelector;
 
 		public:
 
 			/// <summary>
 			/// Default destructor.
 			/// </summary>
-			~GQMatchResult();
+			~MatchResult();
 
 			/// <summary>
 			/// Gets the result of the match. May or may not be nullptr. Use the bool operator of
@@ -123,7 +123,7 @@ namespace gq
 			/// The node matched by the most right hand side of a single or combined selector. Will
 			/// be nullptr if there was no successful match. Valid otherwise.
 			/// </returns>
-			const GQNode* GetResult() const;
+			const Node* GetResult() const;
 
 			/// <summary>
 			/// Determine if this result contains a valid match or not. 
@@ -140,21 +140,21 @@ namespace gq
 
 		private:
 
-			GQMatchResult(const GQNode* result = nullptr);
+			MatchResult(const Node* result = nullptr);
 
-			const GQNode* m_result;
+			const Node* m_result;
 
 		};
 
-		GQSelector();
+		Selector();
 
 		/// <summary>
-		/// Constructs a GQSelector with the specified operator. 
+		/// Constructs a Selector with the specified operator. 
 		/// </summary>
 		/// <param name="op">
 		/// The operator to define the functionality of this selector. 
 		/// </param>
-		GQSelector(SelectorOperator op);
+		Selector(SelectorOperator op);
 
 		/// <summary>
 		/// Construct a selector meant to match a single element. 
@@ -162,7 +162,7 @@ namespace gq
 		/// <param name="matchType">
 		/// Determine if the single element is bound to a specific type or not. 
 		/// </param>
-		GQSelector(const bool matchType);
+		Selector(const bool matchType);
 
 		/// <summary>
 		/// Construct a selector used to match nth-(child|last-child|of-type|last-of-type)
@@ -185,21 +185,21 @@ namespace gq
 		/// <param name="matchType">
 		/// Determine if matching is bound to a specific type. 
 		/// </param>
-		GQSelector(const int leftHandSideOfNth, const int rightHandSideOfNth, const bool matchLast, const bool matchType);
+		Selector(const int leftHandSideOfNth, const int rightHandSideOfNth, const bool matchLast, const bool matchType);
 
 		/// <summary>
-		/// Constructs a GQSelector intended solely to match a specific element based on its tag
+		/// Constructs a Selector intended solely to match a specific element based on its tag
 		/// type.
 		/// </summary>
 		/// <param name="tagTypeToMatch">
 		/// The type of tag/element to match. 
 		/// </param>
-		GQSelector(GumboTag tagTypeToMatch);
+		Selector(GumboTag tagTypeToMatch);
 
 		/// <summary>
 		/// Default destructor.
 		/// </summary>
-		virtual ~GQSelector();
+		virtual ~Selector();
 
 		/// <summary>
 		/// Gets the GumboTag that this selector is to match against. If this selector is not built with the ::Tag matching operator, then the
@@ -221,7 +221,7 @@ namespace gq
 		
 		/// <summary>
 		/// Get a collection of attributes that this selector requires for the sake of matching.
-		/// These attributes are used internally in GQNode and GQDocument to filter potential match
+		/// These attributes are used internally in Node and Document to filter potential match
 		/// candidates by.
 		/// </summary>
 		/// <returns>
@@ -239,7 +239,7 @@ namespace gq
 		/// True if this selector was successfully matched against the supplied node, false
 		/// otherwise.
 		/// </returns>
-		virtual const GQMatchResult Match(const GQNode* node) const;
+		virtual const MatchResult Match(const Node* node) const;
 
 		/// <summary>
 		/// Recursively tests for matches against the supplied node and all of its descendants,
@@ -251,7 +251,7 @@ namespace gq
 		/// <returns>
 		/// A collection of all nodes matched by this selector. 
 		/// </returns>
-		void MatchAll(const GQNode* node, std::vector< const GQNode* >& results) const;
+		void MatchAll(const Node* node, std::vector< const Node* >& results) const;
 
 		/// <summary>
 		/// Accepts an existing collection of nodes and removes all nodes in the collection that do
@@ -260,7 +260,7 @@ namespace gq
 		/// <param name="nodes">
 		/// A collection of nodes to filter. 
 		/// </param>
-		void Filter(std::vector< const GQNode* >& nodes) const;
+		void Filter(std::vector< const Node* >& nodes) const;
 
 		/// <summary>
 		/// Fetches the original selector string that the selector was built from. This will only be
@@ -323,7 +323,7 @@ namespace gq
 		/// of the left hand side (left of the N) of the nth parameter. In the event that the parsed
 		/// value of the nth parameter is something like "odd", "even", "-n+3", the values supplied
 		/// in the constructor will already be accurately set accordingly by
-		/// GQParser::ParseNth(...).
+		/// Parser::ParseNth(...).
 		/// </summary>
 		int m_leftHandSideOfNth = 0;
 
@@ -332,7 +332,7 @@ namespace gq
 		/// of the right hand side (right of the N) of the nth parameter. In the event that the
 		/// parsed value of the nth parameter is something like "odd", "even", "-n+3", the values
 		/// supplied in the constructor will already be accurately set accordingly by
-		/// GQParser::ParseNth(...).
+		/// Parser::ParseNth(...).
 		/// </summary>
 		int m_rightHandSideOfNth = 0;
 
@@ -390,10 +390,10 @@ namespace gq
 		/// <param name="nodes">
 		/// The existing collection of matched nodes to append matches to. 
 		/// </param>
-		void MatchAllInto(const GQNode* node, std::vector< const GQNode* >& nodes) const;
+		void MatchAllInto(const Node* node, std::vector< const Node* >& nodes) const;
 
 	};
 
-	typedef std::shared_ptr<GQSelector> SharedGQSelector;
+	typedef std::shared_ptr<Selector> SharedSelector;
 
 } /* namespace gq */

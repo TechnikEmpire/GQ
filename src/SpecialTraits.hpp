@@ -28,7 +28,7 @@ namespace gq
 {
 
 	/// <summary>
-	/// The purpose of the GQSpecialTraits class is to define and contain special attribute names
+	/// The purpose of the SpecialTraits class is to define and contain special attribute names
 	/// that can be used for indexing elements based on certain qualities which are not defined as
 	/// standard html element attributes.
 	/// <para>&#160;</para>
@@ -48,7 +48,7 @@ namespace gq
 	/// change, but at runtime, the actual value returned from this member would be randomly
 	/// generated once per program lifecycle.
 	/// <para>&#160;</para>
-	/// As such, classes such as GQNode, GQDocument and GQSelector are safe to always index and
+	/// As such, classes such as Node, Document and Selector are safe to always index and
 	/// search the same types of attributes by these keys and it's as close to a guarantee as
 	/// possible that these names will be unique and thus not conflict with any natural or "in the
 	/// wild" input.
@@ -65,7 +65,7 @@ namespace gq
 	/// faster than simply doing no work at all. The only real performance increases that can be
 	/// done are by improving indexing to reduce returned candidate set sizes.
 	/// </summary>
-	class GQSpecialTraits
+	class SpecialTraits
 	{
 	
 	public:
@@ -103,7 +103,7 @@ namespace gq
 		/// Gets the value used for indexing a node as being the last child within its parent. As
 		/// discussed elsewhere in documentation, GQ doesn't consider every GumbNode* to be a valid
 		/// "child" in the same sense the Gumbo Parser does. Only nodes that are of type
-		/// GUMBO_NODE_ELEMENT are consumed and managed as GQNodes. Just as another reminder, last
+		/// GUMBO_NODE_ELEMENT are consumed and managed as Nodes. Just as another reminder, last
 		/// child in the sense of this value is meant to describe the last GUMBO_NODE_ELEMENT within
 		/// a parent.
 		/// </summary>
@@ -116,7 +116,7 @@ namespace gq
 		/// Gets the value used for indexing a node as being the last child of a certain type within
 		/// its parent. As discussed elsewhere in documentation, GQ doesn't consider every GumbNode*
 		/// to be a valid "child" in the same sense the Gumbo Parser does. Only nodes that are of
-		/// type GUMBO_NODE_ELEMENT are consumed and managed as GQNodes. Just as another reminder,
+		/// type GUMBO_NODE_ELEMENT are consumed and managed as Nodes. Just as another reminder,
 		/// last child in the sense of this value is meant to describe the last GUMBO_NODE_ELEMENT
 		/// within a parent.
 		/// </summary>
@@ -128,8 +128,8 @@ namespace gq
 
 	private:
 
-		GQSpecialTraits();
-		~GQSpecialTraits();
+		SpecialTraits();
+		~SpecialTraits();
 
 		class RandomKey
 		{

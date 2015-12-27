@@ -27,20 +27,20 @@
 * THE SOFTWARE.
 */
 
-#include "GQTextSelector.hpp"
-#include "GQUtil.hpp"
+#include "TextSelector.hpp"
+#include "Util.hpp"
 #include <boost/algorithm/string.hpp>
-#include "GQNode.hpp"
+#include "Node.hpp"
 
 namespace gq
 {
 
-	GQTextSelector::GQTextSelector(const SelectorOperator op, const boost::string_ref value) :
+	TextSelector::TextSelector(const SelectorOperator op, const boost::string_ref value) :
 		m_operator(op), m_textToMatch(value.to_string()), m_textToMatchStrRef(m_textToMatch)
 	{
 		if (m_textToMatch.size() == 0)
 		{
-			throw std::runtime_error(u8"In GQAttributeSelector::GQAttributeSelector(SelectorOperator, const boost::string_ref) - Supplied text to match has zero length.");
+			throw std::runtime_error(u8"In AttributeSelector::AttributeSelector(SelectorOperator, const boost::string_ref) - Supplied text to match has zero length.");
 		}
 
 		if (m_operator == SelectorOperator::Matches || m_operator == SelectorOperator::MatchesOwn)
@@ -49,23 +49,23 @@ namespace gq
 
 			if (m_expression == nullptr)
 			{
-				throw std::runtime_error(u8"In GQAttributeSelector::GQAttributeSelector(SelectorOperator, const boost::string_ref) - Failed to allocate new std::regex for regex based GQTextSelector.");
+				throw std::runtime_error(u8"In AttributeSelector::AttributeSelector(SelectorOperator, const boost::string_ref) - Failed to allocate new std::regex for regex based TextSelector.");
 			}
 		}
 
 		#ifndef NDEBUG
 			#ifdef GQ_VERBOSE_DEBUG_NFO
-				std::cout << "Built GQTextSelector with operator " << static_cast<size_t>(m_operator) << " with text to match " << m_textToMatch << u8"." << std::endl;
+				std::cout << "Built TextSelector with operator " << static_cast<size_t>(m_operator) << " with text to match " << m_textToMatch << u8"." << std::endl;
 			#endif
 		#endif
 	}
 
-	GQTextSelector::GQTextSelector(const SelectorOperator op, std::string value) :
+	TextSelector::TextSelector(const SelectorOperator op, std::string value) :
 		m_operator(op), m_textToMatch(std::move(value)), m_textToMatchStrRef(m_textToMatch)
 	{
 		if (m_textToMatch.size() == 0)
 		{
-			throw std::runtime_error(u8"In GQAttributeSelector::GQAttributeSelector(SelectorOperator, std::string) - Supplied text to match has zero length.");
+			throw std::runtime_error(u8"In AttributeSelector::AttributeSelector(SelectorOperator, std::string) - Supplied text to match has zero length.");
 		}
 
 		if (m_operator == SelectorOperator::Matches || m_operator == SelectorOperator::MatchesOwn)
@@ -74,23 +74,23 @@ namespace gq
 
 			if (m_expression == nullptr)
 			{
-				throw std::runtime_error(u8"In GQAttributeSelector::GQAttributeSelector(SelectorOperator, const boost::string_ref) - Failed to allocate new std::regex for regex based GQTextSelector.");
+				throw std::runtime_error(u8"In AttributeSelector::AttributeSelector(SelectorOperator, const boost::string_ref) - Failed to allocate new std::regex for regex based TextSelector.");
 			}
 		}
 
 		#ifndef NDEBUG
 			#ifdef GQ_VERBOSE_DEBUG_NFO
-				std::cout << "Built GQTextSelector with operator " << static_cast<size_t>(m_operator) << " with text to match " << m_textToMatch << u8"." << std::endl;
+				std::cout << "Built TextSelector with operator " << static_cast<size_t>(m_operator) << " with text to match " << m_textToMatch << u8"." << std::endl;
 			#endif
 		#endif
 	}
 
-	GQTextSelector::~GQTextSelector()
+	TextSelector::~TextSelector()
 	{
 
 	}
 
-	const GQSelector::GQMatchResult GQTextSelector::Match(const GQNode* node) const
+	const Selector::MatchResult TextSelector::Match(const Node* node) const
 	{		
 		switch (m_operator)
 		{
@@ -98,12 +98,12 @@ namespace gq
 			{
 				// In jQuery, contains is case sensitive. As such, we use find, rather than
 				// ifind_first.
-				auto text = GQUtil::NodeText(node);
+				auto text = Util::NodeText(node);
 				boost::string_ref textStrRef(text);
 
 				if (textStrRef.find(m_textToMatchStrRef) != boost::string_ref::npos)
 				{
-					return GQMatchResult(node);
+					return MatchResult(node);
 				}
 				
 				return false;
@@ -114,12 +114,12 @@ namespace gq
 			{
 				// In jQuery, contains is case sensitive. As such, we use find, rather than
 				// ifind_first.
-				auto text = GQUtil::NodeOwnText(node);
+				auto text = Util::NodeOwnText(node);
 				boost::string_ref textStrRef(text);
 
 				if (textStrRef.find(m_textToMatchStrRef) != boost::string_ref::npos)
 				{
-					return GQMatchResult(node);
+					return MatchResult(node);
 				}
 
 				return false;
@@ -128,10 +128,10 @@ namespace gq
 
 			case SelectorOperator::Matches:
 			{
-				auto text = GQUtil::NodeText(node);
+				auto text = Util::NodeText(node);
 				if (std::regex_search(text, *(m_expression.get())))
 				{
-					return GQMatchResult(node);
+					return MatchResult(node);
 				}
 
 				return false;
@@ -140,10 +140,10 @@ namespace gq
 
 			case SelectorOperator::MatchesOwn:
 			{
-				auto text = GQUtil::NodeOwnText(node);
+				auto text = Util::NodeOwnText(node);
 				if (std::regex_search(text, *(m_expression.get())))
 				{
-					return GQMatchResult(node);
+					return MatchResult(node);
 				}
 
 				return false;

@@ -28,48 +28,48 @@
 */
 
 #include <unordered_set>
-#include "GQSelector.hpp"
-#include "GQNode.hpp"
-#include "GQSpecialTraits.hpp"
+#include "Selector.hpp"
+#include "Node.hpp"
+#include "SpecialTraits.hpp"
 
 namespace gq
 {
-	GQSelector::GQMatchResult::GQMatchResult(const GQNode* result) :m_result(result)
+	Selector::MatchResult::MatchResult(const Node* result) :m_result(result)
 	{
 
 	}
 
-	GQSelector::GQMatchResult::~GQMatchResult()
+	Selector::MatchResult::~MatchResult()
 	{
 
 	}
 
-	const GQNode* GQSelector::GQMatchResult::GetResult() const
+	const Node* Selector::MatchResult::GetResult() const
 	{		
 		return m_result;
 	}
 
-	GQSelector::GQMatchResult::operator bool() const
+	Selector::MatchResult::operator bool() const
 	{
 		return m_result != nullptr;
 	}
 
-	const bool GQSelector::GQMatchResult::operator==(const bool other) const
+	const bool Selector::MatchResult::operator==(const bool other) const
 	{
 		return (m_result != nullptr) == other;
 	}
 
-	const bool GQSelector::GQMatchResult::operator!=(const bool other) const
+	const bool Selector::MatchResult::operator!=(const bool other) const
 	{
 		return (m_result != nullptr) != other;
 	}
 
-	GQSelector::GQSelector()
+	Selector::Selector()
 	{
 		InitDefaults();
 	}
 
-	GQSelector::GQSelector(SelectorOperator op)
+	Selector::Selector(SelectorOperator op)
 	{
 		InitDefaults();
 		m_selectorOperator = op;
@@ -77,13 +77,13 @@ namespace gq
 		if (m_selectorOperator == SelectorOperator::Dummy)
 		{
 			// A dummy can match anything. So we add a trait that it can match against any tag type.
-			AddMatchTrait(GQSpecialTraits::GetTagKey(), GQSpecialTraits::GetAnyValue());
+			AddMatchTrait(SpecialTraits::GetTagKey(), SpecialTraits::GetAnyValue());
 		}
 
 		#ifndef NDEBUG
 			#ifdef GQ_VERBOSE_DEBUG_NFO
 				std::cout
-					<< u8"Built GQSelector with operator "
+					<< u8"Built Selector with operator "
 					<< static_cast<size_t>(op)
 					<< u8"."
 					<< std::endl;
@@ -91,7 +91,7 @@ namespace gq
 		#endif
 	}
 
-	GQSelector::GQSelector(const bool matchType)
+	Selector::Selector(const bool matchType)
 	{
 		InitDefaults();
 		m_selectorOperator = SelectorOperator::OnlyChild;
@@ -100,7 +100,7 @@ namespace gq
 		#ifndef NDEBUG
 			#ifdef GQ_VERBOSE_DEBUG_NFO
 				std::cout
-					<< u8"Built GQSelector for only child matching"
+					<< u8"Built Selector for only child matching"
 					<< u8" with matching type set to "
 					<< std::boolalpha << matchType
 					<< u8"."
@@ -109,7 +109,7 @@ namespace gq
 		#endif
 	}
 
-	GQSelector::GQSelector(const int leftHandSideOfNth, const int rightHandSideOfNth, const bool matchLast, const bool matchType)
+	Selector::Selector(const int leftHandSideOfNth, const int rightHandSideOfNth, const bool matchLast, const bool matchType)
 	{
 		InitDefaults();
 		m_selectorOperator = SelectorOperator::NthChild;
@@ -121,7 +121,7 @@ namespace gq
 		#ifndef NDEBUG
 			#ifdef GQ_VERBOSE_DEBUG_NFO
 			std::cout 
-				<< u8"Built GQSelector for nth matching with lhs of "
+				<< u8"Built Selector for nth matching with lhs of "
 				<< std::to_string(leftHandSideOfNth) 
 				<< u8" and rhs of " 
 				<< std::to_string(rightHandSideOfNth) 
@@ -135,7 +135,7 @@ namespace gq
 		#endif
 	}
 
-	GQSelector::GQSelector(GumboTag tagTypeToMatch)
+	Selector::Selector(GumboTag tagTypeToMatch)
 	{
 		InitDefaults();
 		m_selectorOperator = SelectorOperator::Tag;
@@ -143,38 +143,38 @@ namespace gq
 
 		#ifndef NDEBUG
 			#ifdef GQ_VERBOSE_DEBUG_NFO
-				std::cout << "Built GQSelector for matching GumboTag " << gumbo_normalized_tagname(tagTypeToMatch) << u8"." << std::endl;
+				std::cout << "Built Selector for matching GumboTag " << gumbo_normalized_tagname(tagTypeToMatch) << u8"." << std::endl;
 			#endif
 		#endif
 	}
 
-	GQSelector::~GQSelector()
+	Selector::~Selector()
 	{
 	}
 
-	const GumboTag GQSelector::GetTagTypeToMatch() const
+	const GumboTag Selector::GetTagTypeToMatch() const
 	{
 		return m_tagTypeToMatch;
 	}
 
-	const boost::string_ref GQSelector::GetNormalizedTagTypeToMatch() const
+	const boost::string_ref Selector::GetNormalizedTagTypeToMatch() const
 	{
 		return m_normalizedTagTypeToMatch;
 	}
 
-	const std::vector< std::pair<boost::string_ref, boost::string_ref> >& GQSelector::GetMatchTraits() const
+	const std::vector< std::pair<boost::string_ref, boost::string_ref> >& Selector::GetMatchTraits() const
 	{
 		return m_matchTraits;
 	}
 
-	const GQSelector::GQMatchResult GQSelector::Match(const GQNode* node) const
+	const Selector::MatchResult Selector::Match(const Node* node) const
 	{
 
 		switch (m_selectorOperator)
 		{
 			case SelectorOperator::Dummy:
 			{				
-				return GQMatchResult(node);
+				return MatchResult(node);
 			}
 			break;
 
@@ -182,7 +182,7 @@ namespace gq
 			{
 				if (node->IsEmpty())
 				{
-					return GQMatchResult(node);
+					return MatchResult(node);
 				}
 
 				return false;
@@ -191,7 +191,7 @@ namespace gq
 
 			case SelectorOperator::OnlyChild:
 			{
-				const GQNode* parent = node->GetParent();
+				const Node* parent = node->GetParent();
 				if (parent == nullptr)
 				{
 					// Can't be a child without parents. :( Poor node. So sad.
@@ -226,7 +226,7 @@ namespace gq
 
 				if (count == 1)
 				{
-					return GQMatchResult(node);
+					return MatchResult(node);
 				}
 
 				return false;
@@ -235,7 +235,7 @@ namespace gq
 
 			case SelectorOperator::NthChild:
 			{
-				const GQNode* parent = node->GetParent();
+				const Node* parent = node->GetParent();
 				if (parent == nullptr)
 				{
 					// Can't be a child without parents. :( Poor node. So sad.
@@ -341,7 +341,7 @@ namespace gq
 				// true, then we didn't match at all.
 				if (nthIndex == actualIndex || (validNths.find(actualIndex) != validNths.end()))
 				{
-					return GQMatchResult(node);
+					return MatchResult(node);
 				}
 
 				return false;
@@ -352,7 +352,7 @@ namespace gq
 			{				
 				if (node->GetTag() == m_tagTypeToMatch)
 				{
-					return GQMatchResult(node);
+					return MatchResult(node);
 				}
 
 				return false;
@@ -363,33 +363,33 @@ namespace gq
 		return false;
 	}
 
-	void GQSelector::MatchAll(const GQNode* node, std::vector< const GQNode* >& results) const
+	void Selector::MatchAll(const Node* node, std::vector< const Node* >& results) const
 	{
 		#ifndef NDEBUG
-			assert(node != nullptr && u8"In GQSelector::MatchAll(const GumboNode*, std::vector< const GQNode* >&) - Nullptr node supplied for matching.");
+			assert(node != nullptr && u8"In Selector::MatchAll(const GumboNode*, std::vector< const Node* >&) - Nullptr node supplied for matching.");
 		#else
-			if (node == nullptr) { throw std::runtime_error(u8"In GQSelector::MatchAll(const GumboNode*, std::vector< const GQNode* >&) - Nullptr node supplied for matching."); }
+			if (node == nullptr) { throw std::runtime_error(u8"In Selector::MatchAll(const GumboNode*, std::vector< const Node* >&) - Nullptr node supplied for matching."); }
 		#endif
 
 		MatchAllInto(node, results);
 	}
 
-	void GQSelector::Filter(std::vector< const GQNode* >& nodes) const
+	void Selector::Filter(std::vector< const Node* >& nodes) const
 	{
 		nodes.erase(std::remove_if(nodes.begin(), nodes.end(), 
-			[this](const GQNode* sharedNode)
+			[this](const Node* sharedNode)
 			{
 				return !Match(sharedNode);
 			}
 		), nodes.end());
 	}
 
-	boost::string_ref GQSelector::GetOriginalSelectorString() const
+	boost::string_ref Selector::GetOriginalSelectorString() const
 	{
 		return boost::string_ref(m_originalSelectorString);
 	}
 
-	void GQSelector::SetTagTypeToMatch(const GumboTag tag)
+	void Selector::SetTagTypeToMatch(const GumboTag tag)
 	{
 		m_tagTypeToMatch = tag;
 
@@ -399,11 +399,11 @@ namespace gq
 			m_normalizedTagTypeToMatch = boost::string_ref(normalName);
 
 			// Add the tag type as a match trait
-			AddMatchTrait(GQSpecialTraits::GetTagKey(), m_normalizedTagTypeToMatch);
+			AddMatchTrait(SpecialTraits::GetTagKey(), m_normalizedTagTypeToMatch);
 		}
 	}
 
-	void GQSelector::AddMatchTrait(boost::string_ref key, boost::string_ref value)
+	void Selector::AddMatchTrait(boost::string_ref key, boost::string_ref value)
 	{
 		auto pair = std::make_pair(key, value);
 		if (std::find(m_matchTraits.begin(), m_matchTraits.end(), pair) == m_matchTraits.end())
@@ -412,7 +412,7 @@ namespace gq
 		}
 	}
 
-	void GQSelector::InitDefaults()
+	void Selector::InitDefaults()
 	{
 		m_matchType = false;
 		m_leftHandSideOfNth = 0;
@@ -421,12 +421,12 @@ namespace gq
 		m_tagTypeToMatch = GUMBO_TAG_UNKNOWN;
 	}
 
-	void GQSelector::MatchAllInto(const GQNode* node, std::vector< const GQNode* >& nodes) const
+	void Selector::MatchAllInto(const Node* node, std::vector< const Node* >& nodes) const
 	{
 		#ifndef NDEBUG
-			assert(node != nullptr && u8"In GQSelector::MatchAllInto(const GumboNode*, std::vector<const GumboNode*>&) - Nullptr node supplied for matching.");
+			assert(node != nullptr && u8"In Selector::MatchAllInto(const GumboNode*, std::vector<const GumboNode*>&) - Nullptr node supplied for matching.");
 		#else
-			if (node == nullptr) { throw std::runtime_error(u8"In GQSelector::MatchAllInto(const GumboNode*, std::vector<const GumboNode*>&) - Nullptr node supplied for matching."); }
+			if (node == nullptr) { throw std::runtime_error(u8"In Selector::MatchAllInto(const GumboNode*, std::vector<const GumboNode*>&) - Nullptr node supplied for matching."); }
 		#endif
 
 		if (Match(node))
