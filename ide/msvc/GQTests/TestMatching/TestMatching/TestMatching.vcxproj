@@ -177,7 +177,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(ProjectDir)..\..\..\..\..\deps\gumbo-parser\msvc\$(ConfigurationName)\lib;$(ProjectDir)..\..\..\..\..\build\msvc\$(ConfigurationName)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>gumbo_parser.lib;gumbo_query.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>gumbo_parser.lib;gq.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /Y "$(ProjectDir)..\..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\lib\*.dll" "$(OutDir)"</Command>
@@ -197,7 +197,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(ProjectDir)..\..\..\..\..\deps\gumbo-parser\msvc\$(ConfigurationName)\lib;$(ProjectDir)..\..\..\..\..\build\msvc\$(ConfigurationName)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>gumbo_parser.lib;gumbo_query.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>gumbo_parser.lib;gq.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /Y "$(ProjectDir)..\..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\lib\*.dll" "$(OutDir)"</Command>
@@ -217,7 +217,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(ProjectDir)..\..\..\..\..\deps\gumbo-parser\msvc\$(ConfigurationName)\lib;$(ProjectDir)..\..\..\..\..\build\msvc\$(ConfigurationName)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>gumbo_parser.lib;gumbo_query.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>gumbo_parser.lib;gq.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /Y "$(ProjectDir)..\..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\lib\*.dll" "$(OutDir)"</Command>
@@ -237,7 +237,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(ProjectDir)..\..\..\..\..\deps\gumbo-parser\msvc\$(ConfigurationName)\lib;$(ProjectDir)..\..\..\..\..\build\msvc\$(ConfigurationName)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>gumbo_parser.lib;gumbo_query.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>gumbo_parser.lib;gq.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /Y "$(ProjectDir)..\..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\lib\*.dll" "$(OutDir)"</Command>
@@ -261,7 +261,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>$(ProjectDir)..\..\..\..\..\deps\gumbo-parser\msvc\$(ConfigurationName)\lib;$(ProjectDir)..\..\..\..\..\build\msvc\$(ConfigurationName)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>gumbo_parser.lib;gumbo_query.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>gumbo_parser.lib;gq.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /Y "$(ProjectDir)..\..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\lib\*.dll" "$(OutDir)"</Command>
@@ -285,7 +285,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>$(ProjectDir)..\..\..\..\..\deps\gumbo-parser\msvc\$(ConfigurationName)\lib;$(ProjectDir)..\..\..\..\..\build\msvc\$(ConfigurationName)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>gumbo_parser.lib;gumbo_query.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>gumbo_parser.lib;gq.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /Y "$(ProjectDir)..\..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\lib\*.dll" "$(OutDir)"</Command>
@@ -309,7 +309,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>$(ProjectDir)..\..\..\..\..\deps\gumbo-parser\msvc\$(ConfigurationName)\lib;$(ProjectDir)..\..\..\..\..\build\msvc\$(ConfigurationName)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>gumbo_parser.lib;gumbo_query.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>gumbo_parser.lib;gq.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /Y "$(ProjectDir)..\..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\lib\*.dll" "$(OutDir)"</Command>
@@ -333,7 +333,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>$(ProjectDir)..\..\..\..\..\deps\gumbo-parser\msvc\$(ConfigurationName)\lib;$(ProjectDir)..\..\..\..\..\build\msvc\$(ConfigurationName)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>gumbo_parser.lib;gumbo_query.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>gumbo_parser.lib;gq.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /Y "$(ProjectDir)..\..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\lib\*.dll" "$(OutDir)"</Command>
