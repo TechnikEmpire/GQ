@@ -15,93 +15,93 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\src\GQDocument.hpp">
+    <ClInclude Include="..\..\..\..\src\AttributeSelector.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\GQNode.hpp">
+    <ClInclude Include="..\..\..\..\src\BinarySelector.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\GQParser.hpp">
+    <ClInclude Include="..\..\..\..\src\Document.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\GQSelection.hpp">
+    <ClInclude Include="..\..\..\..\src\Node.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\GQSelector.hpp">
+    <ClInclude Include="..\..\..\..\src\NodeMutationCollection.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\GQBinarySelector.hpp">
+    <ClInclude Include="..\..\..\..\src\Parser.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\GQAttributeSelector.hpp">
+    <ClInclude Include="..\..\..\..\src\Selection.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\GQTextSelector.hpp">
+    <ClInclude Include="..\..\..\..\src\Selector.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\GQUtil.hpp">
+    <ClInclude Include="..\..\..\..\src\Serializer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\GQSerializer.hpp">
+    <ClInclude Include="..\..\..\..\src\SpecialTraits.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\GQStrRefHash.hpp">
+    <ClInclude Include="..\..\..\..\src\TextSelector.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\GQTreeMap.hpp">
+    <ClInclude Include="..\..\..\..\src\TreeMap.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\GQSpecialTraits.hpp">
+    <ClInclude Include="..\..\..\..\src\UnarySelector.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\GQUnarySelector.hpp">
+    <ClInclude Include="..\..\..\..\src\Util.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\GQNodeMutationCollection.hpp">
+    <ClInclude Include="..\..\..\..\src\StrRefHash.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\src\GQDocument.cpp">
+    <ClCompile Include="..\..\..\..\src\AttributeSelector.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\src\GQNode.cpp">
+    <ClCompile Include="..\..\..\..\src\BinarySelector.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\src\GQParser.cpp">
+    <ClCompile Include="..\..\..\..\src\Document.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\src\GQSelection.cpp">
+    <ClCompile Include="..\..\..\..\src\Node.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\src\GQSelector.cpp">
+    <ClCompile Include="..\..\..\..\src\NodeMutationCollection.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\src\GQBinarySelector.cpp">
+    <ClCompile Include="..\..\..\..\src\Parser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\src\GQAttributeSelector.cpp">
+    <ClCompile Include="..\..\..\..\src\Selection.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\src\GQTextSelector.cpp">
+    <ClCompile Include="..\..\..\..\src\Selector.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\src\GQUtil.cpp">
+    <ClCompile Include="..\..\..\..\src\Serializer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\src\GQSerializer.cpp">
+    <ClCompile Include="..\..\..\..\src\SpecialTraits.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\src\GQTreeMap.cpp">
+    <ClCompile Include="..\..\..\..\src\TextSelector.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\src\GQSpecialTraits.cpp">
+    <ClCompile Include="..\..\..\..\src\TreeMap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\src\GQUnarySelector.cpp">
+    <ClCompile Include="..\..\..\..\src\UnarySelector.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\src\GQNodeMutationCollection.cpp">
+    <ClCompile Include="..\..\..\..\src\Util.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
