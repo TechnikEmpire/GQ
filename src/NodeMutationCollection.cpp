@@ -34,6 +34,14 @@ namespace gq
 		}
 	}
 
+	const bool NodeMutationCollection::Remove(const Node* node)
+	{
+		if (node != nullptr)
+		{
+			return m_rawNodes.erase(node->m_node) == 1;
+		}
+	}
+
 	const bool NodeMutationCollection::Contains(const GumboNode* rawNode) const
 	{
 		auto& res = m_rawNodes.find(rawNode);

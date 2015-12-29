@@ -35,20 +35,19 @@ namespace gq
 	class Node;
 
 	/// <summary>
-	/// The purpose of the NodeMutationCollection class is to provide a safe way for users to
-	/// modify nodes during the serialization process. Users should not be concerned about validity
-	/// of pointers in the collection or the lifetime of the objects in the collection. Once again,
-	/// the user only must simply keep Document alive and any naked pointers received by the user
-	/// during its lifetime should be safe and valid, as they are managed internally this way. This
-	/// collection also does not allow for removal. This collection internally uses an
-	/// unordered_set, and as such sort of has built in duplicate filtering, but that's not the
-	/// intended use and this behavior should not be relied upon.
+	/// The purpose of the NodeMutationCollection class is to provide a safe way for users to modify
+	/// nodes during the serialization process. Users should not be concerned about validity of
+	/// pointers in the collection or the lifetime of the objects in the collection. Once again, the
+	/// user only must simply keep Document alive and any naked pointers received by the user during
+	/// its lifetime should be safe and valid, as they are managed internally this way. This
+	/// collection internally uses an unordered_set, and as such sort of has built in duplicate
+	/// filtering, but that's not the intended use and this behavior should not be relied upon.
 	/// <para>&#160;</para>
 	/// Gumbo Parser does not provide any way to mutate a parsed document. The first thought to
 	/// solve this would be to provide lots of methods to fake the appearance of mutability, such as
-	/// Node::SetText(...), copying data, then on serialization looking up all of these fake
-	/// changes and attempting to place them correctly in the output. However, this could get
-	/// complex fast, making maintenance a PITA.
+	/// Node::SetText(...), copying data, then on serialization looking up all of these fake changes
+	/// and attempting to place them correctly in the output. However, this could get complex fast,
+	/// making maintenance a PITA.
 	/// <para>&#160;</para>
 	/// An alternative approach is to use a structure like this. When users really want to change
 	/// nodes that are matched by selectors, they can store match results in this container and
@@ -61,19 +60,18 @@ namespace gq
 	/// is because of the extraordinary lengths taken by this library to prevent the end user from
 	/// directly accessing underlying Gumbo structures that are managed by structures in this
 	/// library, such as GumboNode. The second reason is that not every element in the GumboOutput
-	/// is created and stored in a Node, because Nodes are only constructed from
-	/// GUMBO_NODE_ELEMENT nodes. The Serializer is agnostic about this design, and is agnostic
-	/// about Node in general. We'd like to keep it that way (to keep it simple) and so we pass in
-	/// this collection which is a friend of Node, and can, in a blackbox fashion (from the
-	/// Serializer's perspective) handle recognizing a GumboNode* that's wrapped in a Node, etc
-	/// etc.
+	/// is created and stored in a Node, because Nodes are only constructed from GUMBO_NODE_ELEMENT
+	/// nodes. The Serializer is agnostic about this design, and is agnostic about Node in general.
+	/// We'd like to keep it that way (to keep it simple) and so we pass in this collection which is
+	/// a friend of Node, and can, in a blackbox fashion (from the Serializer's perspective) handle
+	/// recognizing a GumboNode* that's wrapped in a Node, etc etc.
 	/// <para>&#160;</para>
 	/// And just for the sake of explaining it to death, the user doesn't have access to the
 	/// underlying GumboNode* elements. Since Serializer is largely agnostic to Node* and rather
-	/// deals in raw GumboNode* structures, a gap needs to be bridged between the Serializer and
-	/// the end user, who only deals in Node elements. But, we also don't want to be iterating
-	/// over every Node the user has collected and wants to modify on serialization, comparing
-	/// pointers in a repeating, recursive fashion (to match GumboNode* elements the serializer has
+	/// deals in raw GumboNode* structures, a gap needs to be bridged between the Serializer and the
+	/// end user, who only deals in Node elements. But, we also don't want to be iterating over
+	/// every Node the user has collected and wants to modify on serialization, comparing pointers
+	/// in a repeating, recursive fashion (to match GumboNode* elements the serializer has
 	/// discovered against GumboNode* elements the user is handling, wrapped up in Node*
 	/// structures). So, this container is specialized so that Serializer can quickly ask it "is
 	/// this next node I'm going to process something the user wants to modify?", and if that's
@@ -98,6 +96,18 @@ namespace gq
 		/// A node that requires custom serialization. 
 		/// </param>
 		void Add(const Node* node);
+
+		/// <summary>
+		/// Removes the supplied node from the collection. If the supplied node is not present in
+		/// the collection, then the return value is false. This can be useful for situations where
+		/// whitelists and blacklists of certain selectors exist. Whitelist selectors can run after
+		/// an initial collection and then the results of a whitelist selection can be pruned from a
+		/// previously populated collection.
+		/// </summary>
+		/// <param name="node">
+		/// True if the supplied node was found and removed from the collection, false otherwise.
+		/// </param>
+		const bool Remove(const Node* node);
 
 		/// <summary>
 		/// Sets the callback to be used at the start of the serialization for a node found in this
