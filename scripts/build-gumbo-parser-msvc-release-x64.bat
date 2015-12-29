@@ -29,8 +29,8 @@ setlocal enabledelayedexpansion
 :: lets say Gumbo Parser 0.10.1. So you'll have 
 :: PROJECT_ROOT_DIR\deps\gumbo-parser\gumbo-parser-0.10.1\SOURCES. 
 :: Therefore, set GUMBO_VERSION to "gumbo-parser-0.10.1" like so:
-:: GUMBO_VERSION=
-set GUMBO_VERSION=
+:: GUMBO_VERSION=gumbo-parser-0.10.1
+set GUMBO_VERSION=%1
 
 :: Make sure the variables have been set.
 if [%GUMBO_VERSION%] == [] GOTO RequiresSetup
