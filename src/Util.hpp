@@ -128,6 +128,31 @@ namespace gq
 		/// </param>
 		static boost::string_ref TrimEnclosingQuotes(boost::string_ref str);
 
+		/// <summary>
+		/// Removes leading and trailing whitespace from the supplied string_ref, returns the
+		/// trimmed result.
+		/// </summary>
+		/// <param name="str">
+		/// The string that may or may not contain leading and trailing whitespace.
+		/// </param>
+		/// <returns>
+		/// The supplied string with any leading or trailing whitespace removed.
+		/// </returns>
+		static boost::string_ref Trim(boost::string_ref str);
+
+		/// <summary>
+		/// Gets the tag name for the supplied node. This method also handles unknown tags. That is,
+		/// if the tag name is an unknown/non-standard tag name, the method will attempt to extract
+		/// the tag name from the raw input.
+		/// </summary>
+		/// <param name="node">
+		/// The node for which to get the normalized tag name.
+		/// </param>
+		/// <returns>
+		/// The tag name of the supplied node.
+		/// </returns>
+		static boost::string_ref GetNodeTagName(const GumboNode* node);
+
 	private:
 
 		/// <summary>

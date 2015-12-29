@@ -242,7 +242,7 @@ namespace gq
 		/// <returns>
 		/// The tag of the node.
 		/// </returns>
-		const GumboTag& GetTag() const;
+		const GumboTag GetTag() const;
 
 		/// <summary>
 		/// Run a selector against the node and its descendants and return any and all nodes that

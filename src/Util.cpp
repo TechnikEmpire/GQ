@@ -29,6 +29,7 @@
 
 #include "Util.hpp"
 #include "Node.hpp"
+#include <locale>
 
 namespace gq
 {
@@ -142,6 +143,137 @@ namespace gq
 		}
 
 		return str;
+	}
+
+	boost::string_ref Util::Trim(boost::string_ref str)
+	{
+		#ifdef _MSC_VER
+		std::locale loc("");
+		#endif
+
+		size_t si = 0;
+
+		for (size_t si = 0; si < str.size(); ++si)
+		{
+			#ifdef _MSC_VER
+			if (std::isspace(str[0], loc))
+			#else
+			if (std::isspace(str[0]))
+			#endif
+			{
+				continue;
+			}
+			else
+			{
+				break;
+			}
+		}
+
+		if (si < str.size())
+		{
+			str = str.substr(si);
+		}
+
+		if (str.size() > 0)
+		{
+			size_t ei = str.size() - 1;
+			for (ei = str.size() - 1; ei > 0; --ei)
+			{
+				#ifdef _MSC_VER
+				if (std::isspace(str[0], loc))
+				#else
+				if (std::isspace(str[0]))
+				#endif
+				{
+					continue;
+				}
+				else
+				{
+					break;
+				}
+			}
+
+
+			if (ei >= 0)
+			{
+				// +1 because we've got a zero based index passed as length, which isn't.
+				str = str.substr(0, ei+1);
+			}
+		}	
+
+		return str;
+	}
+
+	boost::string_ref Util::GetNodeTagName(const GumboNode* node)
+	{
+		if (node == nullptr || node->v.element.original_tag.length == 0)
+		{
+			return boost::string_ref();
+		}
+
+		boost::string_ref tagName;
+
+		switch (node->type)
+		{
+			case GUMBO_NODE_DOCUMENT:
+			{
+				tagName = u8"document";
+			}
+			break;
+
+			default:
+			{
+				tagName = boost::string_ref(gumbo_normalized_tagname(node->v.element.tag));
+			}
+			break;
+		}
+
+		// Handle unknown tag right here.
+		if (tagName.empty())
+		{
+			// If string length is zero, then the string is null.
+			if (node->v.element.original_tag.length >= 2 && node->v.element.original_tag.data[0] == '<')
+			{
+				boost::string_ref unknownTag(node->v.element.original_tag.data, node->v.element.original_tag.length);
+
+				if (unknownTag[0] == '<' && unknownTag[1] == '/')
+				{
+					// Closing tag
+					unknownTag = unknownTag.substr(2).to_string();
+
+					if (unknownTag.size() > 0)
+					{
+						// Remove trailing ">" char and trim whitespace.
+						if (unknownTag[unknownTag.size() - 1] == '>')
+						{
+							unknownTag = unknownTag.substr(0, unknownTag.size() - 1);
+						}
+
+						unknownTag = gq::Util::Trim(unknownTag);
+
+						tagName = unknownTag;
+					}
+				}
+				else
+				{
+					// Assume opening tag.
+					unknownTag = unknownTag.substr(1);
+					unknownTag = gq::Util::Trim(unknownTag);
+
+					auto end = unknownTag.find_first_of(">/");
+
+					if (end != boost::string_ref::npos)
+					{
+						unknownTag = unknownTag.substr(0, end);
+						unknownTag = gq::Util::Trim(unknownTag);
+					}
+
+					tagName = unknownTag;
+				}
+			}
+		}
+
+		return tagName;
 	}
 
 	void Util::WriteNodeText(const GumboNode* node, std::string& stringContainer)

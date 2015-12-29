@@ -275,47 +275,8 @@ namespace gq
 
 	std::string Serializer::GetTagName(const GumboNode* node)
 	{
-		boost::string_ref tagName;
-
-		switch (node->type)
-		{
-		case GUMBO_NODE_DOCUMENT:
-		{
-			tagName = u8"document";
-		}
-		break;
-
-		default:
-		{
-			tagName = boost::string_ref(gumbo_normalized_tagname(node->v.element.tag));
-		}
-		break;
-		}
-
-		// Handle unknown tag right here.
-		if (tagName.empty())
-		{
-			// If string length is zero, then the string is null
-			if (node->v.element.original_tag.length == 0)
-			{
-				boost::string_ref unknownTag(node->v.element.original_tag.data, node->v.element.original_tag.length);
-				auto start = unknownTag.find_first_not_of(u8"><\\ \t\r\n");
-
-				if (start == boost::string_ref::npos)
-				{
-					return std::string();
-				}
-
-				unknownTag = unknownTag.substr(start);
-
-				auto end = unknownTag.find_first_of(u8"><\\ \t\r\n");
-
-				if (end != boost::string_ref::npos)
-				{
-					unknownTag = unknownTag.substr(0, end);
-				}
-			}
-		}
+		// GetNodeTagName(...) will handle unknown tags.
+		boost::string_ref tagName = Util::GetNodeTagName(node);
 
 		return tagName.to_string();
 	}

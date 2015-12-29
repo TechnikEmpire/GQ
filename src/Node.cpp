@@ -264,15 +264,10 @@ namespace gq
 
 	boost::string_ref Node::GetTagName() const
 	{	
-		if (m_node->type != GUMBO_NODE_ELEMENT)
-		{
-			return boost::string_ref();
-		}
-
-		return boost::string_ref(gumbo_normalized_tagname(m_node->v.element.tag));
+		return Util::GetNodeTagName(m_node);
 	}
 
-	const GumboTag& Node::GetTag() const
+	const GumboTag Node::GetTag() const
 	{
 		return m_node->v.element.tag;
 	}
