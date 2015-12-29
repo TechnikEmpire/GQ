@@ -87,7 +87,7 @@ That's almost stretching the "user doesn't notice" goal, but thankfully nowhere 
 Speed doesn't mean much if the matching code is broken. As such, over 40 tests currently exist that ensure correct functionality of various types of selectors. ~~I have yet to write tests for nested and combined selectors.~~
 
 ##Configuration  
-It can be pretty handy to see verbose output from GQ for debugging selectors, engine issues, and just plain seeing what's going on under the hood. If you build GQ in Debug and add `GQ_VERBOSE_DEBUG_NFO` to your preprocessor definitions, GQ will generate ***lots*** of console output, detailing nearly every single significant event at various stages of the program. Be advised that this will be a lot of text, so piping it to a file or something similar is recommended.
+Presently, there are only scripts/project files for building GQ under Windows with Visual Studio 2015. There is no reason why GQ cannot be used under Linux or OSX, I just simply have not gone there yet. It will come soon. There is a minimal amount of setup required for building under Windows with VS, and it's detailed in the [Wiki](https://github.com/TechnikEmpire/GQ/wiki).
 
 ##TODO
  - ~~Mutation API.~~
@@ -97,6 +97,7 @@ It can be pretty handy to see verbose output from GQ for debugging selectors, en
  hand sides of the BinarySelector, which would drastically reduce candidates and thus drastically increase matching speed.~~ This was tried and abandoned, it's actually faster to just let it chew through all candidates.
  - ~~Modify `Selector::Match()` and related methods to return the final matched node. Required for child selectors and such.~~
  - ~~Work around for including root node without having to switch to the abysmal `weak_ptr` in `TreeMap`.~~
+ - Scripts/Project Files for building/using under Linux, OSX.
 
 ##Original Goals  
  - Wrapping things up in proper namespaces.
