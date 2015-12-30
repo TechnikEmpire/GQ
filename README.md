@@ -61,28 +61,47 @@ These snippets are just meant to demonstrate the most basic of usage. Thanks to 
 The contract placed on the end user is very light. Keep Document alive for as long as you're storing or accessing any Node object, directly or indirectly. That's basically it.
 
 ##Speed
-One of the primary goals with this engine was to maximize speed. For my purposes, I wanted to ensure I could run an insane amount of selectors without any visible delay to the user. Running the TestParser test benchmarks parsing and using every single selector in [EasyList](https://easylist.adblockplus.org/en/) (spare a handful which were removed because they're improperly formatted) against a standard high profile website's landing page HTML. The current results on my [dev laptop](https://www.asus.com/ca-en/ROG-Republic-Of-Gamers/ASUS_ROG_G750JM/) are:
+One of the primary goals with this engine was to maximize speed. For my purposes, I wanted to ensure I could run an insane amount of selectors without any visible delay to the user. Running the TestParser test benchmarks parsing and using every single selector in [EasyList](https://easylist.adblockplus.org/en/) (spare a handful which were removed because they're improperly formatted) against a standard high profile website's landing page HTML. For example, if I download the source for the landing page of [yahoo.com](https://yahoo.com) and use it in the parser test at the time of this writing, the current results on my [dev laptop](https://www.asus.com/ca-en/ROG-Republic-Of-Gamers/ASUS_ROG_G750JM/) are:
 
 ```
 Processed 27646 selectors. Had handled errors? false
 Benchmarking parsing speed.
-Time taken to parse 2764600 selectors: 2492.68 ms.
-Processed at a rate of 0.00090164 milliseconds per selector or 1109.09 selectors per millisecond.
+Time taken to parse 2764600 selectors: 2443.11 ms.
+Processed at a rate of 0.000883713 milliseconds per selector or 1131.59 selectors per millisecond.
 Benchmarking document parsing.
-Time taken to parse 100 documents: 13102.2 ms.
-Processed at a rate of 131.022 milliseconds per document.
+Time taken to parse 100 documents: 8054.37 ms.
+Processed at a rate of 80.5437 milliseconds per document.
 Benchmarking selection speed.
-Time taken to run 2764600 selectors against the document: 8783.99 ms producing 42900 total matches.
-Processed at a rate of 0.00317731 milliseconds per selector or 314.732 selectors per millisecond.
+Time taken to run 2764600 selectors against the document: 5709.75 ms producing 23300 total matches.
+Processed at a rate of 0.00206531 milliseconds per selector or 484.189 selectors per millisecond.
 Benchmarking mutation.
-Time taken to run 27646 selectors against the document while serializing with mutations 100 times: 9169.81 ms.
-Time per cycle 91.6981 ms.
-Processed at a rate of 0.00331687 milliseconds per selector or 301.489 selectors per millisecond.
+Time taken to run 27646 selectors against the document while serializing with mutations 100 times: 6110.32 ms.
+Time per cycle 61.1032 ms.
+Processed at a rate of 0.0022102 milliseconds per selector or 452.448 selectors per millisecond.
 ```
 
-So from these results, a document could be loaded, parsed, and have 27646 precompiled selectors run on it in about **218.8619** milliseconds, a little shy of a quarter of a second. Based on the latest benchmarks (that actually included mutation during serialization) it's about ***222.7201*** msec to load, parse the document, run 27646 selectors and serialize the output with modifications based on those selectors back to a html string.
-  
-That's almost stretching the "user doesn't notice" goal, but thankfully nowhere near 30K selectors would ever actually need to be run at once. In a more realistic use case of the EasyList, less than half that number of selectors would run on any given html input.
+So from these results, a document could be loaded, parsed, and have 27646 precompiled selectors run on it in about **137.6412** milliseconds. If you include reserializing the input to an HTML string with modifications, it's about ***141.6469*** msec to load, parse the document, run 27646 selectors and serialize the output with modifications based on those selectors back to a html string.
+
+It should be obvious that the speed can greatly vary depending on the size and complexity of the input HTML. For example, running the same test program against the [cnn.com](http://cnn.com) landing page yields the following results:
+
+```
+Processed 27646 selectors. Had handled errors? false
+Benchmarking parsing speed.
+Time taken to parse 2764600 selectors: 2396.14 ms.
+Processed at a rate of 0.000866723 milliseconds per selector or 1153.77 selectors per millisecond.
+Benchmarking document parsing.
+Time taken to parse 100 documents: 2081.5 ms.
+Processed at a rate of 20.815 milliseconds per document.
+Benchmarking selection speed.
+Time taken to run 2764600 selectors against the document: 3321.3 ms producing 9900 total matches.
+Processed at a rate of 0.00120137 milliseconds per selector or 832.386 selectors per millisecond.
+Benchmarking mutation.
+Time taken to run 27646 selectors against the document while serializing with mutations 100 times: 3478.62 ms.
+Time per cycle 34.7862 ms.
+Processed at a rate of 0.00125827 milliseconds per selector or 794.741 selectors per millisecond.
+```
+
+As you can see, approaching double the speed over the [yahoo.com](https://yahoo.com) website's landing page.  
 
 Speed doesn't mean much if the matching code is broken. As such, over 40 tests currently exist that ensure correct functionality of various types of selectors. ~~I have yet to write tests for nested and combined selectors.~~
 
