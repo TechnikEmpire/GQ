@@ -80,7 +80,7 @@ Time per cycle 61.1032 ms.
 Processed at a rate of 0.0022102 milliseconds per selector or 452.448 selectors per millisecond.
 ```
 
-So from these results, a document could be loaded, parsed, and have 27646 precompiled selectors run on it in about **137.6412** milliseconds. If you include reserializing the input to an HTML string with modifications, it's about ***141.6469*** msec to load, parse the document, run 27646 selectors and serialize the output with modifications based on those selectors back to a html string.
+So from these results, a document could be loaded, parsed, and have 27646 precompiled selectors run on it in about **137.6412** milliseconds. If you include reserializing the input to an HTML string with modifications, it's about ***141.6469*** msec to load, parse the document, run 27646 selectors and serialize the output with modifications based on those selectors back to an HTML string.
 
 It should be obvious that the speed can greatly vary depending on the size and complexity of the input HTML. For example, running the same test program against the [cnn.com](http://cnn.com) landing page yields the following results:
 
