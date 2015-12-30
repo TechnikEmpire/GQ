@@ -40,6 +40,8 @@ namespace gq
 		{
 			return m_rawNodes.erase(node->m_node) == 1;
 		}
+
+		return false;
 	}
 
 	const bool NodeMutationCollection::Contains(const GumboNode* rawNode) const

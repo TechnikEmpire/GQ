@@ -159,56 +159,56 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug x86|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <IntDir>Intermediates\$(Configuration)\</IntDir>
-    <OutDir>$(ProjectDir)..\..\..\..\build\msvc\$(Configuration)\lib\</OutDir>
+    <OutDir>$(ProjectDir)..\..\..\..\build\msvc\$(Configuration)\</OutDir>
     <TargetName>gq</TargetName>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug x64|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <IntDir>Intermediates\$(Configuration)\</IntDir>
-    <OutDir>$(ProjectDir)..\..\..\..\build\msvc\$(Configuration)\lib\</OutDir>
+    <OutDir>$(ProjectDir)..\..\..\..\build\msvc\$(Configuration)\</OutDir>
     <TargetName>gq</TargetName>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug x86|x64'">
     <LinkIncremental>true</LinkIncremental>
     <IntDir>Intermediates\$(Configuration)\</IntDir>
-    <OutDir>$(ProjectDir)..\..\..\..\build\msvc\$(Configuration)\lib\</OutDir>
+    <OutDir>$(ProjectDir)..\..\..\..\build\msvc\$(Configuration)\</OutDir>
     <TargetName>gq</TargetName>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug x64|x64'">
     <LinkIncremental>true</LinkIncremental>
     <IntDir>Intermediates\$(Configuration)\</IntDir>
-    <OutDir>$(ProjectDir)..\..\..\..\build\msvc\$(Configuration)\lib\</OutDir>
+    <OutDir>$(ProjectDir)..\..\..\..\build\msvc\$(Configuration)\</OutDir>
     <TargetName>gq</TargetName>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release x86|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <IntDir>Intermediates\$(Configuration)\</IntDir>
-    <OutDir>$(ProjectDir)..\..\..\..\build\msvc\$(Configuration)\lib\</OutDir>
+    <OutDir>$(ProjectDir)..\..\..\..\build\msvc\$(Configuration)\</OutDir>
     <TargetName>gq</TargetName>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release x64|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <IntDir>Intermediates\$(Configuration)\</IntDir>
-    <OutDir>$(ProjectDir)..\..\..\..\build\msvc\$(Configuration)\lib\</OutDir>
+    <OutDir>$(ProjectDir)..\..\..\..\build\msvc\$(Configuration)\</OutDir>
     <TargetName>gq</TargetName>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release x86|x64'">
     <LinkIncremental>false</LinkIncremental>
     <IntDir>Intermediates\$(Configuration)\</IntDir>
-    <OutDir>$(ProjectDir)..\..\..\..\build\msvc\$(Configuration)\lib\</OutDir>
+    <OutDir>$(ProjectDir)..\..\..\..\build\msvc\$(Configuration)\</OutDir>
     <TargetName>gq</TargetName>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release x64|x64'">
     <LinkIncremental>false</LinkIncremental>
     <IntDir>Intermediates\$(Configuration)\</IntDir>
-    <OutDir>$(ProjectDir)..\..\..\..\build\msvc\$(Configuration)\lib\</OutDir>
+    <OutDir>$(ProjectDir)..\..\..\..\build\msvc\$(Configuration)\</OutDir>
     <TargetName>gq</TargetName>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
@@ -233,8 +233,8 @@
     </Link>
     <PostBuildEvent>
       <Command>xcopy /Y "$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\lib\*.dll" "$(OutDir)"
-cmd /x /c mkdir "$(OutDir)\..\include"
-xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)\..\include"</Command>
+cmd /x /c mkdir "$(OutDir)..\include\"
+xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)..\include\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug x64|Win32'">
@@ -258,8 +258,8 @@ xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)\..\include"</Command>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /Y "$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\lib\*.dll" "$(OutDir)"
-cmd /x /c mkdir "$(OutDir)\..\include"
-xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)\..\include"</Command>
+cmd /x /c mkdir "$(OutDir)..\include\"
+xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)..\include\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug x86|x64'">
@@ -283,8 +283,8 @@ xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)\..\include"</Command>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /Y "$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\lib\*.dll" "$(OutDir)"
-cmd /x /c mkdir "$(OutDir)\..\include"
-xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)\..\include"</Command>
+cmd /x /c mkdir "$(OutDir)..\include\"
+xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)..\include\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug x64|x64'">
@@ -308,8 +308,8 @@ xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)\..\include"</Command>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /Y "$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\lib\*.dll" "$(OutDir)"
-cmd /x /c mkdir "$(OutDir)\..\include"
-xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)\..\include"</Command>
+cmd /x /c mkdir "$(OutDir)..\include\"
+xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)..\include\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release x86|Win32'">
@@ -337,8 +337,8 @@ xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)\..\include"</Command>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /Y "$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\lib\*.dll" "$(OutDir)"
-cmd /x /c mkdir "$(OutDir)\..\include"
-xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)\..\include"</Command>
+cmd /x /c mkdir "$(OutDir)..\include\"
+xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)..\include\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release x64|Win32'">
@@ -366,8 +366,8 @@ xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)\..\include"</Command>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /Y "$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\lib\*.dll" "$(OutDir)"
-cmd /x /c mkdir "$(OutDir)\..\include"
-xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)\..\include"</Command>
+cmd /x /c mkdir "$(OutDir)..\include\"
+xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)..\include\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release x86|x64'">
@@ -395,8 +395,8 @@ xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)\..\include"</Command>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /Y "$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\lib\*.dll" "$(OutDir)"
-cmd /x /c mkdir "$(OutDir)\..\include"
-xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)\..\include"</Command>
+cmd /x /c mkdir "$(OutDir)..\include\"
+xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)..\include\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release x64|x64'">
@@ -424,8 +424,8 @@ xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)\..\include"</Command>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /Y "$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\lib\*.dll" "$(OutDir)"
-cmd /x /c mkdir "$(OutDir)\..\include"
-xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)\..\include"</Command>
+cmd /x /c mkdir "$(OutDir)..\include\"
+xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)..\include\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

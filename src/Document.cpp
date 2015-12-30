@@ -31,6 +31,7 @@
 #include "Parser.hpp"
 #include "Util.hpp"
 #include "Serializer.hpp"
+#include "error.h"
 
 namespace gq
 {
@@ -40,7 +41,7 @@ namespace gq
 		{
 			auto doc = std::unique_ptr<Document>{ new Document(gumboOutput) };
 			
-			// Must call init to build out and index shared_ptr children.
+			// Must call init to build out and index children.
 			doc->Init();
 
 			return doc;
@@ -81,7 +82,7 @@ namespace gq
 		#ifndef NDEBUG
 			assert(source.length() > 0 && (source.find_first_not_of(u8" \t\r\n") != std::string::npos) && u8"In Document::Parse(const std::string&) - Empty or whitespace string supplied.");
 		#else
-			if (source.length() == 0 || (source.find_first_not_of(u8" \t\r\n\f") == std::string::npos)) { throw std::runtime_error(u8"In Document::Parse(const std::string&) - Empty or whitespace string supplied."); }
+			if (source.length() == 0) { throw std::runtime_error(u8"In Document::Parse(const std::string&) - Empty string supplied."); }
 		#endif
 
 		if (m_gumboOutput != nullptr)
@@ -91,9 +92,18 @@ namespace gq
 
 		m_gumboOutput = gumbo_parse(source.c_str());
 
+		// Check if we got coal in our stocking.
 		if (m_gumboOutput == nullptr)
 		{
-			throw std::runtime_error(u8"In Document::Parse(const std::string&) - Failed to parse and or allocate GumboOutput.");
+			throw std::runtime_error(u8"In Document::Parse(const std::string&) - Failed to allocate GumboOutput.");
+		}
+
+		// Check if we got absolutely nothing in our stocking. If we didn't then, santa isn't real.
+		if (m_gumboOutput->root == nullptr 
+			|| m_gumboOutput->root->v.element.children.length == 0 
+			|| static_cast<GumboNode*>(m_gumboOutput->root->v.element.children.data[0])->v.element.children.length == 0)
+		{
+			throw std::runtime_error(u8"In Document::Parse(const std::string&) - Failed to generate any HTML nodes from parsing process. The supplied string is most likely invalid HTML.");
 		}
 
 		m_node = m_gumboOutput->root;

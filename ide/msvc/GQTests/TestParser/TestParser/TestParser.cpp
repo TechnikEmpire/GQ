@@ -51,7 +51,7 @@ int main()
 	
 	std::ifstream in(parsingTestDataFilePath, std::ios::binary | std::ios::in);
 
-	if (in.fail())
+	if (in.fail() || !in.is_open())
 	{
 		std::cout << u8"Failed to load \"../../parsingtest.data\" test file." << std::endl;
 		return -1;
@@ -59,7 +59,16 @@ int main()
 		
 	std::string testContents;
 	in.seekg(0, std::ios::end);
-	testContents.resize(in.tellg());
+	
+	auto ptfsize = in.tellg();
+	
+	if (ptfsize < 0 || static_cast<unsigned long long>(ptfsize) > static_cast<unsigned long long>(std::numeric_limits<size_t>::max()))
+	{
+		std::cout << u8"When loading parsingtest.data, ifstream::tellg() returned either less than zero or a number greater than this program can correctly handle." << std::endl;
+		return -1;
+	}
+
+	testContents.resize(static_cast<size_t>(ptfsize));
 	in.seekg(0, std::ios::beg);
 	in.read(&testContents[0], testContents.size());
 	in.close();
@@ -162,7 +171,7 @@ int main()
 	
 	std::ifstream htmlFile(htmlTestDataFilePath, std::ios::binary | std::ios::in);
 
-	if (htmlFile.fail())
+	if (htmlFile.fail() || !htmlFile.is_open())
 	{
 		std::cout << u8"Failed to load \"../../testhtml.data\" test file." << std::endl;
 		return -1;
@@ -170,7 +179,16 @@ int main()
 
 	std::string testHtmlContents;
 	htmlFile.seekg(0, std::ios::end);
-	testHtmlContents.resize(htmlFile.tellg());
+
+	auto phfsize = htmlFile.tellg();
+
+	if (phfsize < 0 || static_cast<unsigned long long>(phfsize) > static_cast<unsigned long long>(std::numeric_limits<size_t>::max()))
+	{
+		std::cout << u8"When loading testhtml.data, ifstream::tellg() returned either less than zero or a number greater than this program can correctly handle." << std::endl;
+		return -1;
+	}
+
+	testHtmlContents.resize(static_cast<size_t>(phfsize));
 	htmlFile.seekg(0, std::ios::beg);
 	htmlFile.read(&testHtmlContents[0], testHtmlContents.size());
 	htmlFile.close();
@@ -183,6 +201,20 @@ int main()
 
 		auto result = selectorParser.CreateSelector(selectors[ind], true);
 		precompiledSelectors.push_back(result);
+	}
+
+	{
+		// Ensure test html validity
+		auto doc = gq::Document::Create();
+		try
+		{
+			doc->Parse(testHtmlContents);
+		}
+		catch (std::runtime_error& e)
+		{
+			std::cout << e.what() << std::endl;
+			return -1;
+		}		
 	}
 
 	std::cout << u8"Benchmarking document parsing." << std::endl;

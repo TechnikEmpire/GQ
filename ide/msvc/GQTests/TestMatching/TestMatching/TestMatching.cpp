@@ -58,7 +58,16 @@ int main()
 
 	std::string testContents;
 	in.seekg(0, std::ios::end);
-	testContents.resize(in.tellg());
+
+	auto fsize = in.tellg();
+
+	if (fsize < 0 || static_cast<unsigned long long>(fsize) > static_cast<unsigned long long>(std::numeric_limits<size_t>::max()))
+	{
+		std::cout << u8"When loading the test file, ifstream::tellg() returned either less than zero or a number greater than this program can correctly handle." << std::endl;
+		return -1;
+	}
+
+	testContents.resize(static_cast<size_t>(fsize));
 	in.seekg(0, std::ios::beg);
 	in.read(&testContents[0], testContents.size());
 	in.close();

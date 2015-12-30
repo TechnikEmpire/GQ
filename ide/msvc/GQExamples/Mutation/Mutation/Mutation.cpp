@@ -69,13 +69,31 @@ int main(int argc, char *argv[])
 
 	std::string testHtmlContents;
 	htmlFile.seekg(0, std::ios::end);
-	testHtmlContents.resize(htmlFile.tellg());
+
+	auto fsize = htmlFile.tellg();
+
+	if (fsize < 0 || static_cast<unsigned long long>(fsize) > static_cast<unsigned long long>(std::numeric_limits<size_t>::max()))
+	{
+		std::cout << u8"When loading the input HTML file, ifstream::tellg() returned either less than zero or a number greater than this program can correctly handle." << std::endl;
+		return -1;
+	}
+
+	testHtmlContents.resize(static_cast<size_t>(fsize));
 	htmlFile.seekg(0, std::ios::beg);
 	htmlFile.read(&testHtmlContents[0], testHtmlContents.size());
 	htmlFile.close();
 
 	auto testDocument = gq::Document::Create();
-	testDocument->Parse(testHtmlContents);
+
+	try
+	{
+		testDocument->Parse(testHtmlContents);
+	}
+	catch (std::runtime_error& e)
+	{
+		std::cout << e.what() << std::endl;
+		return -1;
+	}	
 
 	gq::NodeMutationCollection collection;	
 
