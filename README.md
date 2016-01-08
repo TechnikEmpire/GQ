@@ -120,7 +120,7 @@ Presently, there are only scripts/project files for building GQ under Windows wi
 
 ##Original Goals  
  - Wrapping things up in proper namespaces.
- - Remove custom rolled automatic reference counting and replace with standard `shared_ptr` types.  
+ - Remove custom rolled automatic reference counting, remove any sort of `shared_ptr` and make lifetime management dead simple.
  - Fix broken parsing that was ported from cascadia, but is invalid for use with Gumbo Parser.
  - Make parsing/matching produce the same behavior as jQuery does on the exact same test data.
  - Replace `std::string` with `boost::string_ref` wherever string copies don't truly need to be generated.  
