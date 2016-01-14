@@ -22,7 +22,9 @@ deps/
 [Dd]ebugPublic/
 [Rr]elease/
 [Rr]elease x86/
+[Rr]elease x86 SSE2/
 [Rr]elease x64/
+[Rr]elease x64 AVX/
 [Rr]eleases/
 x64/
 x86/

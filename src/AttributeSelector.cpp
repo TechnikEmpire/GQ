@@ -33,6 +33,7 @@
 #include "Node.hpp"
 #include "Util.hpp"
 #include "SpecialTraits.hpp"
+#include <iterator>
 
 namespace gq
 {
@@ -53,7 +54,7 @@ namespace gq
 		#endif
 
 		// Add attribute key as a match trait for EXISTS, specifying any ("*") as the value. 
-		AddMatchTrait(m_attributeNameRef, SpecialTraits::GetAnyValue());
+		AddMatchTrait(m_attributeNameRef, SpecialTraits::GetAnyValue());		
 	}
 
 	AttributeSelector::AttributeSelector(SelectorOperator op, boost::string_ref key, boost::string_ref value) :
@@ -110,6 +111,7 @@ namespace gq
 
 	AttributeSelector::~AttributeSelector()
 	{
+		
 	}
 
 	const Selector::MatchResult AttributeSelector::Match(const Node* node) const

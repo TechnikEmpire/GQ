@@ -31,7 +31,7 @@
 #include "Parser.hpp"
 #include "Util.hpp"
 #include "Serializer.hpp"
-#include "error.h"
+#include <gumboparser/error.h>
 
 namespace gq
 {
@@ -50,13 +50,14 @@ namespace gq
 		return std::unique_ptr<Document>{ new Document() };
 	}
 
-	Document::Document()
+	Document::Document() : 
+		m_parsingOptions(kGumboDefaultOptions)
 	{
-		m_parent = nullptr;
+		
 	}
 
 	Document::Document(GumboOutput* gumboOutput) :
-		m_gumboOutput(gumboOutput)
+		m_gumboOutput(gumboOutput), m_parsingOptions(kGumboDefaultOptions)
 	{
 		// No attempting to construct explicitly supplying a pointer, when its null. 
 		#ifndef NDEBUG
@@ -72,7 +73,7 @@ namespace gq
 	{
 		if (m_gumboOutput != nullptr)
 		{
-			gumbo_destroy_output(&kGumboDefaultOptions, m_gumboOutput);
+			gumbo_destroy_output(&m_parsingOptions, m_gumboOutput);
 		}
 	}
 
@@ -87,10 +88,10 @@ namespace gq
 
 		if (m_gumboOutput != nullptr)
 		{
-			gumbo_destroy_output(&kGumboDefaultOptions, m_gumboOutput);
+			gumbo_destroy_output(&m_parsingOptions, m_gumboOutput);
 		}
-
-		m_gumboOutput = gumbo_parse(source.c_str());
+		
+		m_gumboOutput = gumbo_parse_with_options(&m_parsingOptions, source.c_str(), source.size());
 
 		// Check if we got coal in our stocking.
 		if (m_gumboOutput == nullptr)

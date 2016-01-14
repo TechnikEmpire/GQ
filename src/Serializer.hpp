@@ -21,7 +21,7 @@
 #pragma once
 
 #include <unordered_set>
-#include <gumbo.h>
+#include <gumboparser/gumbo.h>
 #include "StrRefHash.hpp"
 #include "NodeMutationCollection.hpp"
 

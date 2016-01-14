@@ -25,7 +25,7 @@
 #include <unordered_set>
 #include <functional>
 #include <boost/utility/string_ref.hpp>
-#include <gumbo.h>
+#include <gumboparser/gumbo.h>
 #include <memory>
 #include <string>
 
@@ -173,6 +173,14 @@ namespace gq
 		/// </param>
 		void SetOnTagContent(OnTagContentCallback callback);
 		
+		/// <summary>
+		/// Gets the number of elements in the collection.
+		/// </summary>
+		/// <returns>
+		/// The number of elements in the collection.
+		/// </returns>
+		size_t Size() const;
+
 	private:
 
 		/// <summary>

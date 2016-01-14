@@ -99,6 +99,11 @@ namespace gq
 		/// </summary>
 		void Init();
 
+		/// <summary>
+		/// Custom options for parsing. Can be used to implement, for example, custom allocator.
+		/// </summary>
+		GumboOptions m_parsingOptions;
+
 	};
 
 } /* namespace gq */

@@ -263,6 +263,27 @@ int main(int argc, char *argv[])
 	// Give our mutation collection to the serialize method and get the serialization result.
 	auto serialized = gq::Serializer::Serialize(testDocument.get(), &collection);
 
+	std::string finalResult;
+
+	auto docStartPos = testDocument->GetStartOuterPosition();
+	auto docEndPos = testDocument->GetEndOuterPosition();
+
+	// We might have got some valid HTML that was embedded in some other unknown data. So, we'll
+	// check the doc->GetStartOuterPosition() and doc->GetEndOuterPosition(), then copy the
+	// difference in offsets onto the serialized string and return it. This way, we're not blowing
+	// away any data we shouldn't be.
+	if (docStartPos > 0)
+	{
+		finalResult.append(testHtmlContents.substr(0, docStartPos));
+	}
+
+	finalResult.append(serialized);
+
+	if (docEndPos < (testHtmlContents.size() - 1))
+	{
+		finalResult.append(testHtmlContents.substr(docEndPos + 1));
+	}
+
 	std::string outputFileName = htmlTestDataFilePath;
 	outputFileName.append(u8".filtered.html");
 
@@ -275,7 +296,7 @@ int main(int argc, char *argv[])
 	}
 
 	// Write result to file.
-	output << serialized;
+	output << finalResult;
 
 	output.close();
 

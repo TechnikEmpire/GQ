@@ -13,12 +13,28 @@
       <Configuration>Debug x86</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="Release x64 AVX|Win32">
+      <Configuration>Release x64 AVX</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release x64 AVX|x64">
+      <Configuration>Release x64 AVX</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="Release x64|Win32">
       <Configuration>Release x64</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="Release x64|x64">
       <Configuration>Release x64</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release x86 SSE2|Win32">
+      <Configuration>Release x86 SSE2</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release x86 SSE2|x64">
+      <Configuration>Release x86 SSE2</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="Release x86|Win32">
@@ -93,7 +109,21 @@
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release x86 SSE2|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>NotSet</CharacterSet>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release x64|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>NotSet</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release x64 AVX|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
@@ -119,7 +149,21 @@
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release x86 SSE2|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>NotSet</CharacterSet>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release x64|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>NotSet</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release x64 AVX|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
@@ -140,7 +184,13 @@
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release x86|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release x86 SSE2|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release x64|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release x64 AVX|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug x86|x64'">
@@ -152,7 +202,13 @@
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release x86|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release x86 SSE2|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release x64|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release x64 AVX|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
@@ -191,7 +247,21 @@
     <TargetName>gq</TargetName>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release x86 SSE2|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <IntDir>Intermediates\$(Configuration)\</IntDir>
+    <OutDir>$(ProjectDir)..\..\..\..\build\msvc\$(Configuration)\</OutDir>
+    <TargetName>gq</TargetName>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release x64|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <IntDir>Intermediates\$(Configuration)\</IntDir>
+    <OutDir>$(ProjectDir)..\..\..\..\build\msvc\$(Configuration)\</OutDir>
+    <TargetName>gq</TargetName>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release x64 AVX|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <IntDir>Intermediates\$(Configuration)\</IntDir>
     <OutDir>$(ProjectDir)..\..\..\..\build\msvc\$(Configuration)\</OutDir>
@@ -205,7 +275,21 @@
     <TargetName>gq</TargetName>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release x86 SSE2|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <IntDir>Intermediates\$(Configuration)\</IntDir>
+    <OutDir>$(ProjectDir)..\..\..\..\build\msvc\$(Configuration)\</OutDir>
+    <TargetName>gq</TargetName>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release x64|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <IntDir>Intermediates\$(Configuration)\</IntDir>
+    <OutDir>$(ProjectDir)..\..\..\..\build\msvc\$(Configuration)\</OutDir>
+    <TargetName>gq</TargetName>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release x64 AVX|x64'">
     <LinkIncremental>false</LinkIncremental>
     <IntDir>Intermediates\$(Configuration)\</IntDir>
     <OutDir>$(ProjectDir)..\..\..\..\build\msvc\$(Configuration)\</OutDir>
@@ -218,8 +302,8 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>GQ_VERBOSE_DEBUG_NFO;WIN32;_DEBUG;_WINDOWS;_USRDLL;GUMBQUERY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\include;$(ProjectDir)..\..\..\..\third-party\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>GQ_VERBOSE_DEBUG_NFO;GQ_EXPORT;WIN32;_DEBUG;_WINDOWS;_USRDLL;GUMBQUERY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\include;$(ProjectDir)..\..\..\..\third-party\include</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4503;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
@@ -234,7 +318,8 @@
     <PostBuildEvent>
       <Command>xcopy /Y "$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\lib\*.dll" "$(OutDir)"
 cmd /x /c mkdir "$(OutDir)..\include\"
-xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)..\include\"</Command>
+cmd /x /c mkdir "$(OutDir)..\include\gq"
+xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)..\include\gq\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug x64|Win32'">
@@ -243,8 +328,8 @@ xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)..\include\"</Command>
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>GQ_VERBOSE_DEBUG_NFO;WIN32;_DEBUG;_WINDOWS;_USRDLL;GUMBQUERY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\include;$(ProjectDir)..\..\..\..\third-party\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>GQ_VERBOSE_DEBUG_NFO;GQ_EXPORT;WIN32;_DEBUG;_WINDOWS;_USRDLL;GUMBQUERY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\include;$(ProjectDir)..\..\..\..\third-party\include</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4503;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
@@ -259,7 +344,8 @@ xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)..\include\"</Command>
     <PostBuildEvent>
       <Command>xcopy /Y "$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\lib\*.dll" "$(OutDir)"
 cmd /x /c mkdir "$(OutDir)..\include\"
-xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)..\include\"</Command>
+cmd /x /c mkdir "$(OutDir)..\include\gq"
+xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)..\include\gq\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug x86|x64'">
@@ -268,8 +354,8 @@ xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)..\include\"</Command>
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>GQ_VERBOSE_DEBUG_NFO;_DEBUG;_WINDOWS;_USRDLL;GUMBQUERY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\include;$(ProjectDir)..\..\..\..\third-party\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>GQ_VERBOSE_DEBUG_NFO;GQ_EXPORT;_DEBUG;_WINDOWS;_USRDLL;GUMBQUERY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\include;$(ProjectDir)..\..\..\..\third-party\include</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4503;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
@@ -284,7 +370,8 @@ xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)..\include\"</Command>
     <PostBuildEvent>
       <Command>xcopy /Y "$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\lib\*.dll" "$(OutDir)"
 cmd /x /c mkdir "$(OutDir)..\include\"
-xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)..\include\"</Command>
+cmd /x /c mkdir "$(OutDir)..\include\gq"
+xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)..\include\gq\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug x64|x64'">
@@ -293,8 +380,8 @@ xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)..\include\"</Command>
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>GQ_VERBOSE_DEBUG_NFO;_DEBUG;_WINDOWS;_USRDLL;GUMBQUERY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\include;$(ProjectDir)..\..\..\..\third-party\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>GQ_VERBOSE_DEBUG_NFO;GQ_EXPORT;_DEBUG;_WINDOWS;_USRDLL;GUMBQUERY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\include;$(ProjectDir)..\..\..\..\third-party\include</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4503;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
@@ -309,7 +396,8 @@ xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)..\include\"</Command>
     <PostBuildEvent>
       <Command>xcopy /Y "$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\lib\*.dll" "$(OutDir)"
 cmd /x /c mkdir "$(OutDir)..\include\"
-xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)..\include\"</Command>
+cmd /x /c mkdir "$(OutDir)..\include\gq"
+xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)..\include\gq\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release x86|Win32'">
@@ -320,9 +408,14 @@ xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)..\include\"</Command>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>GQ_VERBOSE_DEBUG_NFO;WIN32;NDEBUG;_WINDOWS;_USRDLL;GUMBQUERY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\include;$(ProjectDir)..\..\..\..\third-party\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>GQ_VERBOSE_DEBUG_NFO;GQ_EXPORT;WIN32;NDEBUG;_WINDOWS;_USRDLL;GUMBQUERY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\include;$(ProjectDir)..\..\..\..\third-party\include</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4503;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <StringPooling>true</StringPooling>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <ControlFlowGuard>false</ControlFlowGuard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -338,7 +431,43 @@ xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)..\include\"</Command>
     <PostBuildEvent>
       <Command>xcopy /Y "$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\lib\*.dll" "$(OutDir)"
 cmd /x /c mkdir "$(OutDir)..\include\"
-xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)..\include\"</Command>
+cmd /x /c mkdir "$(OutDir)..\include\gq"
+xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)..\include\gq\"</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release x86 SSE2|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>GQ_VERBOSE_DEBUG_NFO;GQ_EXPORT;WIN32;NDEBUG;_WINDOWS;_USRDLL;GUMBQUERY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\include;$(ProjectDir)..\..\..\..\third-party\include</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4503;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <StringPooling>true</StringPooling>
+      <ControlFlowGuard>false</ControlFlowGuard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>No</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>gumbo_parser.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\lib;$(ProjectDir)..\..\..\..\..\..\dev\projects\Stahp\libstahp\deps\boost\boost_1_59_0\stage\MSVC-$(PlatformTarget)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+      <GenerateMapFile>true</GenerateMapFile>
+      <MapExports>true</MapExports>
+    </Link>
+    <PostBuildEvent>
+      <Command>xcopy /Y "$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\lib\*.dll" "$(OutDir)"
+cmd /x /c mkdir "$(OutDir)..\include\"
+cmd /x /c mkdir "$(OutDir)..\include\gq"
+xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)..\include\gq\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release x64|Win32'">
@@ -349,9 +478,14 @@ xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)..\include\"</Command>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>GQ_VERBOSE_DEBUG_NFO;WIN32;NDEBUG;_WINDOWS;_USRDLL;GUMBQUERY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\include;$(ProjectDir)..\..\..\..\third-party\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>GQ_VERBOSE_DEBUG_NFO;GQ_EXPORT;WIN32;NDEBUG;_WINDOWS;_USRDLL;GUMBQUERY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\include;$(ProjectDir)..\..\..\..\third-party\include</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4503;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <StringPooling>true</StringPooling>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <ControlFlowGuard>false</ControlFlowGuard>
+      <FloatingPointModel>Fast</FloatingPointModel>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -367,7 +501,44 @@ xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)..\include\"</Command>
     <PostBuildEvent>
       <Command>xcopy /Y "$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\lib\*.dll" "$(OutDir)"
 cmd /x /c mkdir "$(OutDir)..\include\"
-xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)..\include\"</Command>
+cmd /x /c mkdir "$(OutDir)..\include\gq"
+xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)..\include\gq\"</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release x64 AVX|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>GQ_VERBOSE_DEBUG_NFO;GQ_EXPORT;WIN32;NDEBUG;_WINDOWS;_USRDLL;GUMBQUERY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\include;$(ProjectDir)..\..\..\..\third-party\include</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4503;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <StringPooling>true</StringPooling>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <ControlFlowGuard>false</ControlFlowGuard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>No</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>gumbo_parser.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\lib;$(ProjectDir)..\..\..\..\..\..\dev\projects\Stahp\libstahp\deps\boost\boost_1_59_0\stage\MSVC-$(PlatformTarget)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+      <GenerateMapFile>true</GenerateMapFile>
+      <MapExports>true</MapExports>
+    </Link>
+    <PostBuildEvent>
+      <Command>xcopy /Y "$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\lib\*.dll" "$(OutDir)"
+cmd /x /c mkdir "$(OutDir)..\include\"
+cmd /x /c mkdir "$(OutDir)..\include\gq"
+xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)..\include\gq\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release x86|x64'">
@@ -378,9 +549,14 @@ xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)..\include\"</Command>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>GQ_VERBOSE_DEBUG_NFO;NDEBUG;_WINDOWS;_USRDLL;GUMBQUERY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\include;$(ProjectDir)..\..\..\..\third-party\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>GQ_VERBOSE_DEBUG_NFO;GQ_EXPORT;NDEBUG;_WINDOWS;_USRDLL;GUMBQUERY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\include;$(ProjectDir)..\..\..\..\third-party\include</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4503;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <StringPooling>true</StringPooling>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <ControlFlowGuard>false</ControlFlowGuard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -396,7 +572,43 @@ xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)..\include\"</Command>
     <PostBuildEvent>
       <Command>xcopy /Y "$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\lib\*.dll" "$(OutDir)"
 cmd /x /c mkdir "$(OutDir)..\include\"
-xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)..\include\"</Command>
+cmd /x /c mkdir "$(OutDir)..\include\gq"
+xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)..\include\gq\"</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release x86 SSE2|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>GQ_VERBOSE_DEBUG_NFO;GQ_EXPORT;NDEBUG;_WINDOWS;_USRDLL;GUMBQUERY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\include;$(ProjectDir)..\..\..\..\third-party\include</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4503;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <StringPooling>true</StringPooling>
+      <ControlFlowGuard>false</ControlFlowGuard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>No</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>gumbo_parser.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\lib;$(ProjectDir)..\..\..\..\..\..\dev\projects\Stahp\libstahp\deps\boost\boost_1_59_0\stage\MSVC-$(PlatformTarget)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+      <GenerateMapFile>true</GenerateMapFile>
+      <MapExports>true</MapExports>
+    </Link>
+    <PostBuildEvent>
+      <Command>xcopy /Y "$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\lib\*.dll" "$(OutDir)"
+cmd /x /c mkdir "$(OutDir)..\include\"
+cmd /x /c mkdir "$(OutDir)..\include\gq"
+xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)..\include\gq\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release x64|x64'">
@@ -407,9 +619,14 @@ xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)..\include\"</Command>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>GQ_VERBOSE_DEBUG_NFO;NDEBUG;_WINDOWS;_USRDLL;GUMBQUERY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\include;$(ProjectDir)..\..\..\..\third-party\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>GQ_VERBOSE_DEBUG_NFO;GQ_EXPORT;NDEBUG;_WINDOWS;_USRDLL;GUMBQUERY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\include;$(ProjectDir)..\..\..\..\third-party\include</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4503;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <StringPooling>true</StringPooling>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <ControlFlowGuard>false</ControlFlowGuard>
+      <FloatingPointModel>Fast</FloatingPointModel>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -425,7 +642,44 @@ xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)..\include\"</Command>
     <PostBuildEvent>
       <Command>xcopy /Y "$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\lib\*.dll" "$(OutDir)"
 cmd /x /c mkdir "$(OutDir)..\include\"
-xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)..\include\"</Command>
+cmd /x /c mkdir "$(OutDir)..\include\gq"
+xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)..\include\gq\"</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release x64 AVX|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>GQ_VERBOSE_DEBUG_NFO;GQ_EXPORT;NDEBUG;_WINDOWS;_USRDLL;GUMBQUERY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\include;$(ProjectDir)..\..\..\..\third-party\include</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4503;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <StringPooling>true</StringPooling>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <ControlFlowGuard>false</ControlFlowGuard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>No</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>gumbo_parser.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\lib;$(ProjectDir)..\..\..\..\..\..\dev\projects\Stahp\libstahp\deps\boost\boost_1_59_0\stage\MSVC-$(PlatformTarget)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+      <GenerateMapFile>true</GenerateMapFile>
+      <MapExports>true</MapExports>
+    </Link>
+    <PostBuildEvent>
+      <Command>xcopy /Y "$(ProjectDir)..\..\..\..\deps\gumbo-parser\msvc\$(Configuration)\lib\*.dll" "$(OutDir)"
+cmd /x /c mkdir "$(OutDir)..\include\"
+cmd /x /c mkdir "$(OutDir)..\include\gq"
+xcopy /Y "$(ProjectDir)..\..\..\..\src\*.hpp" "$(OutDir)..\include\gq\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

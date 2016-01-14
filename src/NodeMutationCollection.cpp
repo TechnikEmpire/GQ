@@ -66,4 +66,9 @@ namespace gq
 		m_onTagContent = callback;
 	}
 
+	size_t NodeMutationCollection::Size() const
+	{
+		return m_rawNodes.size();
+	}
+
 } /* namespace gq */
