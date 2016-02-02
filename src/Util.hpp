@@ -151,7 +151,7 @@ namespace gq
 		/// <returns>
 		/// The tag name of the supplied node.
 		/// </returns>
-		static boost::string_ref GetNodeTagName(const GumboNode* node);
+		static std::string GetNodeTagName(const GumboNode* node);
 
 	private:
 

@@ -276,9 +276,7 @@ namespace gq
 	std::string Serializer::GetTagName(const GumboNode* node)
 	{
 		// GetNodeTagName(...) will handle unknown tags.
-		boost::string_ref tagName = Util::GetNodeTagName(node);
-
-		return tagName.to_string();
+		return Util::GetNodeTagName(node);
 	}
 
 	std::string Serializer::BuildDocType(const GumboNode* node)

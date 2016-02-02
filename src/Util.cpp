@@ -204,14 +204,14 @@ namespace gq
 		return str;
 	}
 
-	boost::string_ref Util::GetNodeTagName(const GumboNode* node)
+	std::string Util::GetNodeTagName(const GumboNode* node)
 	{
-		if (node == nullptr || node->v.element.original_tag.length == 0)
-		{
-			return boost::string_ref();
-		}
+		std::string tagName;
 
-		boost::string_ref tagName;
+		if (node == nullptr)
+		{
+			return tagName;
+		}
 
 		switch (node->type)
 		{
@@ -223,7 +223,7 @@ namespace gq
 
 			default:
 			{
-				tagName = boost::string_ref(gumbo_normalized_tagname(node->v.element.tag));
+				tagName = std::string(gumbo_normalized_tagname(node->v.element.tag));
 			}
 			break;
 		}
@@ -231,45 +231,14 @@ namespace gq
 		// Handle unknown tag right here.
 		if (tagName.empty())
 		{
+
+			const GumboStringPiece* piece = &node->v.element.original_tag;
 			// If string length is zero, then the string is null.
-			if (node->v.element.original_tag.length >= 2 && node->v.element.original_tag.data[0] == '<')
+			if (piece != nullptr)
 			{
-				boost::string_ref unknownTag(node->v.element.original_tag.data, node->v.element.original_tag.length);
-
-				if (unknownTag[0] == '<' && unknownTag[1] == '/')
-				{
-					// Closing tag
-					unknownTag = unknownTag.substr(2).to_string();
-
-					if (unknownTag.size() > 0)
-					{
-						// Remove trailing ">" char and trim whitespace.
-						if (unknownTag[unknownTag.size() - 1] == '>')
-						{
-							unknownTag = unknownTag.substr(0, unknownTag.size() - 1);
-						}
-
-						unknownTag = gq::Util::Trim(unknownTag);
-
-						tagName = unknownTag;
-					}
-				}
-				else
-				{
-					// Assume opening tag.
-					unknownTag = unknownTag.substr(1);
-					unknownTag = gq::Util::Trim(unknownTag);
-
-					auto end = unknownTag.find_first_of(">/");
-
-					if (end != boost::string_ref::npos)
-					{
-						unknownTag = unknownTag.substr(0, end);
-						unknownTag = gq::Util::Trim(unknownTag);
-					}
-
-					tagName = unknownTag;
-				}
+				GumboStringPiece gsp = *piece;
+				gumbo_tag_from_original_text(&gsp);
+				tagName = std::string(gsp.data, gsp.length);
 			}
 		}
 
