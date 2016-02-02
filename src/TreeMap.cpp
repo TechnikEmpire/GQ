@@ -43,7 +43,7 @@ namespace gq
 		#ifndef NDEBUG
 			assert(scope.size() > 0 && u8"In QTreeMap::AddNodeToMap(boost::string_ref, const Node*, const AttributeMap&) - The supplied scope is empty. This error is impossible unless a user is directly and incorrectly calling this method, or if this class and its required mechanisms are fundamentally broken.");
 		#else
-			if (scope.size() == 0) { throw new std::runtime_error(u8"In QTreeMap::AddNodeToMap(boost::string_ref, const Node*, const AttributeMap&) - The supplied scope is empty. This error is impossible unless a user is directly and incorrectly calling this method, or if this class and its required mechanisms are fundamentally broken."); }
+			if (scope.size() == 0) { throw std::runtime_error(u8"In QTreeMap::AddNodeToMap(boost::string_ref, const Node*, const AttributeMap&) - The supplied scope is empty. This error is impossible unless a user is directly and incorrectly calling this method, or if this class and its required mechanisms are fundamentally broken."); }
 		#endif
 		
 		#ifndef NDEBUG
@@ -178,7 +178,7 @@ namespace gq
 			{
 				// This should not be possible, provided users are messing about and the
 				// implementation isn't fundamentally broken.
-				throw new std::runtime_error(u8"In TreeMap::Get(boost::string_ref, boost::string_ref, boost::string_ref) - The supplied scope does not exist. This error is impossible unless a user is directly and incorrectly calling this method, or if this class and its required mechanisms are fundamentally broken.");
+				throw std::runtime_error(u8"In TreeMap::Get(boost::string_ref, boost::string_ref, boost::string_ref) - The supplied scope does not exist. This error is impossible unless a user is directly and incorrectly calling this method, or if this class and its required mechanisms are fundamentally broken.");
 			}
 		#endif		
 

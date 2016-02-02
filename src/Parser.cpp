@@ -150,13 +150,13 @@ namespace gq
 					
 					if (!IsCombinator(combinator))
 					{
-						throw new std::runtime_error(u8"In Parser::ParseSelector(boost::string_ref&) - Invalid combinator supplied.");
+						throw std::runtime_error(u8"In Parser::ParseSelector(boost::string_ref&) - Invalid combinator supplied.");
 					}
 
 					selectorStr = selectorStr.substr(1);
 					if (!TrimLeadingWhitespace(selectorStr))
 					{
-						throw new std::runtime_error(u8"In Parser::ParseSelector(boost::string_ref&) - Invalid combinator supplied. Combinator had leading whitespace without trailing whitespace.");
+						throw std::runtime_error(u8"In Parser::ParseSelector(boost::string_ref&) - Invalid combinator supplied. Combinator had leading whitespace without trailing whitespace.");
 					}
 				}
 			}
@@ -1204,7 +1204,7 @@ namespace gq
 
 				if (!foundEscapeSequenceEnd)
 				{
-					throw new std::runtime_error(u8"In Parser::ParseIdentifier(boost::string_ref&) - Encountered improperly formatted character escape sequence. Escaped character sequences must be followed by a space.");
+					throw std::runtime_error(u8"In Parser::ParseIdentifier(boost::string_ref&) - Encountered improperly formatted character escape sequence. Escaped character sequences must be followed by a space.");
 				}
 			}
 			else if (!IsNameChar(selectorStr[ind]))
