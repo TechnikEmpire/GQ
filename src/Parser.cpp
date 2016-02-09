@@ -1214,15 +1214,20 @@ namespace gq
 			}
 
 			++ind;
-		}
+		}		
 
-		if (ind <= 0 || ind > static_cast<int>(selectorStr.size()))
+		if (ind <= 0)
 		{
 			throw std::runtime_error(u8"In Parser::ParseIdentifier(boost::string_ref&) - Expected selector containing identifier, yet no valid identifier was found.");
+		}		
+
+		if (ind > static_cast<int>(selectorStr.size()))
+		{
+			ind = static_cast<int>(selectorStr.size());
 		}
 
 		boost::string_ref value = selectorStr.substr(0, ind);
-		selectorStr = selectorStr.substr(ind);
+		selectorStr = selectorStr.substr(ind);		
 		
 		return value;
 	}
