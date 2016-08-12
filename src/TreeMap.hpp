@@ -164,7 +164,7 @@ namespace gq
 		/// whitespace separated list into multiple individual entries, pushing them to a map like
 		/// this.
 		/// </summary>
-		typedef std::unordered_map<boost::string_ref, std::vector< const Node* >, StringRefHash> ValueToNodesMap;
+		typedef std::unordered_map<boost::string_ref, std::vector< const Node* >, StringRefHash, StringRefEquality> ValueToNodesMap;
 
 		/// <summary>
 		/// Attribute maps take an attribute name as a key, and return a map which takes attribute
@@ -174,7 +174,7 @@ namespace gq
 		/// attribute exists, passing "*" as the key to the value map will yield all nodes in which
 		/// the attribute exists.
 		/// </summary>
-		typedef std::unordered_map<boost::string_ref, ValueToNodesMap, StringRefHash> CollectedAttributesMap;
+		typedef std::unordered_map<boost::string_ref, ValueToNodesMap, StringRefHash, StringRefEquality> CollectedAttributesMap;
 
 		/// <summary>
 		/// In order to enable quickly searching within a scope, we store shared pointers to built
@@ -194,7 +194,7 @@ namespace gq
 		/// search within a collection, we certainly don't want to bother looking for attributes
 		/// that don't exist within the scope we're searching.
 		/// </summary>
-		typedef std::unordered_map<boost::string_ref, CollectedAttributesMap, StringRefHash> ScopedAttributeMap;
+		typedef std::unordered_map<boost::string_ref, CollectedAttributesMap, StringRefHash, StringRefEquality> ScopedAttributeMap;
 
 		/// <summary>
 		/// Scoped attributes which map nodes based on attributes existing and also their values.

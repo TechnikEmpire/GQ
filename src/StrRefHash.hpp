@@ -40,4 +40,20 @@ namespace gq
 		}
 	};
 
+	struct StringRefEquality
+	{
+		bool operator()(const boost::string_ref& strRef1, const boost::string_ref& strRef2) const
+		{
+			auto oneSize = strRef1.size();
+			auto twoSize = strRef2.size();
+
+			if (oneSize != twoSize)
+			{
+				return false;
+			}
+
+			return std::memcmp(strRef1.begin(), strRef2.begin(), oneSize) == 0;
+		}
+	};
+
 } /* namespace gq */
