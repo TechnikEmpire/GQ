@@ -25,11 +25,11 @@
 #include <sstream>
 #include <chrono>
 #include <cmath>
-#include <gq/Document.hpp>
-#include <gq/Node.hpp>
-#include <gq/Parser.hpp>
-#include <gq/NodeMutationCollection.hpp>
-#include <gq/Serializer.hpp>
+#include <Document.hpp>
+#include <Node.hpp>
+#include <Parser.hpp>
+#include <NodeMutationCollection.hpp>
+#include <Serializer.hpp>
 
 /// <summary>
 /// The purpose of this test is threefold. One, load the "parsingtest.data" list of selectors and

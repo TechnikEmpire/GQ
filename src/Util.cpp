@@ -233,7 +233,7 @@ namespace gq
 		{
 
 			const GumboStringPiece* piece = &node->v.element.original_tag;
-			// If string length is zero, then the string is null.
+			
 			if (piece != nullptr)
 			{
 				GumboStringPiece gsp = *piece;

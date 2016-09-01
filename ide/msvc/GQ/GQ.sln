@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GQ", "GQ\GQ.vcxproj", "{CE29AD88-4255-450F-9FA1-22252959CE94}"
 EndProject
@@ -9,9 +9,7 @@ Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug x64|Win = Debug x64|Win
 		Debug x86|Win = Debug x86|Win
-		Release x64 AVX|Win = Release x64 AVX|Win
 		Release x64|Win = Release x64|Win
-		Release x86 SSE2|Win = Release x86 SSE2|Win
 		Release x86|Win = Release x86|Win
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
@@ -19,11 +17,8 @@ Global
 		{CE29AD88-4255-450F-9FA1-22252959CE94}.Debug x64|Win.Build.0 = Debug x64|x64
 		{CE29AD88-4255-450F-9FA1-22252959CE94}.Debug x86|Win.ActiveCfg = Debug x86|Win32
 		{CE29AD88-4255-450F-9FA1-22252959CE94}.Debug x86|Win.Build.0 = Debug x86|Win32
-		{CE29AD88-4255-450F-9FA1-22252959CE94}.Release x64 AVX|Win.ActiveCfg = Release x64 AVX|x64
 		{CE29AD88-4255-450F-9FA1-22252959CE94}.Release x64|Win.ActiveCfg = Release x64|x64
 		{CE29AD88-4255-450F-9FA1-22252959CE94}.Release x64|Win.Build.0 = Release x64|Win32
-		{CE29AD88-4255-450F-9FA1-22252959CE94}.Release x86 SSE2|Win.ActiveCfg = Release x86 SSE2|Win32
-		{CE29AD88-4255-450F-9FA1-22252959CE94}.Release x86 SSE2|Win.Build.0 = Release x86 SSE2|Win32
 		{CE29AD88-4255-450F-9FA1-22252959CE94}.Release x86|Win.ActiveCfg = Release x86|Win32
 		{CE29AD88-4255-450F-9FA1-22252959CE94}.Release x86|Win.Build.0 = Release x86|Win32
 	EndGlobalSection

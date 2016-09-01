@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Mutation", "Mutation\Mutation.vcxproj", "{802883BF-9291-42A1-8716-F0573F2DB503}"
 EndProject
@@ -18,7 +18,7 @@ Global
 		{802883BF-9291-42A1-8716-F0573F2DB503}.Debug x86|Win.ActiveCfg = Debug x86|Win32
 		{802883BF-9291-42A1-8716-F0573F2DB503}.Debug x86|Win.Build.0 = Debug x86|Win32
 		{802883BF-9291-42A1-8716-F0573F2DB503}.Release x64|Win.ActiveCfg = Release x64|x64
-		{802883BF-9291-42A1-8716-F0573F2DB503}.Release x64|Win.Build.0 = Release x64|Win32
+		{802883BF-9291-42A1-8716-F0573F2DB503}.Release x64|Win.Build.0 = Release x64|x64
 		{802883BF-9291-42A1-8716-F0573F2DB503}.Release x86|Win.ActiveCfg = Release x86|Win32
 		{802883BF-9291-42A1-8716-F0573F2DB503}.Release x86|Win.Build.0 = Release x86|Win32
 	EndGlobalSection

@@ -264,7 +264,7 @@ namespace gq
 
 	boost::string_ref Node::GetTagName() const
 	{	
-		return Util::GetNodeTagName(m_node);
+		return boost::string_ref(m_nodeTagNameString);		
 	}
 
 	const GumboTag Node::GetTag() const
@@ -519,6 +519,11 @@ namespace gq
 		// is a multimap, as we split whitespace separated attribute values into duplicate key
 		// entries with different values.
 		TreeMap::AttributeMap treeAttribMap;
+
+		// Before building the attributes, we'll need to set the internal
+		// tag name string. This needs to be set, because the tag name is publicly
+		// exposed as a string_ref that wraps this member.
+		m_nodeTagNameString = Util::GetNodeTagName(m_node);
 
 		auto nodeTagName = GetTagName();
 

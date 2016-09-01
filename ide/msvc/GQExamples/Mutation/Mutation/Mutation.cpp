@@ -29,6 +29,7 @@
 #include <Serializer.hpp>
 #include <chrono>
 #include <cmath>
+#include <gumbo.h>
 
 std::string BuildAttribute(boost::string_ref attrName, boost::string_ref attrValue)
 {
@@ -105,7 +106,7 @@ int main(int argc, char *argv[])
 		switch (tag)
 		{
 			case GumboTag::GUMBO_TAG_A:
-			{
+			{	
 				// Let's just return false, which will omit this "a" tag from the final output.
 				// Since we're saying "false" which means "don't serialize this", all children
 				// of this node will be omitted from output as well.
@@ -114,14 +115,14 @@ int main(int argc, char *argv[])
 			break;
 
 			case GumboTag::GUMBO_TAG_SCRIPT:
-			{
+			{							
 				// Same deal as "a" tags.
 				return false;
 			}
 			break;
 
 			default:
-			{
+			{	
 				// Let's keep everything else we selected.
 				return true;
 			}
@@ -136,7 +137,8 @@ int main(int argc, char *argv[])
 	{
 		switch (tag)
 		{
-			case GumboTag::GUMBO_TAG_IMAGE:
+			case GumboTag::GUMBO_TAG_IMG:
+			case GumboTag::GUMBO_TAG_IMAGE:				
 			{
 				// Let's make all images point to something super spoopy.
 				if (attributeName.compare(u8"src") == 0)
@@ -228,7 +230,7 @@ int main(int argc, char *argv[])
 
 	// Create our selector string, in this case a combined selector that will
 	// match all div, p, a, and iframe elements in the html.
-	std::string selectorString(u8"div, p, a, iframe");
+	std::string selectorString(u8"div, p, a, iframe, img");
 
 	gq::SharedSelector selector = nullptr;
 

@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Source Files\gumbo">
+      <UniqueIdentifier>{a2f62d9d-0788-41d6-8c68-51919ee7992c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\src\AttributeSelector.hpp">
@@ -103,6 +106,39 @@
     </ClCompile>
     <ClCompile Include="..\..\..\..\src\Util.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\deps\gumbo-parser\src\attribute.c">
+      <Filter>Source Files\gumbo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\deps\gumbo-parser\src\char_ref.c">
+      <Filter>Source Files\gumbo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\deps\gumbo-parser\src\error.c">
+      <Filter>Source Files\gumbo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\deps\gumbo-parser\src\parser.c">
+      <Filter>Source Files\gumbo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\deps\gumbo-parser\src\string_buffer.c">
+      <Filter>Source Files\gumbo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\deps\gumbo-parser\src\string_piece.c">
+      <Filter>Source Files\gumbo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\deps\gumbo-parser\src\tag.c">
+      <Filter>Source Files\gumbo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\deps\gumbo-parser\src\tokenizer.c">
+      <Filter>Source Files\gumbo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\deps\gumbo-parser\src\utf8.c">
+      <Filter>Source Files\gumbo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\deps\gumbo-parser\src\util.c">
+      <Filter>Source Files\gumbo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\deps\gumbo-parser\src\vector.c">
+      <Filter>Source Files\gumbo</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

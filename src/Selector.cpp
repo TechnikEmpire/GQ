@@ -396,6 +396,7 @@ namespace gq
 		if (m_tagTypeToMatch != GUMBO_TAG_UNKNOWN)
 		{
 			const char* normalName = gumbo_normalized_tagname(m_tagTypeToMatch);
+			
 			m_normalizedTagTypeToMatch = boost::string_ref(normalName);
 
 			// Add the tag type as a match trait

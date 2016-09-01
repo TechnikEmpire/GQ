@@ -557,6 +557,12 @@ namespace gq
 			Node(const Node&) = delete;
 			Node& operator=(const Node&) = delete;
 
+
+			/// <summary>
+			/// Holds node tag name as string so that it can be provided via the public interface
+			/// which exposes it as a string_ref.
+			/// </summary>
+			std::string m_nodeTagNameString;
 	};
 
 	typedef std::unique_ptr<Node> UniqueNode;
