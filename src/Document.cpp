@@ -31,7 +31,7 @@
 #include "Parser.hpp"
 #include "Util.hpp"
 #include "Serializer.hpp"
-#include <gumboparser/error.h>
+#include <error.h>
 
 namespace gq
 {

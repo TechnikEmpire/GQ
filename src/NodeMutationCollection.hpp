@@ -25,7 +25,7 @@
 #include <unordered_set>
 #include <functional>
 #include <boost/utility/string_ref.hpp>
-#include <gumboparser/gumbo.h>
+#include <gumbo.h>
 #include <memory>
 #include <string>
 

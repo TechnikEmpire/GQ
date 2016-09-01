@@ -29,7 +29,7 @@
 
 #pragma once
 
-#include <gumboparser/gumbo.h>
+#include <gumbo.h>
 #include <string>
 #include <vector>
 #include <memory>

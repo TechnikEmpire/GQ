@@ -31,7 +31,7 @@
 
 #include <memory>
 #include <string>
-#include <gumboparser/gumbo.h>
+#include <gumbo.h>
 #include <vector>
 #include <cassert>
 #include <boost/utility/string_ref.hpp>
