@@ -18,126 +18,126 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\src\AttributeSelector.hpp">
+    <ClInclude Include="..\..\..\src\AttributeSelector.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\BinarySelector.hpp">
+    <ClInclude Include="..\..\..\src\BinarySelector.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\Document.hpp">
+    <ClInclude Include="..\..\..\src\Document.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\Node.hpp">
+    <ClInclude Include="..\..\..\src\Node.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\NodeMutationCollection.hpp">
+    <ClInclude Include="..\..\..\src\NodeMutationCollection.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\Parser.hpp">
+    <ClInclude Include="..\..\..\src\Parser.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\Selection.hpp">
+    <ClInclude Include="..\..\..\src\Selection.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\Selector.hpp">
+    <ClInclude Include="..\..\..\src\Selector.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\Serializer.hpp">
+    <ClInclude Include="..\..\..\src\Serializer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\SpecialTraits.hpp">
+    <ClInclude Include="..\..\..\src\SpecialTraits.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\TextSelector.hpp">
+    <ClInclude Include="..\..\..\src\TextSelector.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\TreeMap.hpp">
+    <ClInclude Include="..\..\..\src\TreeMap.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\UnarySelector.hpp">
+    <ClInclude Include="..\..\..\src\UnarySelector.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\Util.hpp">
+    <ClInclude Include="..\..\..\src\Util.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\StrRefHash.hpp">
+    <ClInclude Include="..\..\..\src\StrRefHash.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\src\AttributeSelector.cpp">
+    <ClCompile Include="..\..\..\src\AttributeSelector.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\src\BinarySelector.cpp">
+    <ClCompile Include="..\..\..\src\BinarySelector.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\src\Document.cpp">
+    <ClCompile Include="..\..\..\src\Document.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\src\Node.cpp">
+    <ClCompile Include="..\..\..\src\Node.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\src\NodeMutationCollection.cpp">
+    <ClCompile Include="..\..\..\src\NodeMutationCollection.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\src\Parser.cpp">
+    <ClCompile Include="..\..\..\src\Parser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\src\Selection.cpp">
+    <ClCompile Include="..\..\..\src\Selection.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\src\Selector.cpp">
+    <ClCompile Include="..\..\..\src\Selector.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\src\Serializer.cpp">
+    <ClCompile Include="..\..\..\src\Serializer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\src\SpecialTraits.cpp">
+    <ClCompile Include="..\..\..\src\SpecialTraits.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\src\TextSelector.cpp">
+    <ClCompile Include="..\..\..\src\TextSelector.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\src\TreeMap.cpp">
+    <ClCompile Include="..\..\..\src\TreeMap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\src\UnarySelector.cpp">
+    <ClCompile Include="..\..\..\src\UnarySelector.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\src\Util.cpp">
+    <ClCompile Include="..\..\..\src\Util.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\deps\gumbo-parser\src\attribute.c">
+    <ClCompile Include="..\..\..\deps\gumbo-parser\src\attribute.c">
       <Filter>Source Files\gumbo</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\deps\gumbo-parser\src\char_ref.c">
+    <ClCompile Include="..\..\..\deps\gumbo-parser\src\char_ref.c">
       <Filter>Source Files\gumbo</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\deps\gumbo-parser\src\error.c">
+    <ClCompile Include="..\..\..\deps\gumbo-parser\src\error.c">
       <Filter>Source Files\gumbo</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\deps\gumbo-parser\src\parser.c">
+    <ClCompile Include="..\..\..\deps\gumbo-parser\src\parser.c">
       <Filter>Source Files\gumbo</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\deps\gumbo-parser\src\string_buffer.c">
+    <ClCompile Include="..\..\..\deps\gumbo-parser\src\string_buffer.c">
       <Filter>Source Files\gumbo</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\deps\gumbo-parser\src\string_piece.c">
+    <ClCompile Include="..\..\..\deps\gumbo-parser\src\string_piece.c">
       <Filter>Source Files\gumbo</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\deps\gumbo-parser\src\tag.c">
+    <ClCompile Include="..\..\..\deps\gumbo-parser\src\tag.c">
       <Filter>Source Files\gumbo</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\deps\gumbo-parser\src\tokenizer.c">
+    <ClCompile Include="..\..\..\deps\gumbo-parser\src\tokenizer.c">
       <Filter>Source Files\gumbo</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\deps\gumbo-parser\src\utf8.c">
+    <ClCompile Include="..\..\..\deps\gumbo-parser\src\utf8.c">
       <Filter>Source Files\gumbo</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\deps\gumbo-parser\src\util.c">
+    <ClCompile Include="..\..\..\deps\gumbo-parser\src\util.c">
       <Filter>Source Files\gumbo</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\deps\gumbo-parser\src\vector.c">
+    <ClCompile Include="..\..\..\deps\gumbo-parser\src\vector.c">
       <Filter>Source Files\gumbo</Filter>
     </ClCompile>
   </ItemGroup>
