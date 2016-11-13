@@ -106,7 +106,7 @@ namespace gq
 					return MatchResult(node);
 				}
 				
-				return false;
+				return nullptr;
 			}
 			break;
 
@@ -122,7 +122,7 @@ namespace gq
 					return MatchResult(node);
 				}
 
-				return false;
+				return nullptr;
 			}
 			break;
 
@@ -134,7 +134,7 @@ namespace gq
 					return MatchResult(node);
 				}
 
-				return false;
+				return nullptr;
 			}
 			break;
 
@@ -146,12 +146,12 @@ namespace gq
 					return MatchResult(node);
 				}
 
-				return false;
+				return nullptr;
 			}
 			break;
 		}
 
-		return false;
+		return nullptr;
 	}
 
 } /* namespace gq */

@@ -65,7 +65,7 @@ namespace gq
 		// If it's not a not selector, and there's no children, we can't do a child or descendant match
 		if (m_operator != SelectorOperator::Not && node->GetNumChildren() == 0)
 		{
-			return false;
+			return nullptr;
 		}
 
 		switch (m_operator)
@@ -80,7 +80,7 @@ namespace gq
 				}
 				else
 				{
-					result;
+					return result;
 				}
 			}
 			break;
@@ -95,7 +95,7 @@ namespace gq
 					return MatchResult(node);
 				}
 
-				return false;
+				return nullptr;
 			}
 			break;
 
@@ -118,13 +118,13 @@ namespace gq
 					}
 				}
 
-				return false;				
+				return nullptr;				
 			}
 			break;	
 		}
 
 		// Just to shut up the compiler.
-		return false;
+		return nullptr;
 	}
 
 	const Selector::MatchResult UnarySelector::HasDescendantMatch(const Node* node) const
@@ -147,7 +147,7 @@ namespace gq
 			}
 		}
 
-		return false;
+		return nullptr;
 	}
 
 } /* namespace gq */
