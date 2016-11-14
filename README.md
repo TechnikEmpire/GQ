@@ -106,7 +106,9 @@ As you can see, approaching double the speed over the [yahoo.com](https://yahoo.
 Speed doesn't mean much if the matching code is broken. As such, over 40 tests currently exist that ensure correct functionality of various types of selectors. ~~I have yet to write tests for nested and combined selectors.~~
 
 ##Configuration  
-Presently, there are only scripts/project files for building GQ under Windows with Visual Studio 2015. There is no reason why GQ cannot be used under Linux or OSX, I just simply have not gone there yet. It will come soon. There is a minimal amount of setup required for building under Windows with VS, and it's detailed in the [Wiki](https://github.com/TechnikEmpire/GQ/wiki).
+~~Presently, there are only scripts/project files for building GQ under Windows with Visual Studio 2015. There is no reason why GQ cannot be used under Linux or OSX, I just simply have not gone there yet. It will come soon.~~   
+A recent contribution to the repository has added Cmake support, and bug fixes to enable correct functionality under Linux.
+There is a minimal amount of setup required for building under Windows with VS, and it's detailed in the [Wiki](https://github.com/TechnikEmpire/GQ/wiki).
 
 ##TODO
  - ~~Mutation API.~~
