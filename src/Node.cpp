@@ -64,9 +64,9 @@ namespace gq
 
 	Node::Node(const GumboNode* node, const std::string newUniqueId, const size_t indexWithinParent, Node* parent) :
 		m_node(node), 
-		m_nodeUniqueId(std::move(newUniqueId)),
-		m_indexWithinParent(indexWithinParent), 
-		m_parent(parent)
+		m_parent(parent),
+		m_indexWithinParent(indexWithinParent),
+		m_nodeUniqueId(std::move(newUniqueId))
 	{		
 		#ifndef NDEBUG
 			assert(node != nullptr && u8"In Node::Node(const GumboNode*) - Cannot construct a Node around a nullptr.");		
@@ -298,7 +298,7 @@ namespace gq
 		// it's pushed to the collected map.
 		FastAttributeMap collected;
 
-		for (auto& traitsIt = traits.begin(); traitsIt != traits.end(); ++traitsIt)
+		for (auto traitsIt = traits.begin(); traitsIt != traits.end(); ++traitsIt)
 		{
 
 			#ifndef NDEBUG
@@ -397,7 +397,7 @@ namespace gq
 		// made, it's pushed to the collected map.
 		FastAttributeMap collected;
 
-		for (auto& traitsIt = traits.begin(); traitsIt != traits.end(); ++traitsIt)
+		for (auto traitsIt = traits.begin(); traitsIt != traits.end(); ++traitsIt)
 		{
 
 			#ifndef NDEBUG

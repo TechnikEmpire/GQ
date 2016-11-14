@@ -133,7 +133,7 @@ namespace gq
 
 				if (attributeValue.size() == 0)
 				{
-					return false;
+					return nullptr;
 				}
 
 				// Just do a search
@@ -156,7 +156,7 @@ namespace gq
 
 				if (oneSize == 0 || oneSize != twoSize)
 				{
-					return false;
+					return nullptr;
 				}
 
 				if (oneSize >= 4)
@@ -180,7 +180,7 @@ namespace gq
 					}
 				}
 
-				return false;
+				return nullptr;
 			}
 			break;
 
@@ -192,7 +192,7 @@ namespace gq
 
 				if (attributeValue.size() == 0 || attributeValue.size() <= subSize)
 				{					
-					return false;
+					return nullptr;
 				}				
 
 				auto sub = attributeValue.substr(0, subSize);
@@ -223,7 +223,7 @@ namespace gq
 					}
 				}
 
-				return false;
+				return nullptr;
 			}
 			break;
 
@@ -236,7 +236,7 @@ namespace gq
 				// If our suffix is greater than the attribute value, we can just move on.
 				if (attributeValue.size() == 0 || subSize >= attributeValue.size())
 				{
-					return false;
+					return nullptr;
 				}
 
 				// Test equality of same-length substring taken from the end.
@@ -268,7 +268,7 @@ namespace gq
 					}
 				}
 
-				return false;
+				return nullptr;
 			}
 			break;
 
@@ -280,7 +280,7 @@ namespace gq
 				// return false right away.
 				if (attributeValue.size() == 0 || attributeValue.size() < m_attributeValueRef.size())
 				{
-					return false;
+					return nullptr;
 				}
 
 				if (attributeValue.size() == m_attributeValueRef.size())
@@ -314,7 +314,7 @@ namespace gq
 						}
 					}
 
-					return false;
+					return nullptr;
 				}
 
 				// If there isn't anything that qualifies as whitespace in the CSS selector world,
@@ -323,7 +323,7 @@ namespace gq
 
 				if (anySpacePosition == boost::string_ref::npos)
 				{
-					return false;
+					return nullptr;
 				}				
 				
 				auto firstSpace = attributeValue.find(' ');
@@ -365,7 +365,7 @@ namespace gq
 					firstSpace = attributeValue.find(' ');
 				}
 
-				return false;
+				return nullptr;
 			}
 			break;
 
@@ -377,7 +377,7 @@ namespace gq
 				// return false right away.
 				if (attributeValue.size() == 0 || attributeValue.size() < m_attributeValueRef.size())
 				{
-					return false;
+					return nullptr;
 				}
 
 				if (attributeValue.size() == m_attributeValueRef.size())
@@ -411,7 +411,7 @@ namespace gq
 						}
 					}
 
-					return false;
+					return nullptr;
 				}
 
 				// If we didn't find an exact match, then the only hope of a match now is finding
@@ -422,7 +422,7 @@ namespace gq
 
 				if (anyHyphen == boost::string_ref::npos)
 				{
-					return false;
+					return nullptr;
 				}
 
 				// A hyphen was found, so all we have to do is make a case-insensitive match against
@@ -432,7 +432,7 @@ namespace gq
 				if (sub[sub.length() - 1] != '-')
 				{
 					// If the last character in the substring isn't a dash, it can't possibly be a match anyway.
-					return false;
+					return nullptr;
 				}
 
 				sub = attributeValue.substr(0, m_attributeValueRef.size());
@@ -463,12 +463,12 @@ namespace gq
 					}
 				}		
 
-				return false;
+				return nullptr;
 			}
 			break;
 		}
 
-		return false;
+		return nullptr;
 	}
 
 } /* namespace gq */

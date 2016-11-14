@@ -46,7 +46,7 @@ namespace gq
 
 	const bool NodeMutationCollection::Contains(const GumboNode* rawNode) const
 	{
-		auto& res = m_rawNodes.find(rawNode);
+		const auto& res = m_rawNodes.find(rawNode);
 
 		return res != m_rawNodes.end();
 	}

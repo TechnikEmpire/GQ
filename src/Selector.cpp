@@ -185,7 +185,7 @@ namespace gq
 					return MatchResult(node);
 				}
 
-				return false;
+				return nullptr;
 			}
 			break;
 
@@ -195,7 +195,7 @@ namespace gq
 				if (parent == nullptr)
 				{
 					// Can't be a child without parents. :( Poor node. So sad.
-					return false;
+					return nullptr;
 				}
 
 				int count = 0;
@@ -220,7 +220,7 @@ namespace gq
 
 					if (count > 1)
 					{
-						return false;
+						return nullptr;
 					}
 				}
 
@@ -229,7 +229,7 @@ namespace gq
 					return MatchResult(node);
 				}
 
-				return false;
+				return nullptr;
 			}
 			break;
 
@@ -239,7 +239,7 @@ namespace gq
 				if (parent == nullptr)
 				{
 					// Can't be a child without parents. :( Poor node. So sad.
-					return false;
+					return nullptr;
 				}
 
 				// A valid child is a child that is either an element, or a is a node of exactly the
@@ -344,7 +344,7 @@ namespace gq
 					return MatchResult(node);
 				}
 
-				return false;
+				return nullptr;
 			}
 			break;
 
@@ -355,12 +355,12 @@ namespace gq
 					return MatchResult(node);
 				}
 
-				return false;
+				return nullptr;
 			}
 			break;		
 		}
 
-		return false;
+		return nullptr;
 	}
 
 	void Selector::MatchAll(const Node* node, std::vector< const Node* >& results) const

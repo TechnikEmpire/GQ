@@ -57,14 +57,14 @@ namespace gq
 			#endif
 		#endif
 
-		auto& it = m_scopedAttributes.find(scope);
+		const auto& it = m_scopedAttributes.find(scope);
 
 		CollectedAttributesMap* col;
 
 		if (it == m_scopedAttributes.end())
 		{
 			// Insert a new attribute map for the given scope if it doesn't exists already.
-			auto& res = m_scopedAttributes.emplace(std::make_pair(scope, CollectedAttributesMap{}));
+			const auto& res = m_scopedAttributes.emplace(std::make_pair(scope, CollectedAttributesMap{}));
 			col = &res.first->second;
 		}
 		else
@@ -72,13 +72,13 @@ namespace gq
 			col = &it->second;
 		}		
 
-		for (auto& nodeAttrMapIt = nodeAttributeMap.begin(); nodeAttrMapIt != nodeAttributeMap.end(); ++nodeAttrMapIt)
+		for (auto nodeAttrMapIt = nodeAttributeMap.begin(); nodeAttrMapIt != nodeAttributeMap.end(); ++nodeAttrMapIt)
 		{
 			// Need to find the attribute key at this scope. If it doesn't exist, create it and push values. If it
 			// does exist, need to append the node. Must append the node both with the value as the key, and as
 			// "*" as the key (for EXISTS lookups).	
 
-			auto& attr = col->find(nodeAttrMapIt->first);
+			const auto& attr = col->find(nodeAttrMapIt->first);
 
 			if (attr == col->end())
 			{
@@ -103,8 +103,8 @@ namespace gq
 				// There is already an entry for the attribute name, but that just means a map exists. Have to
 				// check if values exists and if so, append, if not, insert/create the key and vector collection.
 
-				auto& anyValueMatch = attr->second.find(SpecialTraits::GetAnyValue());
-				auto& exactValueMatch = attr->second.find(nodeAttrMapIt->second);
+				const auto& anyValueMatch = attr->second.find(SpecialTraits::GetAnyValue());
+				const auto& exactValueMatch = attr->second.find(nodeAttrMapIt->second);
 
 				// We need to check to make sure that the node doesn't already exist in the collection. This is because
 				// of the way that we split up space and hyphen delimited lists in attribute values. For example, when
@@ -169,7 +169,7 @@ namespace gq
 	const std::vector< const Node* >* TreeMap::Get(boost::string_ref scope, boost::string_ref attribute, boost::string_ref attributeValue) const
 	{
 		// First, jump the the correct scope to begin matching from.
-		auto& atScope = m_scopedAttributes.find(scope);
+		const auto& atScope = m_scopedAttributes.find(scope);
 
 		#ifndef NDEBUG
 			assert(atScope != m_scopedAttributes.end() && u8"In TreeMap::Get(boost::string_ref, boost::string_ref, boost::string_ref) - The supplied scope does not exist. This error is impossible unless a user is directly and incorrectly calling this method, or if this class and its required mechanisms are fundamentally broken.");
@@ -189,11 +189,11 @@ namespace gq
 		#endif
 
 		// Search for the attribute name at this scope		
-		auto& byAttrName = atScope->second.find(attribute);
+		const auto& byAttrName = atScope->second.find(attribute);
 		if (byAttrName != atScope->second.end())
 		{
 			// If we found matches to the attribute, search for the exact value
-			auto& byAttrValue = byAttrName->second.find(attributeValue);
+			const auto& byAttrValue = byAttrName->second.find(attributeValue);
 						
 			if (byAttrValue != byAttrName->second.end())
 			{

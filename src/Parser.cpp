@@ -60,7 +60,12 @@ namespace gq
 
 	Parser::Parser()
 	{
-		m_localeEnUS = std::locale(u8"en-US");		
+    #ifdef __linux__
+        // The locale has a '_' instead of '-' on linux
+        m_localeEnUS = std::locale(u8"en_US");
+    #else
+        m_localeEnUS = std::locale(u8"en-US");
+    #endif //__linux__
 	}
 
 	Parser::~Parser()

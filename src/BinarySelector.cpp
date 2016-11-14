@@ -34,7 +34,7 @@ namespace gq
 {
 
 	BinarySelector::BinarySelector(SelectorOperator op, SharedSelector left, SharedSelector right) :
-		m_operator(op), m_leftHandSide(std::move(left)), m_rightHandSide(std::move(right))
+		m_leftHandSide(std::move(left)), m_rightHandSide(std::move(right)), m_operator(op)
 	{
 		#ifndef NDEBUG
 			assert(m_leftHandSide != nullptr && m_rightHandSide != nullptr && u8"In BinarySelector::BinarySelector(SelectorOperator, SharedSelector, SharedSelector) - Left or right hand selector is nullptr.");
@@ -127,20 +127,20 @@ namespace gq
 				const Node* parent = node->GetParent();
 				if (parent == nullptr)
 				{					
-					return false;
+					return nullptr;
 				}
 
 				if (node->GetIndexWithinParent() == 0)
 				{
 					// Adjacent right hand side must immediately follow the left hand side element.
-					return false;
+					return nullptr;
 				}
 
 				// Can't possibly have an adjacent sibling match without two children.
 				if (parent->GetNumChildren() < 2)
 				{
 					// If there is only 1 child, then we cannot possibly match adjacent nodes.
-					return false;
+					return nullptr;
 				}			
 
 				auto prevSibling = parent->GetChildAt(node->GetIndexWithinParent() - 1);
@@ -162,7 +162,7 @@ namespace gq
 				// Can't be a child without a parent. Boo hoo );
 				if (parent == nullptr)
 				{
-					return false;
+					return nullptr;
 				}
 
 				auto rhsResult = m_rightHandSide->Match(node);
@@ -181,7 +181,7 @@ namespace gq
 				// Can't be a descendant of the void, unless you're Xel'naga.
 				if (parent == nullptr)
 				{
-					return false;
+					return nullptr;
 				}
 
 				auto rhsResult = m_rightHandSide->Match(node);
@@ -199,7 +199,7 @@ namespace gq
 					}
 				}
 
-				return false;
+				return nullptr;
 			}
 			break;
 
@@ -212,7 +212,7 @@ namespace gq
 					return rhsResult;
 				}
 
-				return false;
+				return nullptr;
 			}
 			break;
 
@@ -221,27 +221,27 @@ namespace gq
 				const Node* parent = node->GetParent();
 				if (parent == nullptr)
 				{
-					return false;
+					return nullptr;
 				}
 
 				if (node->GetIndexWithinParent() == 0)
 				{
 					// Adjacent right hand side must immediately follow the left hand side element.
-					return false;
+					return nullptr;
 				}
 
 				// Can't possibly have an adjacent sibling match without two children.
 				if (parent->GetNumChildren() < 2)
 				{
 					// If there is only 1 child, then we cannot possibly match adjacent nodes.
-					return false;
+					return nullptr;
 				}
 
 				auto rhsResult = m_rightHandSide->Match(node);
 
 				if (rhsResult == false)
 				{
-					return false;
+					return nullptr;
 				}
 
 				auto numChildren = parent->GetNumChildren();
@@ -261,7 +261,7 @@ namespace gq
 					}
 				}
 
-				return false;
+				return nullptr;
 			}
 			break;
 
@@ -280,12 +280,12 @@ namespace gq
 					return lshResult;
 				}
 
-				return false;				
+				return nullptr;				
 			}
 			break;
 		}
 
-		return false;
+		return nullptr;
 	}
 
 } /* namespace gq */
