@@ -118,7 +118,7 @@ There is a minimal amount of setup required for building under Windows with VS, 
  hand sides of the BinarySelector, which would drastically reduce candidates and thus drastically increase matching speed.~~ This was tried and abandoned, it's actually faster to just let it chew through all candidates.
  - ~~Modify `Selector::Match()` and related methods to return the final matched node. Required for child selectors and such.~~
  - ~~Work around for including root node without having to switch to the abysmal `weak_ptr` in `TreeMap`.~~
- - Scripts/Project Files for building/using under Linux, OSX.
+ - ~~Scripts/Project Files for building/using under Linux, OSX.~~
 
 ##Original Goals  
  - Wrapping things up in proper namespaces.
