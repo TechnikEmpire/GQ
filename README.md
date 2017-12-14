@@ -3,7 +3,7 @@ GQ is a CSS Selector Engine for [Gumbo Parser](https://github.com/google/gumbo-p
 
 This project is a fork of [gumbo-query](https://github.com/lazytiger/gumbo-query). I opted to have this be an unofficial fork because I intended on performing nearly a complete rewrite, which I did, and as such this source is completely irreconcilable with the original gumbo-query source.
 
-##Usage
+## Usage
 
 You can either construct a Document around an existing GumboOutput pointer, at which point the Document will assume managing the lifetime of the GumboOutput, or you can supply a raw string of HTML for Document to parse and also maintain.
 ```c++
@@ -60,7 +60,7 @@ These snippets are just meant to demonstrate the most basic of usage. Thanks to 
 
 The contract placed on the end user is very light. Keep Document alive for as long as you're storing or accessing any Node object, directly or indirectly. That's basically it.
 
-##Speed
+## Speed
 One of the primary goals with this engine was to maximize speed. For my purposes, I wanted to ensure I could run an insane amount of selectors without any visible delay to the user. Running the TestParser test benchmarks parsing and using every single selector in [EasyList](https://easylist.adblockplus.org/en/) (spare a handful which were removed because they're improperly formatted) against a standard high profile website's landing page HTML. For example, if I download the source for the landing page of [yahoo.com](https://yahoo.com) and use it in the parser test at the time of this writing, the current results on my [dev laptop](https://www.asus.com/ca-en/ROG-Republic-Of-Gamers/ASUS_ROG_G750JM/) are:
 
 ```
@@ -105,12 +105,12 @@ As you can see, approaching double the speed over the [yahoo.com](https://yahoo.
 
 Speed doesn't mean much if the matching code is broken. As such, over 40 tests currently exist that ensure correct functionality of various types of selectors. ~~I have yet to write tests for nested and combined selectors.~~
 
-##Configuration  
+## Configuration
 ~~Presently, there are only scripts/project files for building GQ under Windows with Visual Studio 2015. There is no reason why GQ cannot be used under Linux or OSX, I just simply have not gone there yet. It will come soon.~~   
 A recent contribution to the repository has added Cmake support, and bug fixes to enable correct functionality under Linux.
 There is a minimal amount of setup required for building under Windows with VS, and it's detailed in the [Wiki](https://github.com/TechnikEmpire/GQ/wiki).
 
-##TODO
+## TODO
  - ~~Mutation API.~~
  - ~~Tests for combined and nested selectors.~~
  - ~~Reduce candidate collections BEFORE attempting to match in the event that the selector is a BinarySelector with the
@@ -120,7 +120,7 @@ There is a minimal amount of setup required for building under Windows with VS, 
  - ~~Work around for including root node without having to switch to the abysmal `weak_ptr` in `TreeMap`.~~
  - ~~Scripts/Project Files for building/using under Linux, OSX.~~
 
-##Original Goals  
+## Original Goals
  - Wrapping things up in proper namespaces.
  - Remove custom rolled automatic reference counting, remove any sort of `shared_ptr` and make lifetime management simple.
  - Fix broken parsing that was ported from cascadia, but is invalid for use with Gumbo Parser.
